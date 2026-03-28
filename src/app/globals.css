@@ -121,10 +121,441 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+/* Admin Themes Scope */
+.admin-theme-wrapper {
+  --font-sans: var(--font-inter);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+.theme-blue {
+  /* ================================================
+     THEME BLUE - Paleta profesional en OKLCH
+     ================================================ */
+
+  /* === Light Mode - Fondo con tinte AZUL más pronunciado === */
+  --background: oklch(0.965 0.025 250);
+  /* Fondo principal más saturado y distinguible */
+  --foreground: oklch(0.2 0.04 250);
+  --card: oklch(0.98 0.015 250);
+  /* Card ligeramente más claro que el fondo */
+  --card-foreground: oklch(0.2 0.04 250);
+  --popover: oklch(0.99 0.018 250);
+  --popover-foreground: oklch(0.2 0.04 250);
+
+  --primary: oklch(0.55 0.20 250);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.94 0.022 250);
+  --secondary-foreground: oklch(0.3 0.1 250);
+  --muted: oklch(0.945 0.018 250);
+  --muted-foreground: oklch(0.4 0.05 250);
+  --accent: oklch(0.91 0.028 250);
+  --accent-foreground: oklch(0.25 0.12 250);
+
+  --destructive: oklch(0.5 0.15 25);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.88 0.025 250);
+  --input: oklch(0.88 0.025 250);
+  --ring: oklch(0.55 0.20 250 / 0.5);
+
+  --sidebar: oklch(0.975 0.018 250);
+  /* Sidebar con tinte azul más visible */
+  --sidebar-foreground: oklch(0.2 0.04 250);
+  --sidebar-primary: oklch(0.55 0.20 250);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.022 250);
+  --sidebar-accent-foreground: oklch(0.55 0.20 250);
+  --sidebar-border: oklch(0.90 0.022 250);
+  --sidebar-ring: oklch(0.55 0.20 250 / 0.5);
+
+  --radius: 0.625rem;
+
+  /* === Dark Mode - Fondo AZUL OSCURO más pronunciado === */
+  &.dark {
+    --background: oklch(0.115 0.028 250);
+    /* Fondo dark con mayor saturación azul */
+    --foreground: oklch(0.98 0.01 250);
+    --card: oklch(0.135 0.022 250);
+    --card-foreground: oklch(0.98 0.01 250);
+    --popover: oklch(0.135 0.022 250);
+    --popover-foreground: oklch(0.98 0.01 250);
+
+    --primary: oklch(0.65 0.20 250);
+    --primary-foreground: oklch(0.98 0.01 250);
+
+    --secondary: oklch(0.175 0.032 250);
+    --secondary-foreground: oklch(0.7 0.05 250);
+    --muted: oklch(0.17 0.025 250);
+    --muted-foreground: oklch(0.6 0.04 250);
+    --accent: oklch(0.195 0.03 250);
+    --accent-foreground: oklch(0.9 0.04 250);
+
+    --border: oklch(0.21 0.028 250);
+    --input: oklch(0.21 0.028 250);
+    --ring: oklch(0.65 0.20 250 / 0.45);
+
+    --sidebar: oklch(0.13 0.025 250);
+    --sidebar-foreground: oklch(0.98 0.01 250);
+    --sidebar-primary: oklch(0.65 0.20 250);
+    --sidebar-primary-foreground: oklch(0.98 0.01 250);
+    --sidebar-accent: oklch(0.195 0.03 250);
+    --sidebar-accent-foreground: oklch(0.98 0.01 250);
+    --sidebar-border: oklch(0.21 0.028 250);
+    --sidebar-ring: oklch(0.65 0.20 250 / 0.45);
+  }
+
+  /* Mapeo Tailwind v4 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+.theme-green {
+  /* ================================================
+     THEME GREEN - Paleta fresca y moderna
+     ================================================ */
+
+  /* === Light Mode - Fondo con tinte VERDE más pronunciado === */
+  --background: oklch(0.965 0.025 160);
+  --foreground: oklch(0.2 0.04 160);
+  --card: oklch(0.98 0.015 160);
+  --card-foreground: oklch(0.2 0.04 160);
+  --popover: oklch(0.99 0.018 160);
+  --popover-foreground: oklch(0.2 0.04 160);
+
+  --primary: oklch(0.55 0.20 160);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.94 0.022 160);
+  --secondary-foreground: oklch(0.3 0.1 160);
+  --muted: oklch(0.945 0.018 160);
+  --muted-foreground: oklch(0.4 0.05 160);
+  --accent: oklch(0.91 0.028 160);
+  --accent-foreground: oklch(0.25 0.12 160);
+
+  --destructive: oklch(0.5 0.15 25);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.88 0.025 160);
+  --input: oklch(0.88 0.025 160);
+  --ring: oklch(0.55 0.20 160 / 0.5);
+
+  --sidebar: oklch(0.975 0.018 160);
+  --sidebar-foreground: oklch(0.2 0.04 160);
+  --sidebar-primary: oklch(0.55 0.20 160);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.022 160);
+  --sidebar-accent-foreground: oklch(0.55 0.20 160);
+  --sidebar-border: oklch(0.90 0.022 160);
+  --sidebar-ring: oklch(0.55 0.20 160 / 0.5);
+
+  --radius: 0.625rem;
+
+  /* === Dark Mode - Fondo VERDE OSCURO más pronunciado === */
+  &.dark {
+    --background: oklch(0.115 0.028 160);
+    --foreground: oklch(0.98 0.01 160);
+    --card: oklch(0.135 0.022 160);
+    --card-foreground: oklch(0.98 0.01 160);
+    --popover: oklch(0.135 0.022 160);
+    --popover-foreground: oklch(0.98 0.01 160);
+
+    --primary: oklch(0.65 0.20 160);
+    --primary-foreground: oklch(0.98 0.01 160);
+
+    --secondary: oklch(0.175 0.032 160);
+    --secondary-foreground: oklch(0.7 0.05 160);
+    --muted: oklch(0.17 0.025 160);
+    --muted-foreground: oklch(0.6 0.04 160);
+    --accent: oklch(0.195 0.03 160);
+    --accent-foreground: oklch(0.9 0.04 160);
+
+    --border: oklch(0.21 0.028 160);
+    --input: oklch(0.21 0.028 160);
+    --ring: oklch(0.65 0.20 160 / 0.45);
+
+    --sidebar: oklch(0.13 0.025 160);
+    --sidebar-foreground: oklch(0.98 0.01 160);
+    --sidebar-primary: oklch(0.65 0.20 160);
+    --sidebar-primary-foreground: oklch(0.98 0.01 160);
+    --sidebar-accent: oklch(0.195 0.03 160);
+    --sidebar-accent-foreground: oklch(0.98 0.01 160);
+    --sidebar-border: oklch(0.21 0.028 160);
+    --sidebar-ring: oklch(0.65 0.20 160 / 0.45);
+  }
+
+  /* Mapeo Tailwind v4 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+.theme-ruby {
+  /* ================================================
+     THEME RUBY - Paleta energética y premium
+     ================================================ */
+
+  /* === Light Mode - Fondo con tinte RUBY más pronunciado === */
+  --background: oklch(0.965 0.025 25);
+  --foreground: oklch(0.2 0.04 25);
+  --card: oklch(0.98 0.015 25);
+  --card-foreground: oklch(0.2 0.04 25);
+  --popover: oklch(0.99 0.018 25);
+  --popover-foreground: oklch(0.2 0.04 25);
+
+  --primary: oklch(0.55 0.20 25);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.94 0.022 25);
+  --secondary-foreground: oklch(0.3 0.1 25);
+  --muted: oklch(0.945 0.018 25);
+  --muted-foreground: oklch(0.4 0.05 25);
+  --accent: oklch(0.91 0.028 25);
+  --accent-foreground: oklch(0.25 0.12 25);
+
+  --destructive: oklch(0.5 0.15 25);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.88 0.025 25);
+  --input: oklch(0.88 0.025 25);
+  --ring: oklch(0.55 0.20 25 / 0.5);
+
+  --sidebar: oklch(0.975 0.018 25);
+  --sidebar-foreground: oklch(0.2 0.04 25);
+  --sidebar-primary: oklch(0.55 0.20 25);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.022 25);
+  --sidebar-accent-foreground: oklch(0.55 0.20 25);
+  --sidebar-border: oklch(0.90 0.022 25);
+  --sidebar-ring: oklch(0.55 0.20 25 / 0.5);
+
+  --radius: 0.625rem;
+
+  /* === Dark Mode - Fondo RUBY OSCURO más pronunciado === */
+  &.dark {
+    --background: oklch(0.115 0.028 25);
+    --foreground: oklch(0.98 0.01 25);
+    --card: oklch(0.135 0.022 25);
+    --card-foreground: oklch(0.98 0.01 25);
+    --popover: oklch(0.135 0.022 25);
+    --popover-foreground: oklch(0.98 0.01 25);
+
+    --primary: oklch(0.65 0.20 25);
+    --primary-foreground: oklch(0.98 0.01 25);
+
+    --secondary: oklch(0.175 0.032 25);
+    --secondary-foreground: oklch(0.7 0.05 25);
+    --muted: oklch(0.17 0.025 25);
+    --muted-foreground: oklch(0.6 0.04 25);
+    --accent: oklch(0.195 0.03 25);
+    --accent-foreground: oklch(0.9 0.04 25);
+
+    --border: oklch(0.21 0.028 25);
+    --input: oklch(0.21 0.028 25);
+    --ring: oklch(0.65 0.20 25 / 0.45);
+
+    --sidebar: oklch(0.13 0.025 25);
+    --sidebar-foreground: oklch(0.98 0.01 25);
+    --sidebar-primary: oklch(0.65 0.20 25);
+    --sidebar-primary-foreground: oklch(0.98 0.01 25);
+    --sidebar-accent: oklch(0.195 0.03 25);
+    --sidebar-accent-foreground: oklch(0.98 0.01 25);
+    --sidebar-border: oklch(0.21 0.028 25);
+    --sidebar-ring: oklch(0.65 0.20 25 / 0.45);
+  }
+
+  /* Mapeo Tailwind v4 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+.theme-neutral {
+  /* ================================================
+     THEME NEUTRAL - Gris puro y minimalista
+     ================================================ */
+
+  /* === Light Mode - Fondo NEUTRO (sin cambios drásticos) === */
+  --background: oklch(0.99 0.002 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(0.995 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+
+  --secondary: oklch(0.965 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --border: oklch(0.915 0 0);
+  --input: oklch(0.915 0 0);
+  --ring: oklch(0.708 0 0);
+
+  --radius: 0.625rem;
+
+  --sidebar: oklch(0.98 0.002 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.965 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.915 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* === Dark Mode === */
+  &.dark {
+    --background: oklch(0.14 0.005 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.16 0.005 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.16 0.005 0);
+    --popover-foreground: oklch(0.985 0 0);
+
+    --primary: oklch(0.985 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+
+    --secondary: oklch(0.26 0.005 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.26 0.005 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.26 0.005 0);
+    --accent-foreground: oklch(0.985 0 0);
+
+    --border: oklch(0.26 0.005 0);
+    --input: oklch(0.26 0.005 0);
+    --ring: oklch(0.439 0 0);
+
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.985 0 0);
+
+    --sidebar: oklch(0.14 0.005 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.439 0 0);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.26 0.005 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(0.26 0.005 0);
+    --sidebar-ring: oklch(0.439 0 0);
+  }
+
+  /* Mapeo Tailwind v4 */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
