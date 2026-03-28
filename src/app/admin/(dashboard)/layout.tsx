@@ -15,6 +15,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const cookieStore = await cookies()
   const masterKey = cookieStore.get("certa_admin_session")
 
+  const theme = cookieStore.get("certa-admin-theme")?.value as any || "neutral"
+  const mode = cookieStore.get("certa-admin-mode")?.value as any || "light"
+
   if (!masterKey || masterKey.value !== "true") {
     redirect("/admin/login")
   }
@@ -24,7 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       className={`${inter.variable} antialiased min-h-screen`}
       style={{ "--font-sans": "var(--font-inter)" } as React.CSSProperties}
     >
-      <AdminThemeProvider>
+      <AdminThemeProvider initialTheme={theme} initialMode={mode}>
         <SidebarProvider>
           <AdminSidebar />
           <SidebarInset>

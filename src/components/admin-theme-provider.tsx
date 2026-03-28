@@ -19,43 +19,51 @@ const ThemeContext = createContext<ThemeContextType>({
   setMode: () => null,
 })
 
-export function AdminThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("neutral")
-  const [mode, setModeState] = useState<Mode>("light")
+interface AdminThemeProviderProps {
+  children: React.ReactNode
+  initialTheme?: Theme
+  initialMode?: Mode
+}
+
+const COOKIE_NAME_THEME = "certa-admin-theme"
+const COOKIE_NAME_MODE = "certa-admin-mode"
+
+function setCookie(name: string, value: string) {
+  document.cookie = `${name}=${value}; path=/; max-age=31536000; SameSite=Lax`
+}
+
+export function AdminThemeProvider({ 
+  children, 
+  initialTheme = "neutral", 
+  initialMode = "light" 
+}: AdminThemeProviderProps) {
+  const [theme, setThemeState] = useState<Theme>(initialTheme)
+  const [mode, setModeState] = useState<Mode>(initialMode)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    // Check locally saved theme
-    const savedTheme = localStorage.getItem("certa-admin-theme") as Theme
-    if (savedTheme && ["neutral", "blue", "green", "ruby"].includes(savedTheme)) {
-      setThemeState(savedTheme)
-    }
-
-    // Check locally saved mode
-    const savedMode = localStorage.getItem("certa-admin-mode") as Mode
-    if (savedMode && ["light", "dark"].includes(savedMode)) {
-      setModeState(savedMode)
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      // Default to system preference if no saved mode
-      setModeState("dark")
-    }
   }, [])
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)
-    localStorage.setItem("certa-admin-theme", newTheme)
+    setCookie(COOKIE_NAME_THEME, newTheme)
   }
 
   const setMode = (newMode: Mode) => {
     setModeState(newMode)
-    localStorage.setItem("certa-admin-mode", newMode)
+    setCookie(COOKIE_NAME_MODE, newMode)
   }
+
+  // Si estamos montados, usamos el estado actual. 
+  // Si no (durante hidratación), usamos los valores iniciales del servidor.
+  const currentTheme = mounted ? theme : initialTheme
+  const currentMode = mounted ? mode : initialMode
 
   return (
     <ThemeContext.Provider value={{ theme, mode, setTheme, setMode }}>
       <div 
-        className={`admin-theme-wrapper ${mounted ? `theme-${theme} ${mode === "dark" ? "dark" : ""}` : "theme-neutral"} min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300`}
+        className={`admin-theme-wrapper theme-${currentTheme} ${currentMode === "dark" ? "dark" : ""} min-h-screen flex flex-col bg-background text-foreground transition-colors duration-300`}
       >
         {children}
       </div>
