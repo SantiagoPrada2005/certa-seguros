@@ -83,26 +83,6 @@ export function HeroSection({
           </>
         )}
       </div>
-      
-      <div className={`relative z-10 ${maxWidth} mx-auto px-6 w-full`}>
-        <div className="text-center">
-          <h1
-            className={`font-bold text-foreground text-balance text-4xl sm:text-5xl md:text-6xl xl:text-[80px] leading-tight sm:leading-tight md:leading-tight lg:leading-tight xl:leading-[1.1] mb-6 lg:text-7xl ${titleClassName}`}
-            style={{ fontFamily, fontWeight }}
-          >
-            {title} <span className="text-primary">{highlightText}</span>
-          </h1>
-          <p className={`text-lg sm:text-xl text-white text-pretty max-w-2xl mx-auto leading-relaxed mb-10 px-4 ${descriptionClassName}`}>
-            {description}
-          </p>
-          <button
-            onClick={handleButtonClick}
-            className={`px-6 py-4 sm:px-8 sm:py-6 rounded-full border-4 bg-[rgba(63,63,63,1)] border-card text-sm sm:text-base text-white hover:bg-[rgba(63,63,63,0.9)] transition-colors ${buttonClassName}`}
-          >
-            {buttonText}
-          </button>
-        </div>
-      </div>
     </section>
   )
 }

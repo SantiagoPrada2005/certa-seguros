@@ -291,9 +291,9 @@ const ScrollExpandMedia = ({
                     />
 
                     <motion.div
-                      className='absolute inset-0 bg-black/50 rounded-xl'
+                      className='absolute inset-0 bg-blue-400/30 rounded-xl'
                       initial={{ opacity: 0.7 }}
-                      animate={{ opacity: 0.7 - scrollProgress * 0.3 }}
+                      animate={{ opacity: 0.4 - scrollProgress * 0.2 }}
                       transition={{ duration: 0.2 }}
                     />
                   </div>
@@ -325,13 +325,13 @@ const ScrollExpandMedia = ({
                 }`}
               >
                 <motion.h2
-                  className='text-6xl md:text-8xl lg:text-9xl font-extrabold text-[#38bdf8] transition-none font-montserrat uppercase tracking-tighter'
+                  className='text-5xl md:text-7xl lg:text-8xl font-black text-[#034078] transition-none font-montserrat uppercase tracking-tighter'
                   style={{ transform: `translateX(-${textTranslateX}vw)` }}
                 >
                   {firstWord}
                 </motion.h2>
                 <motion.h2
-                  className='text-6xl md:text-8xl lg:text-9xl font-extrabold text-center text-[#38bdf8] transition-none font-montserrat uppercase tracking-tighter'
+                  className='text-5xl md:text-7xl lg:text-8xl font-black text-center text-[#034078] transition-none font-montserrat uppercase tracking-tighter'
                   style={{ transform: `translateX(${textTranslateX}vw)` }}
                 >
                   {restOfTitle}
