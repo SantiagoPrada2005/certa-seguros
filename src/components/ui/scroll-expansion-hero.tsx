@@ -227,10 +227,10 @@ const ScrollExpandMedia = ({
           <div className='container mx-auto relative z-10'>
             <div className='flex flex-col md:flex-row items-center justify-between w-full h-[100dvh] relative overflow-hidden'>
               {/* Left Content Area (Visible when expanded) */}
-              <motion.div 
+              <motion.div
                 className="w-full md:w-1/2 h-full flex flex-col justify-center px-6 md:px-12 lg:px-20 relative z-20"
                 initial={{ opacity: 0, x: -50 }}
-                animate={{ 
+                animate={{
                   opacity: scrollProgress > 0.8 ? 1 : 0,
                   x: scrollProgress > 0.8 ? 0 : -50
                 }}
@@ -304,21 +304,21 @@ const ScrollExpandMedia = ({
                   )}
 
                   {/* Gradient Mask for Media Integration (Left side mask) */}
-                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#041c32] via-transparent to-transparent opacity-0 transition-opacity duration-500" 
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#041c32] via-transparent to-transparent opacity-0 transition-opacity duration-500"
                     style={{ opacity: isMobileState ? 0 : scrollProgress > 0.8 ? 1 : 0 }}
                   />
-                  
-                  {/* Subtle Dark Blue Overlay */}
+
+                  {/* Soft Blue Overlay for Title Contrast */}
                   <motion.div
-                    className='absolute inset-0 bg-blue-900/10 pointer-events-none'
+                    className='absolute inset-0 bg-[#0d548d]/40 pointer-events-none'
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: scrollProgress > 0.5 ? 0.2 : 0 }}
-                    transition={{ duration: 0.5 }}
+                    animate={{ opacity: scrollProgress > 0.3 ? 1 : 0 }}
+                    transition={{ duration: 0.7 }}
                   />
                 </div>
 
                 {/* Vertical Scroll Indicator & Subtitle */}
-                <motion.div 
+                <motion.div
                   className='flex flex-col items-center text-center relative z-10 mt-4 transition-none'
                   animate={{ opacity: scrollProgress > 0.3 ? 0 : 1 }}
                 >
