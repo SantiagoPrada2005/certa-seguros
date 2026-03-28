@@ -14,8 +14,8 @@ const Hero = () => {
         backgroundNode={
           <HeroSection
             colors={["#001f54", "#034078", "#0d548d", "#0a1128", "#000000"]}
-            distortion={1.2}
-            speed={0.8}
+            distortion={0.4}
+            speed={0.2}
             title=""
             description=""
             buttonText=""
@@ -26,7 +26,6 @@ const Hero = () => {
         title="Certa Seguros"
         date="Tu tranquilidad es nuestro compromiso"
         scrollToExpand="Desliza para conocer más"
-        textBlend
       >
         <div className="max-w-4xl mx-auto text-center font-poppins">
           <h2 className="text-4xl md:text-6xl font-extrabold mb-8 text-white font-montserrat tracking-tight">

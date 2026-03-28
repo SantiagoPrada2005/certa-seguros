@@ -163,8 +163,8 @@ const ScrollExpandMedia = ({
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const mediaWidth = 300 + scrollProgress * (isMobileState ? 650 : 1250);
-  const mediaHeight = 400 + scrollProgress * (isMobileState ? 200 : 400);
+  const mediaWidth = 450 + scrollProgress * (isMobileState ? 500 : 1100);
+  const mediaHeight = 550 + scrollProgress * (isMobileState ? 200 : 350);
   const textTranslateX = scrollProgress * (isMobileState ? 180 : 150);
 
   const firstWord = title ? title.split(' ')[0] : '';
@@ -325,14 +325,20 @@ const ScrollExpandMedia = ({
                 }`}
               >
                 <motion.h2
-                  className='text-5xl md:text-7xl lg:text-8xl font-black text-[#034078] transition-none font-montserrat uppercase tracking-tighter'
-                  style={{ transform: `translateX(-${textTranslateX}vw)` }}
+                  className='text-5xl md:text-7xl lg:text-8xl font-black text-[#011f4b] transition-none font-montserrat uppercase tracking-tighter drop-shadow-2xl'
+                  style={{ 
+                    transform: `translateX(-${textTranslateX}vw)`,
+                    textShadow: '0 4px 15px rgba(0,0,0,0.6)'
+                  }}
                 >
                   {firstWord}
                 </motion.h2>
                 <motion.h2
-                  className='text-5xl md:text-7xl lg:text-8xl font-black text-center text-[#034078] transition-none font-montserrat uppercase tracking-tighter'
-                  style={{ transform: `translateX(${textTranslateX}vw)` }}
+                  className='text-5xl md:text-7xl lg:text-8xl font-black text-center text-[#011f4b] transition-none font-montserrat uppercase tracking-tighter drop-shadow-2xl'
+                  style={{ 
+                    transform: `translateX(${textTranslateX}vw)`,
+                    textShadow: '0 4px 15px rgba(0,0,0,0.6)'
+                  }}
                 >
                   {restOfTitle}
                 </motion.h2>
