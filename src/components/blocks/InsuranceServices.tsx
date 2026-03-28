@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { Heart, ShieldCheck, Home, CarFront, Briefcase } from 'lucide-react';
 
@@ -8,35 +8,30 @@ const services = [
   {
     title: "Seguro de Vida y Plenitud",
     description: "No es solo una póliza, es capital para tu jubilación y estabilidad financiera para tus seres queridos. Una solución de ahorro y seguridad que garantiza tranquilidad ante cualquier imprevisto.",
-    buttonText: "Cotizar mi futuro",
     icon: Heart,
     accent: "#00A8CC",
   },
   {
     title: "Seguros para tu Negocio (PYME)",
     description: "Asegurar tu empresa es asegurar su crecimiento. Te brindamos protección integral, asistencias especializadas y asesoría personalizada para que la continuidad de tu negocio nunca se detenga.",
-    buttonText: "Proteger mi empresa",
     icon: Briefcase,
-    accent: "#0d548d",
+    accent: "#00A8CC",
   },
   {
     title: "Seguro de Hogar Integral",
     description: "Tu tranquilidad es lo más importante. Protegemos el valor comercial de tu vivienda y tus enseres contra eventos naturales y daños, con asistencia técnica disponible las 24 horas.",
-    buttonText: "Asegurar mi hogar",
     icon: Home,
-    accent: "#034078",
+    accent: "#00A8CC",
   },
   {
     title: "Movilidad y Vehículos",
     description: "Protegemos tu carro o moto con coberturas de responsabilidad civil y daños. Además, gestionamos tus trámites de tránsito (traspasos y pagos) con agilidad, confianza y sin filas.",
-    buttonText: "Ver servicios de tránsito",
     icon: CarFront,
-    accent: "#0a2540",
+    accent: "#00A8CC",
   },
   {
     title: "Salud y Riesgos Laborales (ARL)",
     description: "Cumplimos con la normativa legal para que trabajes con total respaldo. Acceso a servicios médicos de alta calidad y cobertura integral para ti y tus colaboradores.",
-    buttonText: "Solicitar asesoría",
     icon: ShieldCheck,
     accent: "#00A8CC",
   }
@@ -78,10 +73,6 @@ const InsuranceServices = () => {
         </p>
         <div className="w-24 h-1 bg-[#00A8CC] mx-auto rounded-full" />
       </div>
-
-      <p className="text-center text-gray-400 text-xs uppercase tracking-widest mb-6 font-poppins" aria-hidden="true">
-        ← Arrastra para explorar →
-      </p>
 
       <div
         className="relative flex overflow-hidden cursor-grab active:cursor-grabbing"
@@ -132,19 +123,9 @@ const InsuranceServices = () => {
                 {service.title}
               </h3>
 
-              <p className="text-gray-700 text-sm leading-relaxed mb-6 font-poppins flex-grow">
+              <p className="text-gray-700 text-sm leading-relaxed font-poppins flex-grow">
                 {service.description}
               </p>
-
-              <a
-                href="#contacto"
-                className="mt-auto inline-flex items-center font-bold text-sm uppercase tracking-widest transition-all duration-300 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 rounded"
-                style={{ color: service.accent, outlineColor: service.accent }}
-                onClick={(e) => e.stopPropagation()}
-                aria-label={`${service.buttonText} — ir al formulario de contacto`}
-              >
-                {service.buttonText}
-              </a>
             </div>
           ))}
         </motion.div>
