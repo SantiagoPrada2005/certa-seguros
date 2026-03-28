@@ -163,8 +163,8 @@ const ScrollExpandMedia = ({
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  const mediaWidth = 450 + scrollProgress * (isMobileState ? 500 : 1100);
-  const mediaHeight = 550 + scrollProgress * (isMobileState ? 200 : 350);
+  const mediaWidth = 380 + scrollProgress * (isMobileState ? 550 : 1200);
+  const mediaHeight = 480 + scrollProgress * (isMobileState ? 200 : 380);
   const textTranslateX = scrollProgress * (isMobileState ? 180 : 150);
 
   const firstWord = title ? title.split(' ')[0] : '';
@@ -321,11 +321,11 @@ const ScrollExpandMedia = ({
 
               <div
                 className={`flex items-center justify-center text-center gap-4 w-full relative z-10 transition-none flex-col ${
-                  textBlend ? 'mix-blend-difference' : 'mix-blend-normal'
+                  textBlend ? 'mix-blend-screen' : 'mix-blend-normal'
                 }`}
               >
                 <motion.h2
-                  className='text-5xl md:text-7xl lg:text-8xl font-black text-[#011f4b] transition-none font-montserrat uppercase tracking-tighter drop-shadow-2xl'
+                  className='text-5xl md:text-7xl lg:text-8xl font-black text-[#5ba7cc] transition-none font-montserrat uppercase tracking-tighter drop-shadow-2xl'
                   style={{ 
                     transform: `translateX(-${textTranslateX}vw)`,
                     textShadow: '0 4px 15px rgba(0,0,0,0.6)'
@@ -334,7 +334,7 @@ const ScrollExpandMedia = ({
                   {firstWord}
                 </motion.h2>
                 <motion.h2
-                  className='text-5xl md:text-7xl lg:text-8xl font-black text-center text-[#011f4b] transition-none font-montserrat uppercase tracking-tighter drop-shadow-2xl'
+                  className='text-5xl md:text-7xl lg:text-8xl font-black text-center text-[#5ba7cc] transition-none font-montserrat uppercase tracking-tighter drop-shadow-2xl'
                   style={{ 
                     transform: `translateX(${textTranslateX}vw)`,
                     textShadow: '0 4px 15px rgba(0,0,0,0.6)'
@@ -342,7 +342,7 @@ const ScrollExpandMedia = ({
                 >
                   {restOfTitle}
                 </motion.h2>
-              </div>
+</div>
             </div>
 
             <motion.section

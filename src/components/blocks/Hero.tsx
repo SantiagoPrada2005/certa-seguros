@@ -26,6 +26,7 @@ const Hero = () => {
         title="Certa Seguros"
         date="Tu tranquilidad es nuestro compromiso"
         scrollToExpand="Desliza para conocer más"
+        textBlend
       >
         <div className="max-w-4xl mx-auto text-center font-poppins">
           <h2 className="text-4xl md:text-6xl font-extrabold mb-8 text-white font-montserrat tracking-tight">
