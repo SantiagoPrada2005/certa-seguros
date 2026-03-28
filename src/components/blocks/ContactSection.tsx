@@ -5,12 +5,12 @@ import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 const ContactSection = () => {
   return (
-    <section className="py-24 bg-white dark:bg-zinc-950" id="contacto">
+    <section className="py-24 bg-white dark:bg-zinc-950 font-poppins" id="contacto">
       <div className="container mx-auto px-6">
-        <div className="bg-blue-600 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row">
+        <div className="bg-[#0d548d] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row">
           <div className="lg:w-1/2 p-12 lg:p-20 text-white">
-            <h2 className="text-4xl font-bold mb-8">Hablemos de tu tranquilidad</h2>
-            <p className="text-xl text-blue-100 mb-12 leading-relaxed">
+            <h2 className="text-4xl font-extrabold mb-8 font-montserrat">Hablemos de tu tranquilidad</h2>
+            <p className="text-xl text-blue-100 mb-12 leading-relaxed font-bold">
               Estamos aquí para responder todas tus dudas y ayudarte a encontrar la mejor opción para ti. Contáctanos por cualquiera de estos medios.
             </p>
 

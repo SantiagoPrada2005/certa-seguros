@@ -44,13 +44,13 @@ const services = [
 
 const InsuranceServices = () => {
   return (
-    <section className="py-24 bg-white dark:bg-zinc-950">
+    <section className="py-24 bg-white dark:bg-zinc-950 font-poppins">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-zinc-900 dark:text-white mb-4">
+          <h2 className="text-4xl font-extrabold text-zinc-900 dark:text-white mb-4 font-montserrat">
             Nuestros Servicios de Seguros
           </h2>
-          <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+          <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto font-bold">
             Ofrecemos una amplia gama de coberturas diseñadas para adaptarse a tus necesidades específicas.
           </p>
         </div>
@@ -64,10 +64,10 @@ const InsuranceServices = () => {
               <div className={`p-3 rounded-xl bg-white dark:bg-zinc-800 w-fit mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
                 <service.icon className={`w-8 h-8 ${service.color}`} />
               </div>
-              <h3 className="text-2xl font-semibold text-zinc-900 dark:text-white mb-4">
+              <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4 font-montserrat">
                 {service.title}
               </h3>
-              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-bold">
                 {service.description}
               </p>
             </div>

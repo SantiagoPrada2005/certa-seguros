@@ -193,7 +193,7 @@ const ScrollExpandMedia = ({
               }}
               priority
             />
-            <div className='absolute inset-0 bg-black/10' />
+            <div className='absolute inset-0 bg-[#0d548d]/40' />
           </motion.div>
 
           <div className='container mx-auto flex flex-col items-center justify-start relative z-10'>
@@ -313,13 +313,13 @@ const ScrollExpandMedia = ({
                 }`}
               >
                 <motion.h2
-                  className='text-4xl md:text-5xl lg:text-6xl font-bold text-blue-200 transition-none'
+                  className='text-6xl md:text-8xl lg:text-9xl font-extrabold text-[#38bdf8] transition-none font-montserrat uppercase tracking-tighter'
                   style={{ transform: `translateX(-${textTranslateX}vw)` }}
                 >
                   {firstWord}
                 </motion.h2>
                 <motion.h2
-                  className='text-4xl md:text-5xl lg:text-6xl font-bold text-center text-blue-200 transition-none'
+                  className='text-6xl md:text-8xl lg:text-9xl font-extrabold text-center text-[#38bdf8] transition-none font-montserrat uppercase tracking-tighter'
                   style={{ transform: `translateX(${textTranslateX}vw)` }}
                 >
                   {restOfTitle}
