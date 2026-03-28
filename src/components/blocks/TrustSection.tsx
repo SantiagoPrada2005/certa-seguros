@@ -23,9 +23,9 @@ const containerVariants: Variants = {
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, scale: 0.9, y: 20 },
-  visible: { 
-    opacity: 1, 
-    scale: 1, 
+  visible: {
+    opacity: 1,
+    scale: 1,
     y: 0,
     transition: { type: 'spring', stiffness: 100, damping: 15 }
   },
@@ -33,9 +33,9 @@ const itemVariants: Variants = {
 
 const textFadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
+  visible: {
+    opacity: 1,
+    y: 0,
     transition: { duration: 0.6, ease: 'easeOut' }
   }
 };
@@ -45,9 +45,9 @@ const TrustSection = () => {
     <section className="py-24 bg-zinc-50 dark:bg-zinc-900 font-poppins overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-16">
-          
+
           {/* Left Content (Text and List) */}
-          <motion.div 
+          <motion.div
             className="lg:w-1/2"
             variants={textFadeUp}
             initial="hidden"
@@ -79,7 +79,7 @@ const TrustSection = () => {
           </motion.div>
 
           {/* Right Content (Staggered Stat Cards) */}
-          <motion.div 
+          <motion.div
             className="lg:w-1/2 grid grid-cols-2 gap-6"
             variants={containerVariants}
             initial="hidden"
