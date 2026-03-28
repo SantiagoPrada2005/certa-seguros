@@ -15,7 +15,8 @@ interface ScrollExpandMediaProps {
   mediaType?: 'video' | 'image';
   mediaSrc: string;
   posterSrc?: string;
-  bgImageSrc: string;
+  bgImageSrc?: string;
+  backgroundNode?: ReactNode;
   title?: string;
   date?: string;
   scrollToExpand?: string;
@@ -28,6 +29,7 @@ const ScrollExpandMedia = ({
   mediaSrc,
   posterSrc,
   bgImageSrc,
+  backgroundNode,
   title,
   date,
   scrollToExpand,
@@ -181,19 +183,29 @@ const ScrollExpandMedia = ({
             animate={{ opacity: 1 - scrollProgress }}
             transition={{ duration: 0.1 }}
           >
-            <Image
-              src={bgImageSrc}
-              alt='Background'
-              width={1920}
-              height={1080}
-              className='w-screen h-screen'
-              style={{
-                objectFit: 'cover',
-                objectPosition: 'center',
-              }}
-              priority
-            />
-            <div className='absolute inset-0 bg-[#0d548d]/40' />
+            {backgroundNode ? (
+              <div className="absolute inset-0 w-full h-full">
+                {backgroundNode}
+              </div>
+            ) : (
+              bgImageSrc && (
+                <>
+                  <Image
+                    src={bgImageSrc!}
+                    alt='Background'
+                    width={1920}
+                    height={1080}
+                    className='w-screen h-screen'
+                    style={{
+                      objectFit: 'cover',
+                      objectPosition: 'center',
+                    }}
+                    priority
+                  />
+                  <div className='absolute inset-0 bg-[#0d548d]/40' />
+                </>
+              )
+            )}
           </motion.div>
 
           <div className='container mx-auto flex flex-col items-center justify-start relative z-10'>

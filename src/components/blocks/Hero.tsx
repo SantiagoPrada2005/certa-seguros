@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
+import { HeroSection } from '@/components/hero-section-with-smooth-bg-shader';
 import ScrollExpandMedia from '@/components/ui/scroll-expansion-hero';
+
 
 const Hero = () => {
   return (
@@ -9,7 +11,18 @@ const Hero = () => {
       <ScrollExpandMedia
         mediaType="image"
         mediaSrc="/images/hero-person.png"
-        bgImageSrc="/images/hero-bg.png"
+        backgroundNode={
+          <HeroSection
+            colors={["#001f54", "#034078", "#0d548d", "#0a1128", "#000000"]}
+            distortion={1.2}
+            speed={0.8}
+            title=""
+            description=""
+            buttonText=""
+            veilOpacity="bg-transparent"
+            className="h-full"
+          />
+        }
         title="Certa Seguros"
         date="Tu tranquilidad es nuestro compromiso"
         scrollToExpand="Desliza para conocer más"
