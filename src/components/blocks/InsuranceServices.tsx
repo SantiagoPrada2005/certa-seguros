@@ -46,7 +46,6 @@ const duplicatedServices = [...services, ...services, ...services];
 
 const InsuranceServices = () => {
   const controls = useAnimationControls();
-  const [isHovered, setIsHovered] = useState(false);
 
   const startAutoScroll = () => {
     controls.start({
@@ -86,14 +85,8 @@ const InsuranceServices = () => {
 
       <div
         className="relative flex overflow-hidden cursor-grab active:cursor-grabbing"
-        onMouseEnter={() => {
-          setIsHovered(true);
-          pauseAutoScroll();
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-          startAutoScroll();
-        }}
+        onMouseEnter={pauseAutoScroll}
+        onMouseLeave={startAutoScroll}
         onFocus={pauseAutoScroll}
         onBlur={startAutoScroll}
       >
@@ -146,7 +139,7 @@ const InsuranceServices = () => {
               <a
                 href="#contacto"
                 className="mt-auto inline-flex items-center font-bold text-sm uppercase tracking-widest transition-all duration-300 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 rounded"
-                style={{ color: service.accent, outlineColor: service.accent  }}
+                style={{ color: service.accent, outlineColor: service.accent }}
                 onClick={(e) => e.stopPropagation()}
                 aria-label={`${service.buttonText} — ir al formulario de contacto`}
               >

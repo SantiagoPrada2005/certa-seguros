@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion, Variants } from 'framer-motion';
 import { CheckCircle2, Star, Users, PhoneCall } from 'lucide-react';
 
 const stats = [
@@ -10,12 +11,49 @@ const stats = [
   { label: 'Soporte 24/7', value: 'En Vivo', icon: PhoneCall },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.9, y: 20 },
+  visible: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: { type: 'spring', stiffness: 100, damping: 15 }
+  },
+};
+
+const textFadeUp: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.6, ease: 'easeOut' }
+  }
+};
+
 const TrustSection = () => {
   return (
-    <section className="py-24 bg-zinc-50 dark:bg-zinc-900 font-poppins">
+    <section className="py-24 bg-zinc-50 dark:bg-zinc-900 font-poppins overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-16">
-          <div className="lg:w-1/2">
+          
+          {/* Left Content (Text and List) */}
+          <motion.div 
+            className="lg:w-1/2"
+            variants={textFadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
             <h2 className="text-4xl font-extrabold text-zinc-900 dark:text-white mb-6 font-montserrat">
               ¿Por qué elegir Certa Seguros?
             </h2>
@@ -38,12 +76,20 @@ const TrustSection = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
-          <div className="lg:w-1/2 grid grid-cols-2 gap-6">
+          {/* Right Content (Staggered Stat Cards) */}
+          <motion.div 
+            className="lg:w-1/2 grid grid-cols-2 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
             {stats.map((stat, index) => (
-              <div
+              <motion.div
                 key={index}
+                variants={itemVariants}
                 className="bg-white dark:bg-zinc-800 p-8 rounded-3xl shadow-sm border border-zinc-100 dark:border-zinc-700 flex flex-col items-center text-center group hover:-translate-y-2 transition-transform duration-300"
               >
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -51,9 +97,10 @@ const TrustSection = () => {
                 </div>
                 <div className="text-3xl font-extrabold text-zinc-900 dark:text-white mb-1 font-montserrat">{stat.value}</div>
                 <div className="text-zinc-500 dark:text-zinc-400 font-bold">{stat.label}</div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
+
         </div>
       </div>
     </section>

@@ -234,7 +234,7 @@ const ScrollExpandMedia = ({
                   opacity: isMobileState ? 1 : (scrollProgress > 0.8 ? 1 : 0),
                   x: isMobileState ? 0 : (scrollProgress > 0.8 ? 0 : -40)
                 }}
-                transition={{ 
+                transition={{
                   type: 'spring',
                   stiffness: 90,
                   damping: 20
@@ -343,13 +343,12 @@ const ScrollExpandMedia = ({
                         {scrollToExpand}
                       </p>
                       <motion.div
-                        animate={{ y: [0, 8, 0] }}
-                        transition={{ 
+                        animate={{ y: [0, 8] }}
+                        transition={{
                           repeat: Infinity,
-                          duration: 1.5,
-                          type: 'spring',
-                          stiffness: 60,
-                          damping: 10
+                          repeatType: 'mirror',
+                          duration: 0.9,
+                          ease: 'easeInOut',
                         }}
                         className="w-[1.5px] h-10 bg-gradient-to-b from-blue-400/50 to-transparent rounded-full"
                       />
