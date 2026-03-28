@@ -202,22 +202,20 @@ const Demo = () => {
       <div className='fixed top-4 right-4 z-50 flex gap-2'>
         <button
           onClick={() => setMediaType('video')}
-          className={`px-4 py-2 rounded-lg ${
-            mediaType === 'video'
+          className={`px-4 py-2 rounded-lg ${mediaType === 'video'
               ? 'bg-white text-black'
               : 'bg-black/50 text-white border border-white/30'
-          }`}
+            }`}
         >
           Video
         </button>
 
         <button
           onClick={() => setMediaType('image')}
-          className={`px-4 py-2 rounded-lg ${
-            mediaType === 'image'
+          className={`px-4 py-2 rounded-lg ${mediaType === 'image'
               ? 'bg-white text-black'
               : 'bg-black/50 text-white border border-white/30'
-          }`}
+            }`}
         >
           Image
         </button>

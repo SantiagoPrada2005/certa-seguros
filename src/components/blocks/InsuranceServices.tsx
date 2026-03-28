@@ -1,79 +1,165 @@
 'use client';
 
-import React from 'react';
-import { Shield, Car, Heart, Home, Umbrella, Briefcase } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, useAnimationControls } from 'framer-motion';
+import { Heart, ShieldCheck, Home, CarFront, Briefcase } from 'lucide-react';
 
 const services = [
   {
-    title: 'Seguro de Salud',
-    description: 'La mejor cobertura médica para ti y tu familia con acceso a las mejores clínicas.',
+    title: "Seguro de Vida y Plenitud",
+    description: "No es solo una póliza, es capital para tu jubilación y estabilidad financiera para tus seres queridos. Una solución de ahorro y seguridad que garantiza tranquilidad ante cualquier imprevisto.",
+    buttonText: "Cotizar mi futuro",
     icon: Heart,
-    color: 'text-red-500',
+    accent: "#00A8CC",
   },
   {
-    title: 'Seguro de Auto',
-    description: 'Protección total para tu vehículo contra accidentes, robo y daños a terceros.',
-    icon: Car,
-    color: 'text-blue-500',
-  },
-  {
-    title: 'Seguro de Vida',
-    description: 'Asegura el bienestar financiero de tus seres queridos en cualquier circunstancia.',
-    icon: Shield,
-    color: 'text-green-500',
-  },
-  {
-    title: 'Seguro de Hogar',
-    description: 'Protege tu casa y tus pertenencias contra incendios, robos y desastres naturales.',
-    icon: Home,
-    color: 'text-orange-500',
-  },
-  {
-    title: 'Responsabilidad Civil',
-    description: 'Cobertura integral para protegerte ante reclamaciones de terceros.',
-    icon: Umbrella,
-    color: 'text-purple-500',
-  },
-  {
-    title: 'Seguro Empresarial',
-    description: 'Soluciones a medida para proteger los activos y el personal de tu empresa.',
+    title: "Seguros para tu Negocio (PYME)",
+    description: "Asegurar tu empresa es asegurar su crecimiento. Te brindamos protección integral, asistencias especializadas y asesoría personalizada para que la continuidad de tu negocio nunca se detenga.",
+    buttonText: "Proteger mi empresa",
     icon: Briefcase,
-    color: 'text-slate-500',
+    accent: "#0d548d",
   },
+  {
+    title: "Seguro de Hogar Integral",
+    description: "Tu tranquilidad es lo más importante. Protegemos el valor comercial de tu vivienda y tus enseres contra eventos naturales y daños, con asistencia técnica disponible las 24 horas.",
+    buttonText: "Asegurar mi hogar",
+    icon: Home,
+    accent: "#034078",
+  },
+  {
+    title: "Movilidad y Vehículos",
+    description: "Protegemos tu carro o moto con coberturas de responsabilidad civil y daños. Además, gestionamos tus trámites de tránsito (traspasos y pagos) con agilidad, confianza y sin filas.",
+    buttonText: "Ver servicios de tránsito",
+    icon: CarFront,
+    accent: "#0a2540",
+  },
+  {
+    title: "Salud y Riesgos Laborales (ARL)",
+    description: "Cumplimos con la normativa legal para que trabajes con total respaldo. Acceso a servicios médicos de alta calidad y cobertura integral para ti y tus colaboradores.",
+    buttonText: "Solicitar asesoría",
+    icon: ShieldCheck,
+    accent: "#00A8CC",
+  }
 ];
 
-const InsuranceServices = () => {
-  return (
-    <section className="py-24 bg-white dark:bg-zinc-950 font-poppins">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold text-zinc-900 dark:text-white mb-4 font-montserrat">
-            Nuestros Servicios de Seguros
-          </h2>
-          <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto font-bold">
-            Ofrecemos una amplia gama de coberturas diseñadas para adaptarse a tus necesidades específicas.
-          </p>
-        </div>
+const duplicatedServices = [...services, ...services, ...services];
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
+const InsuranceServices = () => {
+  const controls = useAnimationControls();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const startAutoScroll = () => {
+    controls.start({
+      x: ['0%', '-33.33%'],
+      transition: {
+        repeat: Infinity,
+        repeatType: 'loop',
+        duration: 60,
+        ease: 'linear',
+      },
+    });
+  };
+
+  const pauseAutoScroll = () => {
+    controls.stop();
+  };
+
+  return (
+    <section
+      className="py-24 bg-white overflow-hidden relative"
+      id="servicios"
+      aria-label="Nuestros servicios de protección"
+    >
+      <div className="container mx-auto px-6 mb-16">
+        <h2 className="text-3xl md:text-5xl font-black text-[#041c32] mb-4 font-montserrat uppercase tracking-tight text-center">
+          Nuestros Servicios de Protección
+        </h2>
+        <p className="text-center text-[#0d548d] font-poppins text-lg mb-6 max-w-2xl mx-auto font-normal">
+          Soluciones integrales diseñadas para proteger lo que más te importa.
+        </p>
+        <div className="w-24 h-1 bg-[#00A8CC] mx-auto rounded-full" />
+      </div>
+
+      <p className="text-center text-gray-400 text-xs uppercase tracking-widest mb-6 font-poppins" aria-hidden="true">
+        ← Arrastra para explorar →
+      </p>
+
+      <div
+        className="relative flex overflow-hidden cursor-grab active:cursor-grabbing"
+        onMouseEnter={() => {
+          setIsHovered(true);
+          pauseAutoScroll();
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          startAutoScroll();
+        }}
+        onFocus={pauseAutoScroll}
+        onBlur={startAutoScroll}
+      >
+        <motion.div
+          className="flex gap-8 py-6 px-4"
+          role="list"
+          drag="x"
+          dragConstraints={{ left: -3000, right: 0 }}
+          onViewportEnter={startAutoScroll}
+          onDragStart={pauseAutoScroll}
+          onDragEnd={startAutoScroll}
+          animate={controls}
+        >
+          {duplicatedServices.map((service, index) => (
             <div
               key={index}
-              className="p-8 rounded-2xl border border-zinc-100 dark:border-zinc-800 hover:shadow-xl transition-all duration-300 bg-zinc-50/50 dark:bg-zinc-900/50 group"
+              role="listitem"
+              className="flex-shrink-0 w-[380px] bg-white rounded-3xl p-8 transition-all duration-500 hover:-translate-y-2 select-none flex flex-col"
+              style={{
+                boxShadow: '0 8px 40px rgba(2, 10, 30, 0.13), 0 2px 12px rgba(1, 5, 20, 0.09)',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.boxShadow =
+                  '0 20px 60px rgba(2, 10, 30, 0.22), 0 4px 20px rgba(1, 5, 20, 0.14)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.boxShadow =
+                  '0 8px 40px rgba(2, 10, 30, 0.13), 0 2px 12px rgba(1, 5, 20, 0.09)';
+              }}
             >
-              <div className={`p-3 rounded-xl bg-white dark:bg-zinc-800 w-fit mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                <service.icon className={`w-8 h-8 ${service.color}`} />
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-300"
+                style={{
+                  backgroundColor: service.accent + '18',
+                  border: `1.5px solid ${service.accent}35`,
+                }}
+                aria-hidden="true"
+              >
+                <service.icon className="w-7 h-7" style={{ color: service.accent }} />
               </div>
-              <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4 font-montserrat">
+
+              <h3 className="text-xl font-bold text-[#041c32] mb-3 font-montserrat leading-tight">
                 {service.title}
               </h3>
-              <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-bold">
+
+              <p className="text-gray-700 text-sm leading-relaxed mb-6 font-poppins flex-grow">
                 {service.description}
               </p>
+
+              <a
+                href="#contacto"
+                className="mt-auto inline-flex items-center font-bold text-sm uppercase tracking-widest transition-all duration-300 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 rounded"
+                style={{ color: service.accent, outlineColor: service.accent  }}
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`${service.buttonText} — ir al formulario de contacto`}
+              >
+                {service.buttonText}
+              </a>
             </div>
           ))}
-        </div>
+        </motion.div>
       </div>
+
+      {/* Gradient fade edges */}
+      <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" aria-hidden="true" />
+      <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" aria-hidden="true" />
     </section>
   );
 };

@@ -5,15 +5,15 @@ import ContactSection from "@/components/blocks/ContactSection";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-[#041c32]">
       <Hero />
       <InsuranceServices />
       <TrustSection />
       <ContactSection />
-      
-      {/* Footer minimalista */}
-      <footer className="py-12 bg-zinc-900 text-center border-t border-zinc-800">
-        <p className="text-zinc-500">
+
+      {/* Footer */}
+      <footer className="py-12 bg-[#020f1e] text-center border-t border-white/5">
+        <p className="text-white/30 text-sm font-poppins">
           &copy; {new Date().getFullYear()} Certa Seguros. Todos los derechos reservados.
         </p>
       </footer>

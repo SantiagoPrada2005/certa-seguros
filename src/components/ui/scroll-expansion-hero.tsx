@@ -229,12 +229,16 @@ const ScrollExpandMedia = ({
               {/* Left Content Area (Visible when expanded) */}
               <motion.div
                 className="w-full md:w-1/2 h-full flex flex-col justify-center px-6 md:px-12 lg:px-20 relative z-20"
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: -40 }}
                 animate={{
-                  opacity: scrollProgress > 0.8 ? 1 : 0,
-                  x: scrollProgress > 0.8 ? 0 : -50
+                  opacity: isMobileState ? 1 : (scrollProgress > 0.8 ? 1 : 0),
+                  x: isMobileState ? 0 : (scrollProgress > 0.8 ? 0 : -40)
                 }}
-                transition={{ duration: 0.5 }}
+                transition={{ 
+                  type: 'spring',
+                  stiffness: 90,
+                  damping: 20
+                }}
               >
                 {leftContent}
               </motion.div>
@@ -308,12 +312,12 @@ const ScrollExpandMedia = ({
                     style={{ opacity: isMobileState ? 0 : scrollProgress > 0.8 ? 1 : 0 }}
                   />
 
-                  {/* Soft Blue Overlay for Title Contrast */}
+                  {/* Subtle Dark Blue Overlay */}
                   <motion.div
-                    className='absolute inset-0 bg-[#0d548d]/40 pointer-events-none'
+                    className='absolute inset-0 bg-blue-900/10 pointer-events-none'
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: scrollProgress > 0.3 ? 1 : 0 }}
-                    transition={{ duration: 0.7 }}
+                    animate={{ opacity: scrollProgress > 0.5 ? 0.2 : 0 }}
+                    transition={{ duration: 0.5 }}
                   />
                 </div>
 
@@ -340,7 +344,13 @@ const ScrollExpandMedia = ({
                       </p>
                       <motion.div
                         animate={{ y: [0, 8, 0] }}
-                        transition={{ repeat: Infinity, duration: 1.5 }}
+                        transition={{ 
+                          repeat: Infinity,
+                          duration: 1.5,
+                          type: 'spring',
+                          stiffness: 60,
+                          damping: 10
+                        }}
                         className="w-[1.5px] h-10 bg-gradient-to-b from-blue-400/50 to-transparent rounded-full"
                       />
                     </div>
@@ -352,8 +362,9 @@ const ScrollExpandMedia = ({
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
                 <div className={`flex items-center justify-center text-center gap-4 w-full flex-col`}>
                   <motion.h2
-                    className='text-6xl md:text-8xl lg:text-[10rem] font-black text-white transition-none font-montserrat uppercase tracking-tighter'
+                    className='font-black text-white transition-none font-montserrat uppercase tracking-tighter'
                     style={{
+                      fontSize: 'clamp(2.5rem, 8vw, 10rem)',
                       transform: `translateX(-${textTranslateX}vw)`,
                       textShadow: scrollProgress > 0.8 ? '0 4px 20px rgba(0,0,0,0.5)' : 'none'
                     }}
@@ -361,8 +372,9 @@ const ScrollExpandMedia = ({
                     {firstWord}
                   </motion.h2>
                   <motion.h2
-                    className='text-6xl md:text-8xl lg:text-[10rem] font-black text-center text-white transition-none font-montserrat uppercase tracking-tighter'
+                    className='font-black text-center text-white transition-none font-montserrat uppercase tracking-tighter'
                     style={{
+                      fontSize: 'clamp(2.5rem, 8vw, 10rem)',
                       transform: `translateX(${textTranslateX}vw)`,
                       textShadow: scrollProgress > 0.8 ? '0 4px 20px rgba(0,0,0,0.5)' : 'none'
                     }}
