@@ -36,14 +36,45 @@ const mockProspects = [
   },
 ]
 
+import { SectionCard } from "@/components/admin/section-card"
+
 export default function AdminDashboardPage() {
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Prospectos</h1>
-        <p className="text-muted-foreground mt-2">
-          Gestión centralizada de clientes y prospectos capturados.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Prospectos</h1>
+          <p className="text-muted-foreground mt-2">
+            Gestión centralizada de clientes y prospectos capturados.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:grid-cols-2 xl:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+        <SectionCard
+          title="Total Prospectos"
+          value="1,284"
+          trend="up"
+          trendValue="+12%"
+          footerTitle="Captura activa"
+        />
+        <SectionCard
+          title="Por Contactar"
+          value="43"
+          trend="down"
+          trendValue="-2"
+          footerTitle="Pendientes hoy"
+        />
+        <SectionCard
+          title="Última Captura"
+          description="Hoy, 10:45 AM"
+          footerTitle="Origen: Web Pública"
+        />
+        <SectionCard
+          title="Eficiencia de Contacto"
+          description="Alta Navegabilidad"
+          footerTitle="Sincronizado"
+        />
       </div>
 
       <Card>

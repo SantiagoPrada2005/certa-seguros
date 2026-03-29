@@ -1,5 +1,18 @@
+import { SectionCard } from "@/components/admin/section-card"
+import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
 import { PlusIcon, BriefcaseIcon } from "lucide-react"
+
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +24,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -28,8 +40,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
+
+export function SectionCards() {
+  return (
+    <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:grid-cols-2 xl:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+      <SectionCard
+        title="Total Comisiones"
+        value="$12,450.00"
+        trend="up"
+        trendValue="+12.5%"
+        footerTitle="Tendencia al alza este mes"
+        footerDescription="Basado en los últimos 6 meses"
+      />
+      <SectionCard
+        title="Nuevos Servicios"
+        value="24"
+        trend="down"
+        trendValue="-5%"
+        footerTitle="Bajó un 5% este periodo"
+        footerDescription="Requiere atención comercial"
+      />
+      <SectionCard
+        title="Servicios Activos"
+        value="156"
+        trend="up"
+        trendValue="+8%"
+        footerTitle="Retención de clientes sólida"
+        footerDescription="Superando expectativas"
+      />
+      <SectionCard
+        title="Tasa de Crecimiento"
+        value="4.5%"
+        trend="up"
+        trendValue="+4.5%"
+        footerTitle="Aumento constante"
+        footerDescription="Cumple con proyecciones"
+      />
+    </div>
+  )
+}
 
 const mockServicios = [
   {
@@ -159,6 +209,8 @@ export default function ServiciosPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <SectionCards />
 
       <Card>
         <CardHeader>
