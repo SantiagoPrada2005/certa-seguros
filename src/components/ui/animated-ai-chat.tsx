@@ -137,6 +137,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 Textarea.displayName = "Textarea"
 
 export function AnimatedAIChat({ backHref }: { backHref?: string }) {
+    const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
     const [value, setValue] = useState("");
     const [attachments, setAttachments] = useState<string[]>([]);
     const [isTyping, setIsTyping] = useState(false);
@@ -150,7 +151,17 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
         maxHeight: 200,
     });
     const [inputFocused, setInputFocused] = useState(false);
+    const [isStreaming, setIsStreaming] = useState(false);
     const commandPaletteRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     const commandSuggestions: CommandSuggestion[] = [
         { 
@@ -260,26 +271,61 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
         }
     };
 
-    const handleSendMessage = () => {
-        if (value.trim()) {
-            startTransition(() => {
-                setIsTyping(true);
-                setTimeout(() => {
-                    setIsTyping(false);
-                    setValue("");
-                    adjustHeight(true);
-                }, 3000);
+    const handleSendMessage = async () => {
+        if (!value.trim()) return;
+
+        const userMsg = value.trim();
+        setValue("");
+        adjustHeight(true);
+        
+        const newMessages = [...messages, { role: 'user' as const, content: userMsg }];
+        setMessages([...newMessages, { role: 'assistant' as const, content: '' }]);
+        setIsStreaming(true);
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: newMessages }),
             });
+
+            if (!response.ok) throw new Error('Failed to fetch');
+            if (!response.body) throw new Error('No response body');
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let assistantContent = "";
+
+            while (true) {
+                const { done, value: chunk } = await reader.read();
+                if (done) break;
+
+                const text = decoder.decode(chunk);
+                assistantContent += text;
+
+                setMessages((prev: { role: 'user' | 'assistant', content: string }[]) => {
+                    const last = prev[prev.length - 1];
+                    if (last && last.role === 'assistant') {
+                        return [...prev.slice(0, -1), { ...last, content: assistantContent }];
+                    }
+                    return prev;
+                });
+            }
+        } catch (error) {
+            console.error("Chat Error:", error);
+            setMessages((prev: { role: 'user' | 'assistant', content: string }[]) => [...prev, { role: 'assistant', content: "Lo siento, hubo un error al procesar tu solicitud." }]);
+        } finally {
+            setIsStreaming(false);
         }
     };
 
     const handleAttachFile = () => {
         const mockFileName = `file-${Math.floor(Math.random() * 1000)}.pdf`;
-        setAttachments(prev => [...prev, mockFileName]);
+        setAttachments((prev: string[]) => [...prev, mockFileName]);
     };
 
     const removeAttachment = (index: number) => {
-        setAttachments(prev => prev.filter((_, i) => i !== index));
+        setAttachments((prev: string[]) => prev.filter((_, i) => i !== index));
     };
     
     const selectCommandSuggestion = (index: number) => {
@@ -319,32 +365,72 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
                 >
-                    <div className="text-center space-y-3">
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2, duration: 0.5 }}
-                            className="inline-block"
-                        >
-                            <h1 className="text-3xl font-medium tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/40 pb-1">
-                                How can I help today?
-                            </h1>
-                            <motion.div 
-                                className="h-px bg-gradient-to-r from-transparent via-border to-transparent"
-                                initial={{ width: 0, opacity: 0 }}
-                                animate={{ width: "100%", opacity: 1 }}
-                                transition={{ delay: 0.5, duration: 0.8 }}
-                            />
-                        </motion.div>
-                        <motion.p 
-                            className="text-sm text-muted-foreground"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                        >
-                            Type a command or ask a question
-                        </motion.p>
-                    </div>
+                    {messages.length === 0 ? (
+                        <div className="text-center space-y-3">
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2, duration: 0.5 }}
+                                className="inline-block"
+                            >
+                                <h1 className="text-3xl font-medium tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/40 pb-1">
+                                    How can I help today?
+                                </h1>
+                                <motion.div 
+                                    className="h-px bg-gradient-to-r from-transparent via-border to-transparent"
+                                    initial={{ width: 0, opacity: 0 }}
+                                    animate={{ width: "100%", opacity: 1 }}
+                                    transition={{ delay: 0.5, duration: 0.8 }}
+                                />
+                            </motion.div>
+                            <motion.p 
+                                className="text-sm text-muted-foreground"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.3 }}
+                            >
+                                Type a command or ask a question
+                            </motion.p>
+                        </div>
+                    ) : (
+                        <div className="space-y-6 max-h-[60vh] overflow-y-auto px-4 pb-4 scroll-smooth custom-scrollbar">
+                            {messages.map((msg, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    className={cn(
+                                        "flex gap-4 p-4 rounded-2xl group transition-all",
+                                        msg.role === 'user' 
+                                            ? "bg-primary/5 border border-primary/10 ml-12" 
+                                            : "bg-muted/30 border border-border/50 mr-12"
+                                    )}
+                                >
+                                    <div className={cn(
+                                        "w-8 h-8 rounded-full flex items-center justify-center shrink-0 border",
+                                        msg.role === 'user' 
+                                            ? "bg-primary/20 border-primary/30 text-primary-foreground" 
+                                            : "bg-accent/20 border-accent/30 text-foreground"
+                                    )}>
+                                        {msg.role === 'user' ? (
+                                            <CircleUserRound className="w-5 h-5" />
+                                        ) : (
+                                            <Sparkles className="w-4 h-4" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                        <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                            {msg.role === 'user' ? 'Tú' : 'Zap AI'}
+                                        </div>
+                                        <div className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                                            {msg.content || (msg.role === 'assistant' && i === messages.length - 1 && isStreaming ? <TypingDots /> : '')}
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                            <div ref={messagesEndRef} />
+                        </div>
+                    )}
 
                     <motion.div 
                         className="relative backdrop-blur-2xl bg-card/40 rounded-2xl border border-border/50 shadow-2xl"
@@ -490,7 +576,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                 onClick={handleSendMessage}
                                 whileHover={{ scale: 1.01 }}
                                 whileTap={{ scale: 0.98 }}
-                                disabled={isTyping || !value.trim()}
+                                disabled={isStreaming || !value.trim()}
                                 className={cn(
                                     "px-4 py-2 rounded-lg text-sm font-medium transition-all",
                                     "flex items-center gap-2",
@@ -499,7 +585,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                         : "bg-muted text-muted-foreground"
                                 )}
                             >
-                                {isTyping ? (
+                                {isStreaming ? (
                                     <LoaderIcon className="w-4 h-4 animate-[spin_2s_linear_infinite]" />
                                 ) : (
                                     <SendIcon className="w-4 h-4" />
@@ -540,7 +626,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
             </div>
 
             <AnimatePresence>
-                {isTyping && (
+                {isStreaming && (
                     <motion.div 
                         className="fixed bottom-8 mx-auto transform -translate-x-1/2 backdrop-blur-2xl bg-card/40 rounded-full px-4 py-2 shadow-lg border border-border/50"
                         initial={{ opacity: 0, y: 20 }}
@@ -552,7 +638,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                 <span className="text-xs font-medium text-foreground/90 mb-0.5">zap</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <span>Thinking</span>
+                                <span>Respondiente</span>
                                 <TypingDots />
                             </div>
                         </div>
