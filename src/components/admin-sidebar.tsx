@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -45,10 +46,12 @@ const data = {
       title: "Gestión y Alertas",
       url: "/admin/recordatorios",
       icon: <BellIcon />,
+      badge: <Badge variant="destructive" className="h-4 px-1 text-[10px] min-w-4 flex items-center justify-center">1</Badge>,
       items: [
         {
           title: "Recordatorios",
           url: "/admin/recordatorios",
+          badge: <Badge variant="destructive" className="h-4 px-1 text-[10px] min-w-4 flex items-center justify-center">1</Badge>,
         },
       ],
     },

@@ -25,9 +25,11 @@ export function NavMain({
     url: string
     icon?: React.ReactNode
     isActive?: boolean
+    badge?: React.ReactNode
     items?: {
       title: string
       url: string
+      badge?: React.ReactNode
     }[]
   }[]
 }) {
@@ -47,7 +49,8 @@ export function NavMain({
             >
               {item.icon}
               <span>{item.title}</span>
-              <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
+              {item.badge && <div className="ml-auto">{item.badge}</div>}
+              <ChevronRightIcon className={`ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90 ${item.badge ? 'hidden group-data-open/collapsible:block' : ''}`} />
             </CollapsibleTrigger>
             <CollapsibleContent>
               <SidebarMenuSub>
@@ -55,6 +58,7 @@ export function NavMain({
                   <SidebarMenuSubItem key={subItem.title}>
                     <SidebarMenuSubButton render={<a href={subItem.url} />}>
                       <span>{subItem.title}</span>
+                      {subItem.badge && <div className="ml-auto">{subItem.badge}</div>}
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 ))}

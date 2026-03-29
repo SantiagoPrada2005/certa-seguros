@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -284,22 +285,24 @@ export default function AdminDashboardPage() {
                         <span className="sr-only">Menú de acciones</span>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-[180px]">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <MessageSquareIcon data-icon="inline-start" className="size-4" />
-                          WhatsApp
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <UserCheckIcon data-icon="inline-start" className="size-4" />
-                          Marcar Contactado
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Ver Detalles</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">
-                          <TrashIcon data-icon="inline-start" className="size-4 text-destructive" />
-                          Eliminar
-                        </DropdownMenuItem>
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <MessageSquareIcon data-icon="inline-start" className="size-4" />
+                            WhatsApp
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <UserCheckIcon data-icon="inline-start" className="size-4" />
+                            Marcar Contactado
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>Ver Detalles</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                            <TrashIcon data-icon="inline-start" className="size-4 text-destructive" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
