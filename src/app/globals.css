@@ -46,7 +46,82 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  @keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px);
+    }
+  }
+  @keyframes slideRightIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateX(0px);
+    }
+  }
+  @keyframes testimonialIn {
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0px) scale(1);
+    }
+  }
+
+  --animate-element: fadeSlideIn 0.8s ease-out forwards;
+  --animate-slide-right: slideRightIn 1s ease-out forwards;
+  --animate-testimonial: testimonialIn 1s ease-out forwards;
+
+  --animate-delay-100: 0.1s;
+  --animate-delay-200: 0.2s;
+  --animate-delay-300: 0.3s;
+  --animate-delay-400: 0.4s;
+  --animate-delay-500: 0.5s;
+  --animate-delay-600: 0.6s;
+  --animate-delay-700: 0.7s;
+  --animate-delay-800: 0.8s;
+  --animate-delay-900: 0.9s;
+  --animate-delay-1000: 1s;
+  --animate-delay-1200: 1.2s;
+  --animate-delay-1400: 1.4s;
 }
+
+@utility animate-element {
+  animation: var(--animate-element);
+  animation-delay: var(--animation-delay, 0s);
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(20px);
+}
+
+@utility animate-slide-right {
+  animation: var(--animate-slide-right);
+  animation-delay: var(--animation-delay, 0s);
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateX(-20px);
+}
+
+@utility animate-testimonial {
+  animation: var(--animate-testimonial);
+  animation-delay: var(--animation-delay, 0s);
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(20px) scale(0.95);
+}
+
+@utility animate-delay-100 { --animation-delay: var(--animate-delay-100); }
+@utility animate-delay-200 { --animation-delay: var(--animate-delay-200); }
+@utility animate-delay-300 { --animation-delay: var(--animate-delay-300); }
+@utility animate-delay-400 { --animation-delay: var(--animate-delay-400); }
+@utility animate-delay-500 { --animation-delay: var(--animate-delay-500); }
+@utility animate-delay-600 { --animation-delay: var(--animate-delay-600); }
+@utility animate-delay-700 { --animation-delay: var(--animate-delay-700); }
+@utility animate-delay-800 { --animation-delay: var(--animate-delay-800); }
+@utility animate-delay-900 { --animation-delay: var(--animate-delay-900); }
+@utility animate-delay-1000 { --animation-delay: var(--animate-delay-1000); }
+@utility animate-delay-1200 { --animation-delay: var(--animate-delay-1200); }
+@utility animate-delay-1400 { --animation-delay: var(--animate-delay-1400); }
 
 :root {
   --background: oklch(1 0 0);

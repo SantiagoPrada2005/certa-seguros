@@ -1,54 +1,46 @@
 "use client"
 
-import { ShieldCheckIcon } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { submitMasterKey } from "./actions"
 import { useActionState } from "react"
-import { Label } from "@/components/ui/label"
+import { submitMasterKey } from "./actions"
+import { SignInPage } from "@/components/ui/sign-in"
 
 export default function AdminLoginPage() {
   const [state, formAction, isPending] = useActionState(submitMasterKey, null)
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <form action={formAction}>
-          <Card className="border-t-4 border-t-primary">
-            <CardHeader className="text-center">
-              <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10 mb-4">
-                <ShieldCheckIcon className="size-6 text-primary" />
-              </div>
-              <CardTitle className="text-2xl font-bold">Certa Seguros</CardTitle>
-              <CardDescription>
-                Acceso restringido para administración.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="masterKey">Clave Maestra Alfanumérica</Label>
-                <Input 
-                  id="masterKey"
-                  name="masterKey" 
-                  type="password" 
-                  placeholder="Escribe la clave aquí..." 
-                  required 
-                  autoComplete="off"
-                />
-                {state?.error && (
-                  <p className="text-red-500 text-sm mt-1">{state.error}</p>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? "Validando..." : "Ingresar al CRM"}
-              </Button>
-            </CardFooter>
-          </Card>
-        </form>
-      </div>
-    </div>
+    <SignInPage
+      title={
+        <span className="font-semibold text-foreground tracking-tight">
+          Certa <span className="text-primary">Seguros</span>
+        </span>
+      }
+      description="Acceso exclusivo para administradores y asesores autorizados. Por favor, ingrese sus credenciales para continuar."
+      heroImageSrc="/images/login-hero.png"
+      passwordName="masterKey"
+      emailLabel="Usuario Administrador"
+      passwordLabel="Clave Maestra"
+      emailPlaceholder="ej. admin@certaseguros.com"
+      passwordPlaceholder="Ingrese la clave maestra..."
+      formAction={formAction}
+      isPending={isPending}
+      error={state?.error}
+      testimonials={[
+        {
+          avatarSrc: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena",
+          name: "Elena Rodriguez",
+          handle: "@elena_insurance",
+          text: "La gestión de pólizas y siniestros nunca había sido tan fluida. ¡Excelente herramienta!"
+        },
+        {
+          avatarSrc: "https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos",
+          name: "Carlos Mendoza",
+          handle: "@carlos_broker",
+          text: "Una interfaz limpia y moderna que realmente ayuda a enfocarse en lo importante: el cliente."
+        }
+      ]}
+      onGoogleSignIn={() => alert("Inicio con Google deshabilitado por seguridad.")}
+      onResetPassword={() => alert("Por favor, contacte al soporte técnico para restablecer su clave.")}
+      onCreateAccount={() => alert("La creación de cuentas nuevas está restringida.")}
+    />
   )
 }
