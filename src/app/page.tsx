@@ -1,9 +1,22 @@
-import ScrollExpansionDemo from "@/components/blocks/scroll-expansion-demo";
+import Hero from "@/components/blocks/Hero";
+import InsuranceServices from "@/components/blocks/InsuranceServices";
+import TrustSection from "@/components/blocks/TrustSection";
+import ContactSection from "@/components/blocks/ContactSection";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black">
-      <ScrollExpansionDemo />
+    <main className="min-h-screen bg-[#041c32]">
+      <Hero />
+      <InsuranceServices />
+      <TrustSection />
+      <ContactSection />
+
+      {/* Footer */}
+      <footer className="py-12 bg-[#020f1e] text-center border-t border-white/5">
+        <p className="text-white/30 text-sm font-poppins">
+          &copy; {new Date().getFullYear()} Certa Seguros. Todos los derechos reservados.
+        </p>
+      </footer>
     </main>
   );
 }
