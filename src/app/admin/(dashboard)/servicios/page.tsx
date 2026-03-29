@@ -1,6 +1,12 @@
 import { SectionCard } from "@/components/admin/section-card"
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-import { PlusIcon, BriefcaseIcon } from "lucide-react"
+import { 
+  PlusIcon, 
+  BriefcaseIcon, 
+  FolderPlusIcon, 
+  FolderTreeIcon, 
+  TagIcon 
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,6 +28,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -130,50 +141,60 @@ export default function ServiciosPage() {
             Administra los servicios, seguros y asesorías que ofreces a tus clientes.
           </p>
         </div>
-        <Dialog>
-          <DialogTrigger render={<Button />}>
-            <PlusIcon data-icon="inline-start" />
-            Nuevo Servicio
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Crear Servicio</DialogTitle>
-              <DialogDescription>
-                Ingresa los detalles del nuevo servicio para añadirlo al catálogo activo.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col gap-4 py-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="nombre">Nombre</Label>
-                <Input id="nombre" placeholder="Ej. Seguro Todo Riesgo" />
-              </div>
+        <div className="flex flex-wrap gap-2">
 
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="descripcion">Descripción</Label>
-                <Textarea 
-                  id="descripcion" 
-                  placeholder="Detalles sobre lo que incluye y no incluye el servicio..." 
-                  className="min-h-[80px]"
-                />
-              </div>
+          {/* Diálogo Nueva Categoría */}
+          <Dialog>
+            <DialogTrigger render={<Button variant="outline" />}>
+              <FolderPlusIcon data-icon="inline-start" />
+              Nueva Categoría
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Crear Categoría</DialogTitle>
+                <DialogDescription>
+                  Define una nueva categoría principal para agrupar servicios relacionados.
+                </DialogDescription>
+              </DialogHeader>
+              <FieldGroup className="py-4">
+                <Field>
+                  <FieldLabel htmlFor="cat-nombre">Nombre de Categoría</FieldLabel>
+                  <Input id="cat-nombre" placeholder="Ej. Seguros de Vida" />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="cat-desc">Descripción (Opcional)</FieldLabel>
+                  <Textarea 
+                    id="cat-desc" 
+                    placeholder="Breve explicación del alcance de esta categoría..." 
+                    className="min-h-[80px]"
+                  />
+                </Field>
+              </FieldGroup>
+              <DialogFooter>
+                <Button type="submit">Crear Categoría</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="vigencia">Vigencia / Duración</Label>
-                  <Input id="vigencia" placeholder="Ej. Anual" />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="valor">Valor (Opcional)</Label>
-                  <Input id="valor" placeholder="Ej. 1500000" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="categoria">Categoría</Label>
+          {/* Diálogo Nueva Subcategoría */}
+          <Dialog>
+            <DialogTrigger render={<Button variant="outline" />}>
+              <FolderTreeIcon data-icon="inline-start" />
+              Nueva Subcategoría
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Crear Subcategoría</DialogTitle>
+                <DialogDescription>
+                  Crea una división específica dentro de una categoría existente.
+                </DialogDescription>
+              </DialogHeader>
+              <FieldGroup className="py-4">
+                <Field>
+                  <FieldLabel htmlFor="sub-categoria">Categoría Padre</FieldLabel>
                   <Select>
-                    <SelectTrigger id="categoria">
-                      <SelectValue placeholder="Seleccionar" />
+                    <SelectTrigger id="sub-categoria">
+                      <SelectValue placeholder="Seleccionar categoría" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -183,32 +204,107 @@ export default function ServiciosPage() {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="sub-nombre">Nombre de Subcategoría</FieldLabel>
+                  <Input id="sub-nombre" placeholder="Ej. Accidentes Personales" />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="sub-desc">Descripción (Opcional)</FieldLabel>
+                  <Textarea 
+                    id="sub-desc" 
+                    placeholder="Detalles sobre esta subcategoría..." 
+                    className="min-h-[80px]"
+                  />
+                </Field>
+              </FieldGroup>
+              <DialogFooter>
+                <Button type="submit">Crear Subcategoría</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger render={<Button />}>
+              <PlusIcon data-icon="inline-start" />
+              Nuevo Servicio
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Crear Servicio</DialogTitle>
+                <DialogDescription>
+                  Ingresa los detalles del nuevo servicio para añadirlo al catálogo activo.
+                </DialogDescription>
+              </DialogHeader>
+              <FieldGroup className="py-4">
+                <Field>
+                  <FieldLabel htmlFor="nombre">Nombre del Servicio</FieldLabel>
+                  <Input id="nombre" placeholder="Ej. Seguro Todo Riesgo" />
+                </Field>
+
+                <Field>
+                  <FieldLabel htmlFor="descripcion">Descripción</FieldLabel>
+                  <Textarea 
+                    id="descripcion" 
+                    placeholder="Detalles sobre lo que incluye y no incluye el servicio..." 
+                    className="min-h-[80px]"
+                  />
+                </Field>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel htmlFor="vigencia">Vigencia</FieldLabel>
+                    <Input id="vigencia" placeholder="Ej. Anual" />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="valor">Valor</FieldLabel>
+                    <Input id="valor" placeholder="Ej. 1500000" />
+                  </Field>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="subcategoria">Subcategoría (Opcional)</Label>
-                  <Select>
-                    <SelectTrigger id="subcategoria">
-                      <SelectValue placeholder="Opcional" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="movilidad">Movilidad</SelectItem>
-                        <SelectItem value="salud">Salud</SelectItem>
-                        <SelectItem value="vida">Vida</SelectItem>
-                        <SelectItem value="legal">Legal</SelectItem>
-                        <SelectItem value="sst">SST</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel htmlFor="categoria">Categoría</FieldLabel>
+                    <Select>
+                      <SelectTrigger id="categoria">
+                        <SelectValue placeholder="Seleccionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="seguros">Seguros</SelectItem>
+                          <SelectItem value="asesorias">Asesorías</SelectItem>
+                          <SelectItem value="servicios">Servicios Adicionales</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="subcategoria">Subcategoría</FieldLabel>
+                    <Select>
+                      <SelectTrigger id="subcategoria">
+                        <SelectValue placeholder="Opcional" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="movilidad">Movilidad</SelectItem>
+                          <SelectItem value="salud">Salud</SelectItem>
+                          <SelectItem value="vida">Vida</SelectItem>
+                          <SelectItem value="legal">Legal</SelectItem>
+                          <SelectItem value="sst">SST</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </Field>
                 </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Guardar Servicio</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              </FieldGroup>
+              <DialogFooter>
+                <Button type="submit">Guardar Servicio</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
+
 
       <SectionCards />
 
