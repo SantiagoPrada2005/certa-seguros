@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
@@ -26,14 +26,25 @@ const data = {
   },
   navMain: [
     {
-      title: "CRM",
+      title: "Métricas",
       url: "/admin",
-      icon: <UsersIcon />,
+      icon: <BarChart3Icon />,
       isActive: true,
       items: [
         {
-          title: "Prospectos",
+          title: "Dashboard",
           url: "/admin",
+        },
+      ],
+    },
+    {
+      title: "CRM",
+      url: "/admin/prospectos",
+      icon: <UsersIcon />,
+      items: [
+        {
+          title: "Prospectos",
+          url: "/admin/prospectos",
         },
         {
           title: "Servicios",
