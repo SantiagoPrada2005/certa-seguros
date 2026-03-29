@@ -18,6 +18,7 @@ const themes = [
   { id: "blue", label: "Océano" },
   { id: "green", label: "Esmeralda" },
   { id: "ruby", label: "Carmesí" },
+  { id: "purple", label: "Amatista" },
 ] as const
 
 const modes = [
