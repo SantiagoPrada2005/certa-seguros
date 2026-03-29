@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, TargetIcon, LayoutDashboard } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
@@ -34,6 +34,10 @@ const data = {
         {
           title: "Dashboard",
           url: "/admin",
+        },
+        {
+          title: "Metas",
+          url: "/admin/metas",
         },
       ],
     },
@@ -101,7 +105,9 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <div className="mt-auto">
+          <NavProjects projects={data.projects} />
+        </div>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
