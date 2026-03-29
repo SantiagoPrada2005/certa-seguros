@@ -38,7 +38,6 @@ import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -197,11 +196,9 @@ export default function ServiciosPage() {
                       <SelectValue placeholder="Seleccionar categoría" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="seguros">Seguros</SelectItem>
-                        <SelectItem value="asesorias">Asesorías</SelectItem>
-                        <SelectItem value="servicios">Servicios Adicionales</SelectItem>
-                      </SelectGroup>
+                      <SelectItem value="seguros">Seguros</SelectItem>
+                      <SelectItem value="asesorias">Asesorías</SelectItem>
+                      <SelectItem value="servicios">Servicios Adicionales</SelectItem>
                     </SelectContent>
                   </Select>
                 </Field>
@@ -270,11 +267,9 @@ export default function ServiciosPage() {
                         <SelectValue placeholder="Seleccionar" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="seguros">Seguros</SelectItem>
-                          <SelectItem value="asesorias">Asesorías</SelectItem>
-                          <SelectItem value="servicios">Servicios Adicionales</SelectItem>
-                        </SelectGroup>
+                        <SelectItem value="seguros">Seguros</SelectItem>
+                        <SelectItem value="asesorias">Asesorías</SelectItem>
+                        <SelectItem value="servicios">Servicios Adicionales</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
@@ -285,13 +280,11 @@ export default function ServiciosPage() {
                         <SelectValue placeholder="Opcional" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="movilidad">Movilidad</SelectItem>
-                          <SelectItem value="salud">Salud</SelectItem>
-                          <SelectItem value="vida">Vida</SelectItem>
-                          <SelectItem value="legal">Legal</SelectItem>
-                          <SelectItem value="sst">SST</SelectItem>
-                        </SelectGroup>
+                        <SelectItem value="movilidad">Movilidad</SelectItem>
+                        <SelectItem value="salud">Salud</SelectItem>
+                        <SelectItem value="vida">Vida</SelectItem>
+                        <SelectItem value="legal">Legal</SelectItem>
+                        <SelectItem value="sst">SST</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>

@@ -44,7 +44,6 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -510,12 +509,10 @@ export default function MetasPage() {
                         <SelectValue placeholder="Seleccionar" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="ventas">Ventas</SelectItem>
-                          <SelectItem value="clientes">Clientes</SelectItem>
-                          <SelectItem value="renovaciones">Renovaciones</SelectItem>
-                          <SelectItem value="ingresos">Ingresos</SelectItem>
-                        </SelectGroup>
+                        <SelectItem value="ventas">Ventas</SelectItem>
+                        <SelectItem value="clientes">Clientes</SelectItem>
+                        <SelectItem value="renovaciones">Renovaciones</SelectItem>
+                        <SelectItem value="ingresos">Ingresos</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
@@ -526,11 +523,9 @@ export default function MetasPage() {
                         <SelectValue placeholder="Seleccionar" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="mensual">Mensual</SelectItem>
-                          <SelectItem value="trimestral">Trimestral</SelectItem>
-                          <SelectItem value="anual">Anual</SelectItem>
-                        </SelectGroup>
+                        <SelectItem value="mensual">Mensual</SelectItem>
+                        <SelectItem value="trimestral">Trimestral</SelectItem>
+                        <SelectItem value="anual">Anual</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
@@ -547,13 +542,11 @@ export default function MetasPage() {
                         <SelectValue placeholder="Seleccionar" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="polizas">Pólizas</SelectItem>
-                          <SelectItem value="clientes">Clientes</SelectItem>
-                          <SelectItem value="renovaciones">Renovaciones</SelectItem>
-                          <SelectItem value="COP">COP ($)</SelectItem>
-                          <SelectItem value="%">Porcentaje (%)</SelectItem>
-                        </SelectGroup>
+                        <SelectItem value="polizas">Pólizas</SelectItem>
+                        <SelectItem value="clientes">Clientes</SelectItem>
+                        <SelectItem value="renovaciones">Renovaciones</SelectItem>
+                        <SelectItem value="COP">COP ($)</SelectItem>
+                        <SelectItem value="%">Porcentaje (%)</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>

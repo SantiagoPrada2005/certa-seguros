@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, TargetIcon, LayoutDashboard, Sparkles } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, TargetIcon, LayoutDashboard, Sparkles, FileTextIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
@@ -78,6 +78,17 @@ const data = {
           title: "Recordatorios",
           url: "/admin/recordatorios",
           badge: <Badge variant="destructive" className="h-4 px-1 text-[10px] min-w-4 flex items-center justify-center">1</Badge>,
+        },
+      ],
+    },
+    {
+      title: "Facturación",
+      url: "/admin/facturas",
+      icon: <FileTextIcon />,
+      items: [
+        {
+          title: "Facturas",
+          url: "/admin/facturas",
         },
       ],
     },
