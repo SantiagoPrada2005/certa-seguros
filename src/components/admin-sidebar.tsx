@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, TargetIcon, LayoutDashboard } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, TargetIcon, LayoutDashboard, Sparkles } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
@@ -54,6 +54,17 @@ const data = {
           title: "Servicios",
           url: "/admin/servicios",
           icon: <BriefcaseIcon className="size-4" />,
+        },
+      ],
+    },
+    {
+      title: "Asistente",
+      url: "/admin/chat",
+      icon: <Sparkles />,
+      items: [
+        {
+          title: "Chat AI",
+          url: "/admin/chat",
         },
       ],
     },
