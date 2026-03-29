@@ -14,11 +14,11 @@ export default async function AdminRootLayout({ children }: { children: React.Re
   const mode = cookieStore.get("certa-admin-mode")?.value as any || "light"
 
   if (!masterKey || masterKey.value !== "true") {
-    redirect("/admin/login")
+    redirect("/login")
   }
 
   return (
-    <div 
+    <div
       className={`${inter.variable} antialiased min-h-screen`}
       style={{ "--font-sans": "var(--font-inter)" } as React.CSSProperties}
     >
