@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -33,6 +33,11 @@ const data = {
         {
           title: "Prospectos",
           url: "/admin",
+        },
+        {
+          title: "Servicios",
+          url: "/admin/servicios",
+          icon: <BriefcaseIcon className="size-4" />,
         },
       ],
     },

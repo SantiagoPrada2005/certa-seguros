@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       className={`${inter.variable} antialiased min-h-screen`}
       style={{ "--font-sans": "var(--font-inter)" } as React.CSSProperties}
     >
-      <AdminThemeProvider initialTheme={theme} initialMode={mode}>
+      <AdminThemeProvider initialTheme={theme} initialMode={mode} fontClass={inter.variable}>
         <SidebarProvider>
           <AdminSidebar />
           <SidebarInset>
