@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { PlusIcon, Trash2Icon } from 'lucide-react';
+import { PlusIcon, Trash2Icon, CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -24,6 +27,8 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const mockServicios = [
   { id: '1', nombre: "Seguro Todo Riesgo", valor: 1200000 },
@@ -34,6 +39,7 @@ const mockServicios = [
 
 export function CrearFacturaDialog() {
   const [open, setOpen] = useState(false);
+  const [fechaVence, setFechaVence] = useState<Date | undefined>(undefined);
   const [items, setItems] = useState([
     { id: '1', description: '', quantity: 1, unitPrice: 0 }
   ]);
@@ -91,6 +97,7 @@ export function CrearFacturaDialog() {
 
     // Reset state and close
     setItems([{ id: '1', description: '', quantity: 1, unitPrice: 0 }]);
+    setFechaVence(undefined);
     setDiscountAmount(0);
     setDiscountDescription('');
     setOpen(false);
@@ -134,8 +141,21 @@ export function CrearFacturaDialog() {
                     <Input id="cliente-nit" required placeholder="900.000.000-0" className="bg-background shadow-xs h-11" />
                   </Field>
                   <Field>
-                    <FieldLabel htmlFor="fecha-vence">Fecha de Vencimiento</FieldLabel>
-                    <Input id="fecha-vence" type="date" required className="bg-background shadow-xs h-11" />
+                    <FieldLabel>Fecha de Vencimiento</FieldLabel>
+                    <Popover>
+                      <PopoverTrigger render={<Button variant="outline" className={cn("w-full justify-start text-left font-normal h-11 bg-background shadow-xs", !fechaVence && "text-muted-foreground")} />}>
+                        <CalendarIcon data-icon="inline-start" />
+                        {fechaVence ? format(fechaVence, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={fechaVence}
+                          onSelect={setFechaVence}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </Field>
                 </FieldGroup>
               </div>

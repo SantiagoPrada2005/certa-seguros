@@ -420,11 +420,10 @@ function GoalCard({ goal }: { goal: Goal }) {
                   <TooltipTrigger>
                     <div className="flex flex-col items-center gap-1">
                       <div
-                        className={`size-2.5 rounded-full transition-colors ${
-                          m.reached
-                            ? "bg-primary"
-                            : "bg-muted border border-border"
-                        }`}
+                        className={`size-2.5 rounded-full transition-colors ${m.reached
+                          ? "bg-primary"
+                          : "bg-muted border border-border"
+                          }`}
                       />
                       <span className="text-[10px] text-muted-foreground tabular-nums">
                         {m.label}
@@ -615,7 +614,7 @@ export default function MetasPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={categoryChartConfig} className="h-[240px] w-full">
+            <ChartContainer config={categoryChartConfig} className="h-[296px] w-full">
               <BarChart
                 accessibilityLayer
                 data={categoryBreakdown}
@@ -671,7 +670,7 @@ export default function MetasPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-2">
-            <ChartContainer config={radialConfig} className="mx-auto h-[180px] w-full max-w-[220px]">
+            <ChartContainer config={radialConfig} className="mx-auto h-[260px] w-full max-w-[220px]">
               <RadialBarChart
                 data={[{ progreso: avgCompletion, fill: "var(--color-primary)" }]}
                 startAngle={180}

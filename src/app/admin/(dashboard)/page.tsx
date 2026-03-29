@@ -333,7 +333,7 @@ export default function MetricsDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex items-center justify-center">
-            <ChartContainer config={leadSourcesConfig} className="mx-auto h-[220px] w-full max-w-[280px]">
+            <ChartContainer config={leadSourcesConfig} className="mx-auto h-[268px] w-full max-w-[280px]">
               <PieChart>
                 <ChartTooltip
                   content={<ChartTooltipContent nameKey="fuente" hideLabel />}
@@ -381,7 +381,7 @@ export default function MetricsDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={weeklyConfig} className="h-[220px] w-full">
+            <ChartContainer config={weeklyConfig} className="h-[268px] w-full">
               <LineChart
                 accessibilityLayer
                 data={weeklyActivityData}
@@ -446,7 +446,7 @@ export default function MetricsDashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
-            <ChartContainer config={conversionConfig} className="mx-auto h-[160px] w-full max-w-[200px]">
+            <ChartContainer config={conversionConfig} className="mx-auto h-[240px] w-full max-w-[200px]">
               <RadialBarChart
                 data={conversionData}
                 startAngle={180}
@@ -557,8 +557,8 @@ export default function MetricsDashboardPage() {
                   <div className="mt-0.5">
                     <Badge variant={activityBadgeVariant[item.type]} className="text-[10px] px-1.5 leading-none">
                       {item.type === "success" ? "✓" :
-                       item.type === "info" ? "→" :
-                       item.type === "warning" ? "!" : "✕"}
+                        item.type === "info" ? "→" :
+                          item.type === "warning" ? "!" : "✕"}
                     </Badge>
                   </div>
                   <div className="flex flex-1 flex-col gap-0.5">
