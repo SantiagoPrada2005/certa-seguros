@@ -9,31 +9,31 @@ const services = [
     title: "Seguro de Vida y Plenitud",
     description: "No es solo una póliza, es capital para tu jubilación y estabilidad financiera para tus seres queridos. Una solución de ahorro y seguridad que garantiza tranquilidad ante cualquier imprevisto.",
     icon: Heart,
-    accent: "#00A8CC",
+    accent: "#2563eb",
   },
   {
     title: "Seguros para tu Negocio (PYME)",
     description: "Asegurar tu empresa es asegurar su crecimiento. Te brindamos protección integral, asistencias especializadas y asesoría personalizada para que la continuidad de tu negocio nunca se detenga.",
     icon: Briefcase,
-    accent: "#00A8CC",
+    accent: "#2563eb",
   },
   {
     title: "Seguro de Hogar Integral",
     description: "Tu tranquilidad es lo más importante. Protegemos el valor comercial de tu vivienda y tus enseres contra eventos naturales y daños, con asistencia técnica disponible las 24 horas.",
     icon: Home,
-    accent: "#00A8CC",
+    accent: "#2563eb",
   },
   {
     title: "Movilidad y Vehículos",
     description: "Protegemos tu carro o moto con coberturas de responsabilidad civil y daños. Además, gestionamos tus trámites de tránsito (traspasos y pagos) con agilidad, confianza y sin filas.",
     icon: CarFront,
-    accent: "#00A8CC",
+    accent: "#2563eb",
   },
   {
     title: "Salud y Riesgos Laborales (ARL)",
     description: "Cumplimos con la normativa legal para que trabajes con total respaldo. Acceso a servicios médicos de alta calidad y cobertura integral para ti y tus colaboradores.",
     icon: ShieldCheck,
-    accent: "#00A8CC",
+    accent: "#2563eb",
   }
 ];
 
@@ -71,7 +71,7 @@ const InsuranceServices = () => {
         <p className="text-center text-[#0d548d] font-poppins text-lg mb-6 max-w-2xl mx-auto font-normal">
           Soluciones integrales diseñadas para proteger lo que más te importa.
         </p>
-        <div className="w-24 h-1 bg-[#00A8CC] mx-auto rounded-full" />
+        <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full" />
       </div>
 
       <div
@@ -132,8 +132,8 @@ const InsuranceServices = () => {
       </div>
 
       {/* Gradient fade edges */}
-      <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" aria-hidden="true" />
-      <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" aria-hidden="true" />
+      <div className="absolute inset-y-0 left-0 w-20 bg-linear-to-r from-white to-transparent z-10 pointer-events-none" aria-hidden="true" />
+      <div className="absolute inset-y-0 right-0 w-20 bg-linear-to-l from-white to-transparent z-10 pointer-events-none" aria-hidden="true" />
     </section>
   );
 };

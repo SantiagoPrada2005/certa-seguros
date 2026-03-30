@@ -1,4 +1,4 @@
-import Hero from "@/components/blocks/Hero";
+import Hero from "@/components/hero/Hero";
 import InsuranceServices from "@/components/blocks/InsuranceServices";
 import TrustSection from "@/components/blocks/TrustSection";
 import ContactSection from "@/components/blocks/ContactSection";
