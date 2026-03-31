@@ -1,0 +1,400 @@
+
+C:\Users\danna\proyectos\certa-seguros\src\app\admin\(dashboard)\metas\page.tsx
+  22:3   warning  'CardAction' is defined but never used   @typescript-eslint/no-unused-vars
+  32:10  warning  'Separator' is defined but never used    @typescript-eslint/no-unused-vars
+  33:16  warning  'TabsContent' is defined but never used  @typescript-eslint/no-unused-vars
+  53:10  warning  'Switch' is defined but never used       @typescript-eslint/no-unused-vars
+  70:3   warning  'InfoIcon' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\app\admin\(dashboard)\page.tsx
+  31:10  warning  'Tabs' is defined but never used                @typescript-eslint/no-unused-vars
+  31:16  warning  'TabsContent' is defined but never used         @typescript-eslint/no-unused-vars
+  31:29  warning  'TabsList' is defined but never used            @typescript-eslint/no-unused-vars
+  31:39  warning  'TabsTrigger' is defined but never used         @typescript-eslint/no-unused-vars
+  35:3   warning  'TrendingDownIcon' is defined but never used    @typescript-eslint/no-unused-vars
+  36:3   warning  'UsersIcon' is defined but never used           @typescript-eslint/no-unused-vars
+  37:3   warning  'DollarSignIcon' is defined but never used      @typescript-eslint/no-unused-vars
+  43:3   warning  'ArrowDownRightIcon' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\app\admin\(dashboard)\prospectos\page.tsx
+  13:34  warning  'AvatarImage' is defined but never used  @typescript-eslint/no-unused-vars
+  26:3   warning  'SelectGroup' is defined but never used  @typescript-eslint/no-unused-vars
+  28:3   warning  'SelectLabel' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\app\admin\(dashboard)\recordatorios\page.tsx
+  13:29   warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  56:3    warning  'LayoutGridIcon' is defined but never used   @typescript-eslint/no-unused-vars
+  99:108  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+C:\Users\danna\proyectos\certa-seguros\src\app\admin\(dashboard)\servicios\page.tsx
+   2:10  warning  'IconTrendingDown' is defined but never used  @typescript-eslint/no-unused-vars
+   2:28  warning  'IconTrendingUp' is defined but never used    @typescript-eslint/no-unused-vars
+   5:3   warning  'BriefcaseIcon' is defined but never used     @typescript-eslint/no-unused-vars
+   8:3   warning  'TagIcon' is defined but never used           @typescript-eslint/no-unused-vars
+  15:3   warning  'CardAction' is defined but never used        @typescript-eslint/no-unused-vars
+  18:3   warning  'CardFooter' is defined but never used        @typescript-eslint/no-unused-vars
+  37:10  warning  'Label' is defined but never used             @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\app\admin\layout.tsx
+  13:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\danna\proyectos\certa-seguros\src\app\login\layout.tsx
+  13:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\danna\proyectos\certa-seguros\src\components\admin-sidebar.tsx
+  4:96   warning  'TargetIcon' is defined but never used       @typescript-eslint/no-unused-vars
+  4:108  warning  'LayoutDashboard' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\components\admin-theme-provider.tsx
+  47:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\danna\proyectos\certa-seguros\src\components\admin-theme-provider.tsx:47:5
+  45 |
+  46 |   useEffect(() => {
+> 47 |     setMounted(true)
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  48 |   }, [])
+  49 |
+  50 |   const setTheme = (newTheme: Theme) => {  react-hooks/set-state-in-effect
+
+C:\Users\danna\proyectos\certa-seguros\src\components\admin-theme-switcher.tsx
+  3:53  warning  'MonitorIcon' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\components\admin\facturas\crear-factura-dialog.tsx
+  46:19  warning  'setTaxRate' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  61:57  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  64:13  error    'updatedItem' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx
+   79:57  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-explicit-any
+  206:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:206:22
+  204 |                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+  205 |                   <div>
+> 206 |                     <FieldLabel required>Nombre o Razón Social</FieldLabel>
+      |                      ^^^^^^^^^^ This component is created during render
+  207 |                     <div className="relative">
+  208 |                       <input
+  209 |                         type="text"
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:115:22
+  113 |   const baseInput = 'w-full px-4 py-3.5 rounded-xl border text-[#041c32] text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 font-poppins';
+  114 |
+> 115 |   const FieldLabel = ({ children, required }: { children: React.ReactNode; required?: boolean }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |     <label className="block text-xs font-bold text-[#041c32] uppercase tracking-wider mb-2 font-montserrat">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 117 |       {children}{required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |     </label>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 119 |   );
+      | ^^^^ The component is created during render here
+  120 |
+  121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+  122 |     touched[field] && !errors[field] && value.trim() ? (                                      react-hooks/static-components
+  216:24  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:216:24
+  214 |                         className={`${baseInput} ${fieldState('nombre', values.nombre)}`}
+  215 |                       />
+> 216 |                       <ValidCheck field="nombre" value={values.nombre} />
+      |                        ^^^^^^^^^^ This component is created during render
+  217 |                     </div>
+  218 |                     {touched.nombre && errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
+  219 |                   </div>
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:121:22
+  119 |   );
+  120 |
+> 121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 122 |     touched[field] && !errors[field] && value.trim() ? (
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 123 |       <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500 pointer-events-none" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |     ) : null;
+      | ^^^^^^^^^^^^^ The component is created during render here
+  125 |
+  126 |   return (
+  127 |     <section className="py-24 bg-[#f8fafc] font-poppins" id="contacto">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/static-components
+  221:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:221:22
+  219 |                   </div>
+  220 |                   <div>
+> 221 |                     <FieldLabel required>Cédula / NIT</FieldLabel>
+      |                      ^^^^^^^^^^ This component is created during render
+  222 |                     <div className="relative">
+  223 |                       <input
+  224 |                         type="text"
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:115:22
+  113 |   const baseInput = 'w-full px-4 py-3.5 rounded-xl border text-[#041c32] text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 font-poppins';
+  114 |
+> 115 |   const FieldLabel = ({ children, required }: { children: React.ReactNode; required?: boolean }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |     <label className="block text-xs font-bold text-[#041c32] uppercase tracking-wider mb-2 font-montserrat">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 117 |       {children}{required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |     </label>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 119 |   );
+      | ^^^^ The component is created during render here
+  120 |
+  121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+  122 |     touched[field] && !errors[field] && value.trim() ? (                                                                                                   react-hooks/static-components
+  231:24  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:231:24
+  229 |                         className={`${baseInput} ${fieldState('cedula', values.cedula)}`}
+  230 |                       />
+> 231 |                       <ValidCheck field="cedula" value={values.cedula} />
+      |                        ^^^^^^^^^^ This component is created during render
+  232 |                     </div>
+  233 |                     {touched.cedula && errors.cedula && <p className="text-red-500 text-xs mt-1">{errors.cedula}</p>}
+  234 |                   </div>
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:121:22
+  119 |   );
+  120 |
+> 121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 122 |     touched[field] && !errors[field] && value.trim() ? (
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 123 |       <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500 pointer-events-none" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |     ) : null;
+      | ^^^^^^^^^^^^^ The component is created during render here
+  125 |
+  126 |   return (
+  127 |     <section className="py-24 bg-[#f8fafc] font-poppins" id="contacto">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/static-components
+  239:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:239:22
+  237 |                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+  238 |                   <div>
+> 239 |                     <FieldLabel required>Correo Electrónico</FieldLabel>
+      |                      ^^^^^^^^^^ This component is created during render
+  240 |                     <div className="relative">
+  241 |                       <input
+  242 |                         type="email"
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:115:22
+  113 |   const baseInput = 'w-full px-4 py-3.5 rounded-xl border text-[#041c32] text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 font-poppins';
+  114 |
+> 115 |   const FieldLabel = ({ children, required }: { children: React.ReactNode; required?: boolean }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |     <label className="block text-xs font-bold text-[#041c32] uppercase tracking-wider mb-2 font-montserrat">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 117 |       {children}{required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |     </label>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 119 |   );
+      | ^^^^ The component is created during render here
+  120 |
+  121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+  122 |     touched[field] && !errors[field] && value.trim() ? (                                        react-hooks/static-components
+  249:24  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:249:24
+  247 |                         className={`${baseInput} ${fieldState('email', values.email)}`}
+  248 |                       />
+> 249 |                       <ValidCheck field="email" value={values.email} />
+      |                        ^^^^^^^^^^ This component is created during render
+  250 |                     </div>
+  251 |                     {touched.email && errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+  252 |                   </div>
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:121:22
+  119 |   );
+  120 |
+> 121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 122 |     touched[field] && !errors[field] && value.trim() ? (
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 123 |       <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500 pointer-events-none" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |     ) : null;
+      | ^^^^^^^^^^^^^ The component is created during render here
+  125 |
+  126 |   return (
+  127 |     <section className="py-24 bg-[#f8fafc] font-poppins" id="contacto">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/static-components
+  254:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:254:22
+  252 |                   </div>
+  253 |                   <div>
+> 254 |                     <FieldLabel required>Número de Celular</FieldLabel>
+      |                      ^^^^^^^^^^ This component is created during render
+  255 |                     <div className="relative">
+  256 |                       <input
+  257 |                         type="tel"
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:115:22
+  113 |   const baseInput = 'w-full px-4 py-3.5 rounded-xl border text-[#041c32] text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 font-poppins';
+  114 |
+> 115 |   const FieldLabel = ({ children, required }: { children: React.ReactNode; required?: boolean }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |     <label className="block text-xs font-bold text-[#041c32] uppercase tracking-wider mb-2 font-montserrat">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 117 |       {children}{required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |     </label>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 119 |   );
+      | ^^^^ The component is created during render here
+  120 |
+  121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+  122 |     touched[field] && !errors[field] && value.trim() ? (                                                                                               react-hooks/static-components
+  264:24  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:264:24
+  262 |                         className={`${baseInput} ${fieldState('celular', values.celular)}`}
+  263 |                       />
+> 264 |                       <ValidCheck field="celular" value={values.celular} />
+      |                        ^^^^^^^^^^ This component is created during render
+  265 |                     </div>
+  266 |                     {touched.celular && errors.celular && <p className="text-red-500 text-xs mt-1">{errors.celular}</p>}
+  267 |                   </div>
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:121:22
+  119 |   );
+  120 |
+> 121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 122 |     touched[field] && !errors[field] && value.trim() ? (
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 123 |       <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500 pointer-events-none" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 124 |     ) : null;
+      | ^^^^^^^^^^^^^ The component is created during render here
+  125 |
+  126 |   return (
+  127 |     <section className="py-24 bg-[#f8fafc] font-poppins" id="contacto">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/static-components
+  272:20  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:272:20
+  270 |                 {/* Custom Multi-select Dropdown */}
+  271 |                 <div className="mb-10 relative" ref={dropdownRef}>
+> 272 |                   <FieldLabel required>Tipo de Servicio (Múltiple)</FieldLabel>
+      |                    ^^^^^^^^^^ This component is created during render
+  273 |                   <button
+  274 |                     type="button"
+  275 |                     onClick={() => setDropdownOpen(!dropdownOpen)}
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\ContactSection.tsx:115:22
+  113 |   const baseInput = 'w-full px-4 py-3.5 rounded-xl border text-[#041c32] text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 font-poppins';
+  114 |
+> 115 |   const FieldLabel = ({ children, required }: { children: React.ReactNode; required?: boolean }) => (
+      |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |     <label className="block text-xs font-bold text-[#041c32] uppercase tracking-wider mb-2 font-montserrat">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 117 |       {children}{required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |     </label>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 119 |   );
+      | ^^^^ The component is created during render here
+  120 |
+  121 |   const ValidCheck = ({ field, value }: { field: keyof FormErrors; value: string }) =>
+  122 |     touched[field] && !errors[field] && value.trim() ? (  react-hooks/static-components
+
+C:\Users\danna\proyectos\certa-seguros\src\components\blocks\Hero.tsx
+  4:10  warning  'HeroSection' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\components\hero-section-with-smooth-bg-shader.tsx
+  26:3  warning  'title' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  27:3  warning  'highlightText' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  28:3  warning  'description' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  29:3  warning  'buttonText' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  37:3  warning  'titleClassName' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  38:3  warning  'descriptionClassName' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  39:3  warning  'buttonClassName' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  40:3  warning  'maxWidth' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  42:3  warning  'fontFamily' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  43:3  warning  'fontWeight' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  49:5  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\danna\proyectos\certa-seguros\src\components\hero-section-with-smooth-bg-shader.tsx:49:5
+  47 |
+  48 |   useEffect(() => {
+> 49 |     setMounted(true)
+     |     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  50 |     const update = () =>
+  51 |       setDimensions({
+  52 |         width: window.innerWidth,  react-hooks/set-state-in-effect
+  60:9  warning  'handleButtonClick' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\components\ui\animated-ai-chat.tsx
+    8:5   warning  'FileUp' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+   12:5   warning  'ArrowUpIcon' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+   14:5   warning  'PlusIcon' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  143:12  warning  'isTyping' is assigned a value but never used                                                                          @typescript-eslint/no-unused-vars
+  143:22  warning  'setIsTyping' is assigned a value but never used                                                                       @typescript-eslint/no-unused-vars
+  144:12  warning  'isPending' is assigned a value but never used                                                                         @typescript-eslint/no-unused-vars
+  144:23  warning  'startTransition' is assigned a value but never used                                                                   @typescript-eslint/no-unused-vars
+  147:12  warning  'recentCommand' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+  209:8   warning  React Hook useEffect has a missing dependency: 'commandSuggestions'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  700:10  warning  'ActionButton' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+
+C:\Users\danna\proyectos\certa-seguros\src\components\ui\scroll-expansion-hero.tsx
+  37:3  warning  'textBlend' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  50:5  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\danna\proyectos\certa-seguros\src\components\ui\scroll-expansion-hero.tsx:50:5
+  48 |
+  49 |   useEffect(() => {
+> 50 |     setScrollProgress(0);
+     |     ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  51 |     setShowContent(false);
+  52 |     setMediaFullyExpanded(false);
+  53 |   }, [mediaType]);  react-hooks/set-state-in-effect
+
+C:\Users\danna\proyectos\certa-seguros\src\components\ui\sign-in.tsx
+  54:5  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+✖ 73 problems (20 errors, 53 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
+import { cn } from "lib/utils"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -45,7 +45,7 @@ export function SectionCard({
             {description}
           </CardTitle>
         ) : null}
-        
+
         {(trend || trendValue) && (
           <CardAction>
             <Badge variant="outline">
@@ -59,7 +59,7 @@ export function SectionCard({
           </CardAction>
         )}
       </CardHeader>
-      
+
       {(footerTitle || footerDescription) && (
         <CardFooter className="flex-col items-start gap-1.5 text-sm border-t-0 bg-transparent">
           {footerTitle && (
