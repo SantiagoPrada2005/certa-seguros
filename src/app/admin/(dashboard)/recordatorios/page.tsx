@@ -64,7 +64,7 @@ import {
 } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { cn } from "@/lib/utils"
+import { cn } from "lib/utils"
 
 const mockReminders = [
   {
@@ -268,7 +268,7 @@ export default function RemindersDashboardPage() {
               Calendario
             </TabsTrigger>
           </TabsList>
-          
+
           <div className="flex items-center gap-2">
             <InputGroup className="w-full sm:w-[250px]">
               <SearchIcon data-slot="icon" />
@@ -373,7 +373,7 @@ export default function RemindersDashboardPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="calendar">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6">
             <Card className="p-4">
@@ -397,9 +397,9 @@ export default function RemindersDashboardPage() {
                     Ver detalles <ChevronRightIcon className="size-3 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
-                
+
                 <div className="p-3 border rounded-xl bg-card hover:bg-muted/50 transition-colors border-l-4 border-l-primary shadow-sm">
-                   <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-2">
                     <Badge variant="secondary" className="h-4 text-[9px] uppercase border font-normal">Pendiente</Badge>
                     <span className="text-[10px] text-muted-foreground italic">Mañana</span>
                   </div>

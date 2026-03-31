@@ -73,9 +73,19 @@
     }
   }
 
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   --animate-element: fadeSlideIn 0.8s ease-out forwards;
   --animate-slide-right: slideRightIn 1s ease-out forwards;
   --animate-testimonial: testimonialIn 1s ease-out forwards;
+  --animate-spin-slow: spin-slow 8s linear infinite;
 
   --animate-delay-100: 0.1s;
   --animate-delay-200: 0.2s;
@@ -113,6 +123,10 @@
   opacity: 0;
   filter: blur(10px);
   transform: translateY(20px) scale(0.95);
+}
+
+@utility animate-spin-slow {
+  animation: var(--animate-spin-slow);
 }
 
 @utility animate-delay-100 {

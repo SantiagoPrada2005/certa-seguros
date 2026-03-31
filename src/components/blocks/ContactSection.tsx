@@ -108,13 +108,13 @@ const ContactSection = () => {
     const isValid = touched[field] && !errors[field] && value.trim().length > 0;
     if (hasError) return 'border-red-400 bg-red-50 focus-visible:ring-red-300';
     if (isValid) return 'border-green-400 bg-green-50 focus-visible:ring-green-300';
-    return 'border-gray-200 hover:border-gray-300 focus-visible:ring-blue-600';
+    return 'border-gray-200 hover:border-gray-300 focus-visible:ring-[#1c80a8]';
   };
 
-  const baseInput = 'w-full px-4 py-3.5 rounded-xl border text-[#041c32] text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 font-poppins';
+  const baseInput = 'w-full px-4 py-3.5 rounded-xl border text-[#182e6b] text-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-1 font-poppins';
 
   const FieldLabel = ({ children, required }: { children: React.ReactNode; required?: boolean }) => (
-    <label className="block text-xs font-bold text-[#041c32] uppercase tracking-wider mb-2 font-montserrat">
+    <label className="block text-xs font-bold text-[#182e6b] uppercase tracking-wider mb-2 font-montserrat">
       {children}{required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
     </label>
   );
@@ -128,51 +128,51 @@ const ContactSection = () => {
     <section className="py-24 bg-[#f8fafc] font-poppins" id="contacto">
       <div className="container mx-auto px-6">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-5xl font-black text-[#041c32] mb-4 font-montserrat uppercase tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-black text-[#182e6b] mb-4 font-montserrat uppercase tracking-tight">
             ¡Solicita tu Cotización al Instante!
           </h2>
-          <p className="text-[#0d548d] text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed">
+          <p className="text-[#4977b8] text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed">
             Completa tus datos y uno de nuestros expertos se pondrá en contacto contigo para brindarte la mejor asesoría.
           </p>
-          <div className="w-24 h-1 bg-blue-600 mx-auto rounded-full mt-6" />
+          <div className="w-24 h-1 bg-[#1c80a8] mx-auto rounded-full mt-6" />
         </div>
 
-        <div className="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(4,28,50,0.10)] flex flex-col lg:flex-row">
-          <div className="lg:w-5/12 bg-[#041c32] p-10 lg:p-14 text-white flex flex-col justify-between rounded-t-[2.5rem] lg:rounded-none lg:rounded-l-[2.5rem]">
+        <div className="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(24,46,107,0.10)] flex flex-col lg:flex-row">
+          <div className="lg:w-5/12 bg-[#182e6b] p-10 lg:p-14 text-white flex flex-col justify-between rounded-t-[2.5rem] lg:rounded-none lg:rounded-l-[2.5rem]">
             <div>
-              <p className="text-blue-600 text-xs uppercase tracking-widest font-bold mb-3">Contáctanos</p>
+              <p className="text-[#2fabcb] text-xs uppercase tracking-widest font-bold mb-3">Contáctanos</p>
               <h3 className="text-2xl font-bold font-montserrat mb-4 leading-tight">
                 Asesoría personalizada, sin compromiso.
               </h3>
-              <p className="text-blue-200 text-sm leading-relaxed mb-10">
+              <p className="text-blue-100/80 text-sm leading-relaxed mb-10">
                 Nuestros asesores certificados te guiarán paso a paso para elegir la póliza ideal para ti, tu familia o tu negocio.
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-5 h-5 text-blue-600" />
+                    <Phone className="w-5 h-5 text-[#2fabcb]" />
                   </div>
                   <div>
-                    <p className="text-blue-300 text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Llámanos</p>
-                    <p className="font-semibold text-sm">+57 (601) 847-2983</p>
+                    <p className="text-[#2fabcb] text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Llámanos</p>
+                    <p className="font-semibold text-sm">+57 3178837156</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-5 h-5 text-blue-600" />
+                    <Mail className="w-5 h-5 text-[#2fabcb]" />
                   </div>
                   <div>
-                    <p className="text-blue-300 text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Escríbenos</p>
-                    <p className="font-semibold text-sm">info@certaseguros.com</p>
+                    <p className="text-[#2fabcb] text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Escríbenos</p>
+                    <p className="font-semibold text-sm">maria.zapata@asesorsura.com   mfz.asesoriasempresariales@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-blue-600" />
+                    <MapPin className="w-5 h-5 text-[#2fabcb]" />
                   </div>
                   <div>
-                    <p className="text-blue-300 text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Visítanos</p>
+                    <p className="text-[#2fabcb] text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Visítanos</p>
                     <p className="font-semibold text-sm">Roldanillo </p>
                   </div>
                 </div>
@@ -183,8 +183,8 @@ const ContactSection = () => {
           <div className="lg:w-7/12 p-10 lg:p-14">
             {formState === 'success' ? (
               <div className="h-full flex flex-col items-center justify-center text-center gap-4 py-16">
-                <CheckCircle className="w-16 h-16 text-blue-600" />
-                <h3 className="text-2xl font-bold text-[#041c32] font-montserrat">¡Cotización Solicitada!</h3>
+                <CheckCircle className="w-16 h-16 text-[#182e6b]" />
+                <h3 className="text-2xl font-bold text-[#1c80a8] font-montserrat">¡Cotización Solicitada!</h3>
                 <p className="text-gray-500 max-w-xs text-sm leading-relaxed">
                   Un asesor de Certa Seguros se comunicará contigo en las próximas horas por WhatsApp o correo.
                 </p>
@@ -195,7 +195,7 @@ const ContactSection = () => {
                     setTouched({});
                     setErrors({});
                   }}
-                  className="mt-4 text-blue-600 text-sm font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
+                  className="mt-4 text-[#1c80a8] text-sm font-bold uppercase tracking-widest hover:opacity-70 transition-opacity"
                 >
                   Nueva cotización
                 </button>
@@ -278,7 +278,7 @@ const ContactSection = () => {
                     className={`${baseInput} text-left flex items-center justify-between ${touched.servicios && errors.servicios ? 'border-red-400 bg-red-50' : 'border-gray-200'
                       }`}
                   >
-                    <span className={`truncate ${values.servicios.length === 0 ? 'text-gray-400' : 'text-[#041c32]'}`}>
+                    <span className={`truncate ${values.servicios.length === 0 ? 'text-gray-400' : 'text-[#182e6b]'}`}>
                       {values.servicios.length === 0
                         ? 'Selecciona los servicios'
                         : values.servicios.length === 1
@@ -292,7 +292,7 @@ const ContactSection = () => {
                     <div className="absolute z-50 left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden max-h-[320px] overflow-y-auto anima-in fade-in slide-in-from-top-2 duration-200">
                       <div className="p-2 space-y-1">
                         {/* Categoría: Seguros y ARL */}
-                        <div className="px-3 py-2 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] bg-gray-50/50 rounded-lg mb-1">
+                        <div className="px-3 py-2 text-[10px] font-black text-[#1c80a8] uppercase tracking-[0.2em] bg-gray-50/50 rounded-lg mb-1">
                           Seguros y ARL
                         </div>
                         {serviceOptions.filter(o => o.category === 'Seguros y ARL').map((option) => (
@@ -302,10 +302,10 @@ const ContactSection = () => {
                             onClick={() => toggleService(option.id)}
                             className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#f8fafc] transition-colors group"
                           >
-                            <span className="text-sm font-medium text-[#041c32]">{option.label}</span>
+                            <span className="text-sm font-medium text-[#182e6b]">{option.label}</span>
                             <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${values.servicios.includes(option.id)
-                              ? 'bg-blue-600 border-blue-600'
-                              : 'border-gray-200 group-hover:border-blue-700'
+                              ? 'bg-[#1c80a8] border-[#1c80a8]'
+                              : 'border-gray-200 group-hover:border-[#1c80a8]'
                               }`}>
                               {values.servicios.includes(option.id) && <Check className="w-3.5 h-3.5 text-white" />}
                             </div>
@@ -313,7 +313,7 @@ const ContactSection = () => {
                         ))}
 
                         {/* Categoría: Tránsito */}
-                        <div className="mt-4 px-3 py-2 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] bg-gray-50/50 rounded-lg mb-1">
+                        <div className="mt-4 px-3 py-2 text-[10px] font-black text-[#1c80a8] uppercase tracking-[0.2em] bg-gray-50/50 rounded-lg mb-1">
                           Asesoría y Trámites de Tránsito
                         </div>
                         {serviceOptions.filter(o => o.category === 'Asesoría y Trámites de Tránsito').map((option) => (
@@ -323,10 +323,10 @@ const ContactSection = () => {
                             onClick={() => toggleService(option.id)}
                             className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-[#f8fafc] transition-colors group"
                           >
-                            <span className="text-sm font-medium text-[#041c32]">{option.label}</span>
+                            <span className="text-sm font-medium text-[#182e6b]">{option.label}</span>
                             <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${values.servicios.includes(option.id)
-                              ? 'bg-blue-600 border-blue-600'
-                              : 'border-gray-200 group-hover:border-blue-700'
+                              ? 'bg-[#1c80a8] border-[#1c80a8]'
+                              : 'border-gray-200 group-hover:border-[#1c80a8]'
                               }`}>
                               {values.servicios.includes(option.id) && <Check className="w-3.5 h-3.5 text-white" />}
                             </div>
@@ -341,7 +341,7 @@ const ContactSection = () => {
                 <NeonButton
                   type="submit"
                   disabled={formState === 'submitting'}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-black py-4 border-transparent flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-blue-600/30 uppercase tracking-widest text-sm font-montserrat"
+                  className="w-full bg-[#1c80a8] hover:bg-[#182e6b] disabled:opacity-60 text-white font-black py-4 border-transparent flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-[#1c80a8]/30 uppercase tracking-widest text-sm font-montserrat"
                 >
                   {formState === 'submitting' ? (
                     <><Loader className="w-5 h-5 animate-spin" /> Enviando...</>
