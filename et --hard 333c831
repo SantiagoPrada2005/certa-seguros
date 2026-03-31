@@ -1,0 +1,36 @@
+[33m072980f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/landing-page[m[33m, [m[1;31morigin/feature/landing-page[m[33m, [m[1;31morigin/admin[m[33m)[m HEAD@{0}: merge origin/admin: Fast-forward
+[33m333c831[m HEAD@{1}: checkout: moving from main to feature/landing-page
+[33m2d8af5c[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{2}: commit: cambio de colores y hero con mas visibilidad de SURA
+[33mc1b048f[m HEAD@{3}: commit: mejora de hero
+[33m0eb12f3[m HEAD@{4}: commit: corregir error de memoria y mejora de hero
+[33m81baed3[m HEAD@{5}: commit: chore: format css utilities and remove unused Toaster import in layout
+[33m12e939f[m HEAD@{6}: pull: Fast-forward
+[33m8071a43[m HEAD@{7}: checkout: moving from admin to main
+[33m345e4c1[m[33m ([m[1;32madmin[m[33m)[m HEAD@{8}: checkout: moving from main to admin
+[33m8071a43[m HEAD@{9}: pull origin main: Fast-forward
+[33m333c831[m HEAD@{10}: merge feature/landing-page: Fast-forward
+[33m3ff5343[m HEAD@{11}: checkout: moving from feature/landing-page to main
+[33m333c831[m HEAD@{12}: checkout: moving from main to feature/landing-page
+[33m3ff5343[m HEAD@{13}: reset: moving to HEAD
+[33m3ff5343[m HEAD@{14}: checkout: moving from 3ff53438c7a58c509c69d081f0efd19ffb628b1e to main
+[33m3ff5343[m HEAD@{15}: checkout: moving from main to origin/main
+[33m3ff5343[m HEAD@{16}: checkout: moving from main to main
+[33m3ff5343[m HEAD@{17}: checkout: moving from feature/landing-page to main
+[33m333c831[m HEAD@{18}: commit: style: standardize service card icon colors and remove CTA links
+[33mfaa022a[m HEAD@{19}: commit: fix(UI): add explicit types for framer-motion variants in TrustSection
+[33m49972d7[m HEAD@{20}: commit: feat: refine landing page UI
+[33m0b4eb7c[m HEAD@{21}: commit: feat: implement UI improvements P2-P7 (bg coherence, hero mobile, spring physics, carousel a11y, form UX)
+[33m5071326[m HEAD@{22}: commit: style: add soft blue overlay to hero image for title contrast
+[33m7340ab9[m HEAD@{23}: commit: feat: implement refined split-layout Hero with solid dark bg and professional copy
+[33m7bda7cb[m HEAD@{24}: reset: moving to 7bda7cb
+[33mfe585d9[m HEAD@{25}: commit: style: finalize hero scroll dynamics and typography consistency
+[33m61b4e54[m HEAD@{26}: commit: feat: redesign Hero to split-layout with solid dark navy bg and new copy
+[33m7bda7cb[m HEAD@{27}: commit: style: reduce media size and refine blue text blending
+[33m4c05894[m HEAD@{28}: commit: style: refine hero shader speed, media size, and title contrast
+[33mb93d3a8[m HEAD@{29}: commit: style: finalize Hero aesthetics with shader bg and dark blue titles
+[33mb2bd558[m HEAD@{30}: commit: style: remove HeroSection UI and refine title aesthetics
+[33m04aeee6[m HEAD@{31}: commit: feat: replace hero image bg with smooth shader background
+[33m4cdfa04[m HEAD@{32}: commit: style: update typography and brand colors for Certa Seguros
+[33m054a598[m HEAD@{33}: commit: feat: complete landing page for Certa Seguros
+[33m3ff5343[m HEAD@{34}: checkout: moving from main to feature/landing-page
+[33m3ff5343[m HEAD@{35}: clone: from https://github.com/SantiagoPrada2005/certa-seguros.git

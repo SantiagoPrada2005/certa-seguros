@@ -150,7 +150,7 @@ const ContactSection = () => {
 
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                     <Phone className="w-5 h-5 text-[#2fabcb]" />
                   </div>
                   <div>
@@ -159,16 +159,16 @@ const ContactSection = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                     <Mail className="w-5 h-5 text-[#2fabcb]" />
                   </div>
                   <div>
                     <p className="text-[#2fabcb] text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Escríbenos</p>
-                    <p className="font-semibold text-sm">maria.zapata@asesorsura.com   mfz.asesoriasempresariales@gmail.com</p>
+                    <p className="font-semibold text-sm">maria.zapata@asesorsura.com  mfz.asesoriasempresariales@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                     <MapPin className="w-5 h-5 text-[#2fabcb]" />
                   </div>
                   <div>
@@ -183,8 +183,8 @@ const ContactSection = () => {
           <div className="lg:w-7/12 p-10 lg:p-14">
             {formState === 'success' ? (
               <div className="h-full flex flex-col items-center justify-center text-center gap-4 py-16">
-                <CheckCircle className="w-16 h-16 text-[#182e6b]" />
-                <h3 className="text-2xl font-bold text-[#1c80a8] font-montserrat">¡Cotización Solicitada!</h3>
+                <CheckCircle className="w-16 h-16 text-[#1c80a8]" />
+                <h3 className="text-2xl font-bold text-[#182e6b] font-montserrat">¡Cotización Solicitada!</h3>
                 <p className="text-gray-500 max-w-xs text-sm leading-relaxed">
                   Un asesor de Certa Seguros se comunicará contigo en las próximas horas por WhatsApp o correo.
                 </p>
