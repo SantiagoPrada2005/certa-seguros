@@ -90,7 +90,7 @@ function TrustBar() {
 }
 
 // ─── Sub-componente: Fondo geométrico ─────────────────────────────────────────
-// SVG puro, sin imágenes externas. Carga instantánea, aspecto premium.
+// SVG puro, sin imágenes externas.
 function GeometricBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -138,76 +138,91 @@ function GeometricBackground() {
   );
 }
 
-// ─── Sub-componente: Imagen Hero ──────────────────────────────────────────────
-function HeroImage({ scrollYProgress }: { scrollYProgress: any }) {
-  const y = useTransform(scrollYProgress, [0, 1], [0, -100]);
-
-  return (
-    <motion.div
-      style={{ y }}
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-      className="relative aspect-square w-full max-w-[300px] lg:ml-auto lg:max-w-none"
-    >
-      <div className="absolute inset-0 rounded-3xl bg-linear-to-tr from-cyan-500/20 to-transparent blur-2xl" />
-      <div className="relative h-full w-full overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm">
-        <Image
-          src="/images/hero-person.png"
-          alt="Asesora de Seguros"
-          fill
-          className="object-cover object-center brightness-110 contrast-110 transition-all duration-1000 hover:scale-105"
-          priority
-        />
-        {/* Decorative elements over image */}
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-[#182e6b] to-transparent" />
-        <div className="absolute bottom-8 left-8 flex items-center gap-4">
-          <div className="h-12 w-12 overflow-hidden rounded-full border-2 border-cyan-400/50 p-0.5 shadow-lg">
-            <div className="h-full w-full overflow-hidden rounded-full">
-              <Image
-                src="/images/hero-person.png"
-                alt="Avatar"
-                width={48}
-                height={48}
-                className="object-cover grayscale-0"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-poppins text-xs font-bold tracking-wider text-white uppercase opacity-80">Asesora Sura</span>
-            <span className="font-poppins text-[10px] font-medium text-cyan-300 uppercase tracking-widest underline decoration-cyan-400/30 underline-offset-4">Respaldo Garantizado</span>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Sub-componente: Scroll Indicator ─────────────────────────────────────────
+// ─── Sub-componente: Indicador de Scroll Minimalista ──────────────────────
 function ScrollIndicator() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.5, duration: 1 }}
-      className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
-    >
-      <span className="font-poppins text-[10px] font-bold tracking-[0.3em] mb-2 uppercase text-cyan-300/60 transition-colors hover:text-cyan-300">
-        Desliza para conocer los servicios
-      </span>
-      <div className="relative h-12 w-px overflow-hidden bg-white/10">
+    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-20">
+      {/* Icono de Ratón Animado */}
+      <div className="w-[26px] h-[42px] border-2 border-white/20 rounded-full relative">
         <motion.div
           animate={{
-            y: ["-100%", "100%"],
+            y: [4, 18, 4],
+            opacity: [0, 1, 0]
           }}
           transition={{
             duration: 2,
             repeat: Infinity,
-            ease: "easeInOut",
+            ease: "easeInOut"
           }}
-          className="absolute top-0 h-1/2 w-full bg-cyan-400/60"
+          className="w-1.5 h-1.5 bg-cyan-400 rounded-full absolute left-1/2 -translate-x-1/2"
         />
       </div>
+
+      {/* Texto sutil opcional (puedes comentarlo si prefieres solo el icono) */}
+      <span className="font-poppins text-[9px] font-bold tracking-[0.3em] text-white/40 uppercase">
+        Desliza para conocer nuestros servic
+      </span>
+    </div>
+  );
+}
+
+// ─── Sub-componente: Video Hero ───────────────────
+function HeroImage({ scrollYProgress }: { scrollYProgress: any }) {
+  // Ajuste sutil de paralaje para más peso visual
+  const y = useTransform(scrollYProgress, [0, 1], [0, -90]);
+
+  return (
+    <motion.div
+      style={{ y }}
+      initial={{ opacity: 0, x: 70 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 1.3, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative aspect-16/10 w-full max-w-[680px] lg:max-w-none lg:w-full lg:ml-auto"
+    >
+      {/* Resplandor de fondo más difuminado y amplio */}
+      <div className="absolute -inset-6 rounded-[50px] bg-cyan-500/15 blur-3xl opacity-60" />
+
+      <div className="relative h-full w-full overflow-hidden rounded-[40px] border border-white/20 bg-[#0a2540]/50 backdrop-blur-md shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
+        <video
+          src="/images/hero-en-movimiento.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover scale-105"
+        />
+
+        {/* Overlay de degradado para profundidad y legibilidad */}
+        <div className="absolute inset-0 bg-linear-to-t from-[#0a2540] via-transparent to-transparent opacity-80" />
+
+        {/* Elementos decorativos: Info de la Asesora (Intactos) */}
+        <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 flex items-center gap-5 z-20">
+          <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-cyan-400/60 p-0.5 shadow-2xl bg-[#0a2540]/60 backdrop-blur-sm">
+            <div className="h-full w-full overflow-hidden rounded-full">
+              <Image
+                src="/images/hero-person.png"
+                alt="Avatar Asesora"
+                width={56}
+                height={56}
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col drop-shadow-xl">
+            <span className="font-montserrat text-[12px] font-extrabold tracking-[0.2em] text-white uppercase">
+              Asesora Sura
+            </span>
+            <span className="font-poppins text-[10px] font-semibold text-cyan-300 uppercase tracking-[0.25em]">
+              Respaldo Garantizado
+            </span>
+            {/* Línea decorativa minimalista */}
+            <div className="mt-1.5 h-[1.5px] w-14 bg-cyan-400/60 rounded-full" />
+          </div>
+        </div>
+      </div>
+
+      {/* Brillo ambiental premium en la esquina superior */}
+      <div className="absolute -top-3 -right-3 h-28 w-28 bg-white/10 blur-2xl rounded-full pointer-events-none" />
     </motion.div>
   );
 }
@@ -235,7 +250,7 @@ export default function HeroSection() {
 
       {/* Contenido principal */}
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-24 lg:py-32">
-        <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+        <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-[1fr_1.5fr]">
           <motion.div
             style={{ y: textY }}
             variants={containerVariants}

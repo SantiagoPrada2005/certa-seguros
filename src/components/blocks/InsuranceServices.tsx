@@ -2,37 +2,37 @@
 
 import React from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
-import { Heart, ShieldCheck, Home, CarFront, Briefcase } from 'lucide-react';
+import Image from 'next/image';
 
 const services = [
   {
     title: "Seguro de Vida y Plenitud",
     description: "No es solo una póliza, es capital para tu jubilación y estabilidad financiera para tus seres queridos. Una solución de ahorro y seguridad que garantiza tranquilidad ante cualquier imprevisto.",
-    icon: Heart,
+    image: "/images/seguro-de-vida.png",
     accent: "#2fabcb",
   },
   {
     title: "Seguros para tu Negocio (PYME)",
     description: "Asegurar tu empresa es asegurar su crecimiento. Te brindamos protección integral, asistencias especializadas y asesoría personalizada para que la continuidad de tu negocio nunca se detenga.",
-    icon: Briefcase,
+    image: "/images/seguro-empresa.png",
     accent: "#2fabcb",
   },
   {
     title: "Seguro de Hogar Integral",
     description: "Tu tranquilidad es lo más importante. Protegemos el valor comercial de tu vivienda y tus enseres contra eventos naturales y daños, con asistencia técnica disponible las 24 horas.",
-    icon: Home,
+    image: "/images/seguro-vivienda.png",
     accent: "#2fabcb",
   },
   {
     title: "Movilidad y Vehículos",
     description: "Protegemos tu carro o moto con coberturas de responsabilidad civil y daños. Además, gestionamos tus trámites de tránsito (traspasos y pagos) con agilidad, confianza y sin filas.",
-    icon: CarFront,
+    image: "/images/seguro-carro.png",
     accent: "#2fabcb",
   },
   {
     title: "Salud y Riesgos Laborales (ARL)",
     description: "Cumplimos con la normativa legal para que trabajes con total respaldo. Acceso a servicios médicos de alta calidad y cobertura integral para ti y tus colaboradores.",
-    icon: ShieldCheck,
+    image: "/images/seguro-arl.png",
     accent: "#2fabcb",
   }
 ];
@@ -95,7 +95,7 @@ const InsuranceServices = () => {
             <div
               key={index}
               role="listitem"
-              className="flex-shrink-0 w-[380px] bg-white rounded-3xl p-8 transition-all duration-500 hover:-translate-y-2 select-none flex flex-col"
+              className="shrink-0 w-[380px] bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-2 select-none flex flex-col"
               style={{
                 boxShadow: '0 8px 40px rgba(2, 10, 30, 0.13), 0 2px 12px rgba(1, 5, 20, 0.09)',
               }}
@@ -108,24 +108,26 @@ const InsuranceServices = () => {
                   '0 8px 40px rgba(2, 10, 30, 0.13), 0 2px 12px rgba(1, 5, 20, 0.09)';
               }}
             >
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-300"
-                style={{
-                  backgroundColor: service.accent + '18',
-                  border: `1.5px solid ${service.accent}35`,
-                }}
-                aria-hidden="true"
-              >
-                <service.icon className="w-7 h-7" style={{ color: service.accent }} />
+              {/* Imagen del servicio */}
+              <div className="relative w-full h-[140px] overflow-hidden bg-[#ffffff] flex items-center justify-center p-4">
+                <Image
+                  src={service.image}
+                  alt={service.title}
+                  fill
+                  sizes="380px"
+                  className="object-contain transition-transform duration-500 hover:scale-105 p-3"
+                />
               </div>
 
-              <h3 className="text-xl font-bold text-[#041c32] mb-3 font-montserrat leading-tight">
-                {service.title}
-              </h3>
+              <div className="p-8 pt-6 flex flex-col grow">
+                <h3 className="text-xl font-bold text-[#041c32] mb-3 font-montserrat leading-tight">
+                  {service.title}
+                </h3>
 
-              <p className="text-gray-700 text-sm leading-relaxed font-poppins flex-grow">
-                {service.description}
-              </p>
+                <p className="text-gray-700 text-sm leading-relaxed font-poppins grow">
+                  {service.description}
+                </p>
+              </div>
             </div>
           ))}
         </motion.div>
@@ -139,3 +141,4 @@ const InsuranceServices = () => {
 };
 
 export default InsuranceServices;
+
