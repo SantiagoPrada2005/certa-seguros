@@ -28,10 +28,10 @@ function useCountUp(target: number, duration = 1800, shouldStart = false) {
 
 // ─── Stat data ────────────────────────────────────────────────────────────────
 const stats = [
-  { label: 'Clientes Felices',        numeric: 10000, display: '+', suffix: '',  icon: Users,         large: true },
-  { label: 'Años de Experiencia',     numeric: 20,    display: '+', suffix: '',  icon: Star,          large: false },
-  { label: 'Reclamaciones Pagadas',   numeric: 98,    display: '%', suffix: '',  icon: CheckCircle2,  large: false },
-  { label: 'Soporte disponible',      numeric: 0,     display: '',  suffix: '24/7', icon: PhoneCall,  large: false },
+  { label: 'Clientes Felices', numeric: 10000, display: '+', suffix: '', icon: Users, large: true },
+  { label: 'Años de Experiencia', numeric: 20, display: '+', suffix: '', icon: Star, large: false },
+  { label: 'Reclamaciones Pagadas', numeric: 98, display: '%', suffix: '', icon: CheckCircle2, large: false },
+  { label: 'Soporte disponible', numeric: 0, display: '', suffix: '24/7', icon: PhoneCall, large: false },
 ];
 
 const benefits = [
@@ -73,9 +73,9 @@ function StatCard({ stat, shouldStart }: { stat: typeof stats[0]; shouldStart: b
   const displayValue = stat.numeric === 0
     ? stat.suffix
     : `${stat.numeric >= 10000
-        ? count >= 10000 ? '10,000' : count.toLocaleString()
-        : count
-      }${stat.display}`;
+      ? count >= 10000 ? '10,000' : count.toLocaleString()
+      : count
+    }${stat.display}`;
 
   return (
     <motion.div
@@ -117,7 +117,7 @@ const TrustSection = () => {
     <section
       ref={sectionRef}
       className="relative py-28 overflow-hidden font-poppins"
-      style={{ background: 'linear-gradient(135deg, #0f1d42 0%, #162552 40%, #1a3a6e 70%, #0d2040 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #0f1d42 0%, #182e6b 40%, #1a3a6e 70%, #0d2040 100%)' }}
     >
       {/* ── Background decorations ── */}
       {/* Grid pattern */}
@@ -133,11 +133,6 @@ const TrustSection = () => {
       {/* Ambient glows */}
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] rounded-full bg-cyan-500/8 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[350px] h-[350px] rounded-full bg-blue-600/10 blur-3xl pointer-events-none" />
-
-      {/* Large decorative icon in background */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none hidden lg:block">
-        <Users className="w-[340px] h-[340px] text-white" />
-      </div>
 
       <div className="relative z-10 container mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-20">

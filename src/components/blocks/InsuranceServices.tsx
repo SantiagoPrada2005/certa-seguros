@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion, useAnimationControls } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import { motion, useMotionValue, useAnimationControls } from 'framer-motion';
 import Image from 'next/image';
 
 const services = [
@@ -39,23 +39,59 @@ const services = [
 
 const duplicatedServices = [...services, ...services, ...services];
 
+// Ancho de cada card + gap
+const CARD_WIDTH = 380 + 32; // w-[380px] + gap-8
+const TOTAL_WIDTH = services.length * CARD_WIDTH;
+
 const InsuranceServices = () => {
-  const controls = useAnimationControls();
+  const x = useMotionValue(0);
+  const isDragging = useRef(false);
+  const animFrameRef = useRef<number | null>(null);
+  const speedRef = useRef(0.6); // px por frame
 
   const startAutoScroll = () => {
-    controls.start({
-      x: ['0%', '-33.33%'],
-      transition: {
-        repeat: Infinity,
-        repeatType: 'loop',
-        duration: 60,
-        ease: 'linear',
-      },
-    });
+    if (animFrameRef.current) return;
+
+    const step = () => {
+      if (!isDragging.current) {
+        let current = x.get();
+        current -= speedRef.current;
+
+        // Loop: cuando llega al segundo bloque, salta al primero
+        if (current <= -TOTAL_WIDTH) {
+          current += TOTAL_WIDTH;
+        }
+
+        x.set(current);
+      }
+      animFrameRef.current = requestAnimationFrame(step);
+    };
+
+    animFrameRef.current = requestAnimationFrame(step);
   };
 
-  const pauseAutoScroll = () => {
-    controls.stop();
+  const stopAutoScroll = () => {
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    startAutoScroll();
+    return () => stopAutoScroll();
+  }, []);
+
+  const handleDragStart = () => {
+    isDragging.current = true;
+  };
+
+  const handleDragEnd = () => {
+    isDragging.current = false;
+    // Normalizar posición para que el loop funcione bien tras el drag
+    let current = x.get();
+    if (current > 0) x.set(current % -TOTAL_WIDTH - TOTAL_WIDTH);
+    if (current < -TOTAL_WIDTH * 2) x.set(current % -TOTAL_WIDTH);
   };
 
   return (
@@ -74,22 +110,16 @@ const InsuranceServices = () => {
         <div className="w-24 h-1 bg-[#182e6b] mx-auto rounded-full" />
       </div>
 
-      <div
-        className="relative flex overflow-hidden cursor-grab active:cursor-grabbing"
-        onMouseEnter={pauseAutoScroll}
-        onMouseLeave={startAutoScroll}
-        onFocus={pauseAutoScroll}
-        onBlur={startAutoScroll}
-      >
+      <div className="relative flex overflow-hidden cursor-grab active:cursor-grabbing">
         <motion.div
           className="flex gap-8 py-6 px-4"
           role="list"
+          style={{ x }}
           drag="x"
-          dragConstraints={{ left: -3000, right: 0 }}
-          onViewportEnter={startAutoScroll}
-          onDragStart={pauseAutoScroll}
-          onDragEnd={startAutoScroll}
-          animate={controls}
+          dragConstraints={{ left: -TOTAL_WIDTH * 2, right: 0 }}
+          dragElastic={0.05}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
         >
           {duplicatedServices.map((service, index) => (
             <div
@@ -97,19 +127,19 @@ const InsuranceServices = () => {
               role="listitem"
               className="shrink-0 w-[380px] bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-2 select-none flex flex-col"
               style={{
-                boxShadow: '0 8px 40px rgba(2, 10, 30, 0.13), 0 2px 12px rgba(1, 5, 20, 0.09)',
+                boxShadow: '0 8px 40px rgba(24, 46, 107, 0.15), 0 2px 12px rgba(24, 46, 107, 0.10)',
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLDivElement).style.boxShadow =
-                  '0 20px 60px rgba(2, 10, 30, 0.22), 0 4px 20px rgba(1, 5, 20, 0.14)';
+                  '0 20px 60px rgba(47, 171, 203, 0.28), 0 4px 20px rgba(47, 171, 203, 0.18)';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLDivElement).style.boxShadow =
-                  '0 8px 40px rgba(2, 10, 30, 0.13), 0 2px 12px rgba(1, 5, 20, 0.09)';
+                  '0 8px 40px rgba(24, 46, 107, 0.15), 0 2px 12px rgba(24, 46, 107, 0.10)';
               }}
             >
               {/* Imagen del servicio */}
-              <div className="relative w-full h-[140px] overflow-hidden bg-[#ffffff] flex items-center justify-center p-4">
+              <div className="relative w-full h-[140px] overflow-hidden bg-white flex items-center justify-center p-4">
                 <Image
                   src={service.image}
                   alt={service.title}
@@ -123,7 +153,6 @@ const InsuranceServices = () => {
                 <h3 className="text-xl font-bold text-[#041c32] mb-3 font-montserrat leading-tight">
                   {service.title}
                 </h3>
-
                 <p className="text-gray-700 text-sm leading-relaxed font-poppins grow">
                   {service.description}
                 </p>
@@ -141,4 +170,3 @@ const InsuranceServices = () => {
 };
 
 export default InsuranceServices;
-

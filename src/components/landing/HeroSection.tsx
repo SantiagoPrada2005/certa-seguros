@@ -244,7 +244,7 @@ export default function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[90vh] overflow-hidden bg-linear-to-br from-[#182e6b] via-[#1c3a7a] to-[#1c80a8]"
+      className="relative min-h-[90vh] overflow-hidden bg-linear-to-br from-[#182e6b] via-[#1c3a7a] to-[#2fabcb]"
     >
       <GeometricBackground />
 
