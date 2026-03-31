@@ -13,7 +13,7 @@ export default function Home() {
       <ContactSection />
 
       {/* Footer */}
-      <footer className="py-12 bg-[#020f1e] text-center border-t border-white/5">
+      <footer className="py-12 bg-[#182e6b] text-center border-t border-white/5">
         <p className="text-white/30 text-sm font-poppins">
           &copy; {new Date().getFullYear()} Certa Seguros. Todos los derechos reservados.
         </p>
