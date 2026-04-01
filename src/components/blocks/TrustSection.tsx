@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, Variants, useInView } from 'framer-motion';
-import { Users, Star, CheckCircle2, PhoneCall } from 'lucide-react';
+import Image from 'next/image';
 
 // ─── Counter-up hook ─────────────────────────────────────────────────────────
 function useCountUp(target: number, duration = 1800, shouldStart = false) {
@@ -28,10 +28,10 @@ function useCountUp(target: number, duration = 1800, shouldStart = false) {
 
 // ─── Stat data ────────────────────────────────────────────────────────────────
 const stats = [
-  { label: 'Clientes Felices', numeric: 10000, display: '+', suffix: '', icon: Users, large: true },
-  { label: 'Años de Experiencia', numeric: 20, display: '+', suffix: '', icon: Star, large: false },
-  { label: 'Reclamaciones Pagadas', numeric: 98, display: '%', suffix: '', icon: CheckCircle2, large: false },
-  { label: 'Soporte disponible', numeric: 0, display: '', suffix: '24/7', icon: PhoneCall, large: false },
+  { label: 'Clientes Felices', numeric: 10000, display: '+', suffix: '', image: '/images/clientes-felices.png', large: true },
+  { label: 'Años de Experiencia', numeric: 20, display: '+', suffix: '', image: '/images/años-de-experiencia.png', large: false },
+  { label: 'Reclamaciones Pagadas', numeric: 98, display: '%', suffix: '', image: '/images/pagados.png', large: false },
+  { label: 'Soporte disponible', numeric: 0, display: '', suffix: '24/7', image: '/images/atencion-24hrs.png', large: false },
 ];
 
 const benefits = [
@@ -68,7 +68,6 @@ const benefitVariants: Variants = {
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ stat, shouldStart }: { stat: typeof stats[0]; shouldStart: boolean }) {
   const count = useCountUp(stat.numeric, 1800, shouldStart && stat.numeric > 0);
-  const Icon = stat.icon;
 
   const displayValue = stat.numeric === 0
     ? stat.suffix
@@ -80,7 +79,7 @@ function StatCard({ stat, shouldStart }: { stat: typeof stats[0]; shouldStart: b
   return (
     <motion.div
       variants={cardVariants}
-      className="group relative flex flex-col items-center text-center p-8 rounded-3xl
+      className="group relative flex flex-col items-center text-center pt-1.5 pb-0.2 px-0.2 rounded-3xl
                  bg-white/5 border border-white/10 backdrop-blur-sm
                  hover:border-cyan-400/40 hover:bg-white/8
                  transition-all duration-400 cursor-default"
@@ -90,20 +89,25 @@ function StatCard({ stat, shouldStart }: { stat: typeof stats[0]; shouldStart: b
       <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-400
                       shadow-[0_0_30px_-5px_rgba(47,171,203,0.3)]" />
 
-      {/* Icon */}
-      <div className="relative mb-5 p-4 rounded-2xl bg-cyan-400/10 border border-cyan-400/20
-                      group-hover:bg-cyan-400/20 group-hover:scale-110 transition-all duration-300">
-        <Icon className="w-8 h-8 text-cyan-400" />
-        <div className="absolute inset-0 rounded-2xl bg-cyan-400/20 blur-md opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
+      {/* Image Container */}
+      <div className="relative mb-1 flex items-center justify-center overflow-hidden
+                      w-58 h-58 group-hover:scale-110 transition-transform duration-500">
+        <Image
+          src={stat.image}
+          alt={stat.label}
+          width={70}
+          height={70}
+          className="object-contain w-full h-full p-1"
+        />
       </div>
 
       {/* Number */}
-      <div className="font-montserrat text-4xl font-black text-white mb-1 tracking-tight leading-none">
+      <div className="font-montserrat text-4xl font-black text-white mb-6 tracking-tight leading-none">
         {displayValue}
       </div>
 
       {/* Label */}
-      <div className="text-sm text-white/50 font-medium tracking-wide mt-1">{stat.label}</div>
+      <div className="text-sm text-white/80 font-medium tracking-wide mb-5">{stat.label}</div>
     </motion.div>
   );
 }
@@ -149,7 +153,7 @@ const TrustSection = () => {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-400/10 border border-cyan-400/20 w-fit mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
               <span className="text-xs font-bold tracking-widest text-cyan-300 uppercase">
-                Nuestra promesa
+                Nuestro compromiso
               </span>
             </div>
 
