@@ -29,16 +29,14 @@ export const HeroContent = () => {
         >
           Protección real para lo que <span className="text-blue-500">más valoras.</span>
         </motion.h1>
-        
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-lg text-blue-100/70 font-poppins leading-relaxed"
         >
-          En Certa Seguros, simplificamos lo complejo. Obtén la cobertura 
-          ideal con expertos que hablan tu mismo idioma y te acompañan 
-          en cada paso.
+          En Certa Seguros, simplificamos lo complejo. Obtén la cobertura ideal con expertos que te acompañan en cada paso.
         </motion.p>
       </div>
 
