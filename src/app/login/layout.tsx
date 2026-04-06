@@ -13,8 +13,8 @@ export default async function AdminRootLayout({ children }: { children: React.Re
   const theme = cookieStore.get("certa-admin-theme")?.value as any || "neutral"
   const mode = cookieStore.get("certa-admin-mode")?.value as any || "light"
 
-  if (!masterKey || masterKey.value !== "true") {
-    redirect("/login")
+  if (masterKey && masterKey.value == "true") {
+    redirect("/admin")
   }
 
   return (
