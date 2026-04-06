@@ -1,7 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// ═══════════════════════════════════════════════════════════════
+// Certa Seguros — Prisma Schema
+// CRM para corredores de seguros (Insurance Brokerage CRM)
+// ═══════════════════════════════════════════════════════════════
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +10,426 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ENUMS
+// ═══════════════════════════════════════════════════════════════
+
+enum UserRole {
+  ADMIN
+  ASESOR
+  VIEWER
+}
+
+enum ClientType {
+  INDIVIDUAL // Persona natural
+  BUSINESS // Empresa / Persona jurídica
+}
+
+enum ClientStatus {
+  NUEVO // Recién capturado
+  CONTACTADO // Ya se hizo contacto inicial
+  EN_PROCESO // En negociación / cotización
+  ACTIVO // Cliente con póliza vigente
+  INACTIVO // Cliente inactivo
+  DESCARTADO // No interesado / inválido
+}
+
+enum LeadSource {
+  WEB_PUBLICA
+  REFERIDOS
+  REDES_SOCIALES
+  DIRECTOS
+}
+
+enum InvoiceStatus {
+  DRAFT // Borrador
+  PENDING // Pendiente de pago
+  PAID // Pagada
+  OVERDUE // Vencida
+}
+
+enum PolicyStatus {
+  ACTIVE // Vigente
+  EXPIRED // Vencida
+  CANCELLED // Cancelada
+  PENDING_RENEWAL // Pendiente de renovación
+}
+
+enum PolicyType {
+  SOAT
+  VEHICULAR
+  VIDA
+  ARL
+  TODO_RIESGO
+  SALUD
+  OTRO
+}
+
+enum ReminderType {
+  RENOVACION_SOAT
+  RENOVACION_POLIZA
+  SEGUIMIENTO_ARL
+  LLAMADA
+  VISITA
+  OTRO
+}
+
+enum ReminderPriority {
+  INMEDIATA
+  CRITICA
+  ALTA
+  MEDIA
+  BAJA
+}
+
+enum ReminderStatus {
+  PENDIENTE
+  EN_PROCESO
+  COMPLETADO
+  VENCIDO
+}
+
+enum GoalCategory {
+  VENTAS
+  CLIENTES
+  RENOVACIONES
+  INGRESOS
+}
+
+enum GoalPeriod {
+  MENSUAL
+  TRIMESTRAL
+  ANUAL
+}
+
+enum GoalStatus {
+  ON_TRACK
+  AT_RISK
+  BEHIND
+  COMPLETED
+  EXCEEDED
+}
+
+enum ActivityType {
+  SUCCESS // Póliza emitida, pago recibido
+  INFO // Cotización enviada, prospecto contactado
+  WARNING // Renovación pendiente
+  DANGER // Siniestro reportado, factura vencida
+}
+
+enum DocumentType {
+  CC // Cédula de Ciudadanía
+  NIT // Número de Identificación Tributaria
+  CE // Cédula de Extranjería
+  PASAPORTE
+  TI // Tarjeta de Identidad
+  RUT // Registro Único Tributario
+}
+
+enum ServiceValidityType {
+  UNICA_VEZ
+  ANUAL
+  MENSUAL
+  TRIMESTRAL
+  SEMESTRAL
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MODELOS
+// ═══════════════════════════════════════════════════════════════
+
+/// Usuarios del sistema (administradores, asesores)
+/// Autenticación delegada a Firebase Auth
+model User {
+  id          String   @id @default(cuid())
+  firebaseUid String   @unique // UID de Firebase Auth
+  email       String   @unique
+  name        String
+  role        UserRole @default(ASESOR)
+  avatarUrl   String?
+  isActive    Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  reminders    Reminder[]
+  activityLogs ActivityLog[]
+
+  @@index([firebaseUid])
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+/// Clientes y prospectos unificados.
+/// El campo `status` diferencia si es prospecto (NUEVO, CONTACTADO, EN_PROCESO)
+/// o cliente activo (ACTIVO).
+model Client {
+  id             String       @id @default(cuid())
+  name           String
+  type           ClientType   @default(INDIVIDUAL)
+  documentType   DocumentType?
+  documentNumber String?
+  email          String?
+  phone          String?
+  address        String?
+  status         ClientStatus @default(NUEVO)
+  source         LeadSource?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  policies     Policy[]
+  invoices     Invoice[]
+  reminders    Reminder[]
+  activityLogs ActivityLog[]
+  services     ClientService[]
+
+  @@index([email])
+  @@index([status])
+  @@index([type])
+  @@index([source])
+  @@index([documentNumber])
+  @@map("clients")
+}
+
+/// Categorías principales de servicios (Seguros, Asesorías, Servicios Adicionales)
+model ServiceCategory {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  subcategories ServiceSubcategory[]
+
+  @@map("service_categories")
+}
+
+/// Subcategorías de servicios (Movilidad, Salud, Vida, Legal, SST)
+model ServiceSubcategory {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+
+  categoryId String
+  category   ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  services Service[]
+
+  @@unique([categoryId, name])
+  @@map("service_subcategories")
+}
+
+/// Catálogo de servicios ofrecidos (Seguro Todo Riesgo, Asesoría Legal, etc.)
+model Service {
+  id               String              @id @default(cuid())
+  name             String
+  description      String?
+  validityType     ServiceValidityType @default(ANUAL)
+  price            Decimal?            @db.Decimal(15, 2)
+  priceDescription String? // Para precios variables como "Depende del perfil"
+  isActive         Boolean             @default(true)
+
+  subcategoryId String?
+  subcategory   ServiceSubcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  policies Policy[]
+  clients  ClientService[]
+
+  @@index([isActive])
+  @@index([subcategoryId])
+  @@map("services")
+}
+
+/// Tabla pivote: servicios de interés de cada prospecto/cliente
+model ClientService {
+  id        String @id @default(cuid())
+  clientId  String
+  serviceId String
+
+  client  Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  assignedAt DateTime @default(now())
+
+  @@unique([clientId, serviceId])
+  @@map("client_services")
+}
+
+/// Pólizas emitidas a clientes
+model Policy {
+  id               String       @id @default(cuid())
+  policyNumber     String       @unique
+  type             PolicyType
+  premiumAmount    Decimal      @db.Decimal(15, 2)
+  commissionAmount Decimal      @default(0) @db.Decimal(15, 2)
+  startDate        DateTime
+  endDate          DateTime
+  status           PolicyStatus @default(ACTIVE)
+
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([status])
+  @@index([type])
+  @@index([endDate])
+  @@index([policyNumber])
+  @@map("policies")
+}
+
+/// Facturas electrónicas emitidas
+model Invoice {
+  id                  String        @id @default(cuid())
+  number              String        @unique // FAC-001, FAC-002...
+  date                DateTime
+  dueDate             DateTime
+  subtotal            Decimal       @db.Decimal(15, 2)
+  discountAmount      Decimal       @default(0) @db.Decimal(15, 2)
+  discountDescription String?
+  taxRate             Decimal       @default(0.19) @db.Decimal(5, 4) // 0.19 = 19% IVA
+  taxAmount           Decimal       @db.Decimal(15, 2)
+  total               Decimal       @db.Decimal(15, 2)
+  status              InvoiceStatus @default(DRAFT)
+  notes               String?
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  items InvoiceItem[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([number])
+  @@map("invoices")
+}
+
+/// Ítems individuales dentro de una factura
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  description String
+  quantity    Int     @default(1)
+  unitPrice   Decimal @db.Decimal(15, 2)
+  total       Decimal @db.Decimal(15, 2)
+
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@map("invoice_items")
+}
+
+/// Recordatorios y alertas preventivas (renovaciones, seguimientos, etc.)
+model Reminder {
+  id          String           @id @default(cuid())
+  type        ReminderType
+  priority    ReminderPriority @default(MEDIA)
+  status      ReminderStatus   @default(PENDIENTE)
+  dueDate     DateTime
+  description String?
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  createdById String?
+  createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@map("reminders")
+}
+
+/// Metas de negocio con seguimiento de progreso
+model Goal {
+  id           String       @id @default(cuid())
+  name         String
+  description  String?
+  category     GoalCategory
+  period       GoalPeriod
+  currentValue Decimal      @default(0) @db.Decimal(15, 2)
+  targetValue  Decimal      @db.Decimal(15, 2)
+  unit         String // "pólizas", "clientes", "COP", "%", "renovaciones"
+  status       GoalStatus   @default(ON_TRACK)
+  trend        Decimal      @default(0) @db.Decimal(5, 2) // Porcentaje de tendencia
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean      @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  milestones GoalMilestone[]
+
+  @@index([category])
+  @@index([status])
+  @@index([isActive])
+  @@index([endDate])
+  @@map("goals")
+}
+
+/// Hitos intermedios de una meta
+model GoalMilestone {
+  id      String  @id @default(cuid())
+  label   String // "25%", "50%", "75%", "100%"
+  value   Decimal @db.Decimal(15, 2)
+  reached Boolean @default(false)
+
+  goalId String
+  goal   Goal   @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+  @@map("goal_milestones")
+}
+
+/// Registro de actividad reciente del sistema (feed del dashboard)
+model ActivityLog {
+  id       String       @id @default(cuid())
+  action   String // "Nueva póliza SOAT emitida", "Prospecto contactado", etc.
+  type     ActivityType
+  metadata Json? // Datos adicionales según contexto
+
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([clientId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("activity_logs")
 }
