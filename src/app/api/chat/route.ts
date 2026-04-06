@@ -1,4 +1,4 @@
-import { openRouter } from "@/lib/openrouter";
+import { openRouter } from "@lib/openrouter";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";

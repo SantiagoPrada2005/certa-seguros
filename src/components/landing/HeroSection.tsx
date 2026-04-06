@@ -10,8 +10,8 @@ import {
   badgeVariants,
   pulseVariants,
   floatVariants,
-} from "@/lib/animations";
-import { ADVISOR, HERO, CONTACT } from "@/lib/constants";
+} from "@lib/animations";
+import { ADVISOR, HERO, CONTACT } from "@lib/constants";
 
 function SuraBadge() {
   return (

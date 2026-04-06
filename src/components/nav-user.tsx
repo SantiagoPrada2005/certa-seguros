@@ -32,11 +32,11 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  
+
   const handleLogout = () => {
     // Basic MVP logout by clearing the cookie (requires deleting it or expiring it)
     document.cookie = "certa_admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = "/admin/login";
+    window.location.href = "/login";
   }
 
   return (

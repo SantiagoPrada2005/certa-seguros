@@ -1,6 +1,6 @@
 import * as React from "react"
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-import { cn } from "lib/utils"
+import { cn } from "@lib/utils"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
