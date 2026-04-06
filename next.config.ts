@@ -1,5 +1,6 @@
+/// <reference types="next" />
+// @ts-ignore - Silence IDE false positive for Next.js 16 types in root config
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -19,13 +20,6 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
       },
     ],
-  },
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@lib": path.resolve(process.cwd(), "src/lib"),
-    };
-    return config;
   },
 };
 
