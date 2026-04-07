@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, TargetIcon, LayoutDashboard, Sparkles, FileTextIcon } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, Sparkles, FileTextIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
@@ -19,11 +19,6 @@ import {
 } from "@/components/ui/sidebar"
 
 const data = {
-  user: {
-    name: "Admin",
-    email: "admin@certaseguros.com",
-    avatar: "",
-  },
   navMain: [
     {
       title: "Métricas",
@@ -132,7 +127,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         </div>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

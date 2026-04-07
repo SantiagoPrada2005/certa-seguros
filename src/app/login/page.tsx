@@ -1,11 +1,73 @@
 "use client"
 
-import { useActionState } from "react"
-import { submitMasterKey } from "./actions"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth"
+import { auth } from "@/lib/firebase/config"
+import { createSession } from "./actions"
 import { SignInPage } from "@/components/ui/sign-in"
+import { toast } from "sonner"
 
 export default function AdminLoginPage() {
-  const [state, formAction, isPending] = useActionState(submitMasterKey, null)
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+  const [isPending, setIsPending] = useState(false)
+
+  const handleEmailSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsPending(true)
+    setError(null)
+
+    const formData = new FormData(event.currentTarget)
+    const email = formData.get("email") as string
+    const password = formData.get("masterKey") as string // MasterKey was the original name, but effectively it's the password now
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const token = await userCredential.user.getIdToken()
+      
+      const sessionResult = await createSession(token)
+      
+      if (sessionResult?.error) {
+        throw new Error(sessionResult.error)
+      }
+
+      toast.success("Inicio de sesión exitoso")
+      router.push("/admin")
+    } catch (err: any) {
+      console.error("Login component error:", err)
+      setError(err?.message || "Ocurrió un error al iniciar sesión.")
+      toast.error("Error al iniciar sesión")
+    } finally {
+      setIsPending(false)
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    setIsPending(true)
+    setError(null)
+
+    try {
+      const provider = new GoogleAuthProvider()
+      const userCredential = await signInWithPopup(auth, provider)
+      const token = await userCredential.user.getIdToken()
+      
+      const sessionResult = await createSession(token)
+      
+      if (sessionResult?.error) {
+        throw new Error(sessionResult.error)
+      }
+
+      toast.success("Sesión con Google exitosa")
+      router.push("/admin")
+    } catch (err: any) {
+      console.error("Google sign-in error:", err)
+      setError(err?.message || "Ocurrió un error con Google.")
+      toast.error("Error al iniciar sesión con Google")
+    } finally {
+      setIsPending(false)
+    }
+  }
 
   return (
     <SignInPage
@@ -18,12 +80,13 @@ export default function AdminLoginPage() {
       heroImageSrc="/images/login-hero.png"
       passwordName="masterKey"
       emailLabel="Usuario Administrador"
-      passwordLabel="Clave Maestra"
+      passwordLabel="Clave de Acceso"
       emailPlaceholder="ej. admin@certaseguros.com"
-      passwordPlaceholder="Ingrese la clave maestra..."
-      formAction={formAction}
+      passwordPlaceholder="Ingrese su contraseña..."
+      onSignIn={handleEmailSignIn}
+      onGoogleSignIn={handleGoogleSignIn}
       isPending={isPending}
-      error={state?.error}
+      error={error || undefined}
       testimonials={[
         {
           avatarSrc: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena",
@@ -38,9 +101,8 @@ export default function AdminLoginPage() {
           text: "Una interfaz limpia y moderna que realmente ayuda a enfocarse en lo importante: el cliente."
         }
       ]}
-      onGoogleSignIn={() => alert("Inicio con Google deshabilitado por seguridad.")}
-      onResetPassword={() => alert("Por favor, contacte al soporte técnico para restablecer su clave.")}
-      onCreateAccount={() => alert("La creación de cuentas nuevas está restringida.")}
+      onResetPassword={() => alert("Función próximamente. Contacte al soporte técnico.")}
+      onCreateAccount={() => alert("Registro de cuentas restringido por seguridad.")}
     />
   )
 }

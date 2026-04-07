@@ -1,21 +1,14 @@
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 import { AdminThemeProvider } from "@/components/admin-theme-provider"
 import { Inter } from "next/font/google"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export default async function AdminRootLayout({ children }: { children: React.ReactNode }) {
-  // Simple MVP protection
   const cookieStore = await cookies()
-  const masterKey = cookieStore.get("certa_admin_session")
-
+  
   const theme = cookieStore.get("certa-admin-theme")?.value as any || "neutral"
   const mode = cookieStore.get("certa-admin-mode")?.value as any || "light"
-
-  if (masterKey && masterKey.value == "true") {
-    redirect("/admin")
-  }
 
   return (
     <div

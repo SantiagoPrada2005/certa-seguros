@@ -2,25 +2,37 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { adminAuth } from "@/lib/firebase/admin"
 
 type ActionState = { error: string } | null;
 
-export async function submitMasterKey(prevState: ActionState, formData: FormData) {
-  const masterKey = formData.get("masterKey") as string
-  
-  // Hardcoded MVP Key, defined in the prompt as "clave maestra alfanumérica"
-  // E.g. "CertaMVP2026"
-  if (masterKey === "CertaMVP2026") {
-    const cookieStore = await cookies()
-    cookieStore.set("certa_admin_session", "true", {
+export async function createSession(idToken: string) {
+  try {
+    // Verify the ID token
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    
+    if (!decodedToken) {
+      return { error: "Token inválido." };
+    }
+
+    // Set a session cookie for Middleware
+    const cookieStore = await cookies();
+    cookieStore.set("firebase_session", idToken, {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    })
-    
-    redirect("/admin")
+      maxAge: 60 * 60 * 24 * 5, // 5 days
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error creating session:", error);
+    return { error: "Error de autenticación en el servidor." };
   }
-  
-  return { error: "Clave incorrecta." }
+}
+
+export async function removeSession() {
+  const cookieStore = await cookies();
+  cookieStore.delete("firebase_session");
+  redirect("/login");
 }

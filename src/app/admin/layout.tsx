@@ -2,20 +2,28 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { AdminThemeProvider } from "@/components/admin-theme-provider"
 import { Inter } from "next/font/google"
+import { adminAuth } from "@/lib/firebase/admin"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export default async function AdminRootLayout({ children }: { children: React.ReactNode }) {
-  // Simple MVP protection
   const cookieStore = await cookies()
-  const masterKey = cookieStore.get("certa_admin_session")
+  const session = cookieStore.get("firebase_session")
+
+  if (!session) {
+    redirect("/login")
+  }
+
+  try {
+    // Verify the session token on the server
+    await adminAuth.verifyIdToken(session.value)
+  } catch (error) {
+    console.error("Invalid session:", error)
+    redirect("/login")
+  }
 
   const theme = cookieStore.get("certa-admin-theme")?.value as any || "neutral"
   const mode = cookieStore.get("certa-admin-mode")?.value as any || "light"
-
-  if (!masterKey || masterKey.value !== "true") {
-    redirect("/login")
-  }
 
   return (
     <div

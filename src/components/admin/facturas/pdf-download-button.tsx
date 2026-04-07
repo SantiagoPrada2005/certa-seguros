@@ -38,7 +38,7 @@ export function PdfDownloadButton({
       fileName={`Factura_${invoice.number}.pdf`}
       className={className}
     >
-      {({ loading }) => (
+      {({ loading }: { loading: boolean; url: string | null; error: Error | null }) => (
         <Button 
           disabled={loading} 
           variant={variant} 
