@@ -176,9 +176,9 @@ export function FacturasTable({ initialInvoices }: FacturasTableProps) {
                               Enviar por correo
                             </DropdownMenuItem>
                             {invoice.status !== "PAID" && (
-                              <DropdownMenuItem onSelect={() => handleMarkPaid(invoice.id)}>
-                                <CheckCircleIcon data-icon="inline-start" className="h-4 w-4 mr-2 text-emerald-500" />
-                                Marcar como pagada
+                              <DropdownMenuItem onClick={() => handleMarkPaid(invoice.id)}>
+                                <CheckCircleIcon data-icon="inline-start" className="size-4 mr-2 text-emerald-500" />
+                                Marcar como Pagada
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuGroup>

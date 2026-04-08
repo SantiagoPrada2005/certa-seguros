@@ -1,7 +1,6 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 import { adminAuth } from "@/lib/firebase/admin"
 import prisma from "@/lib/prisma"
 
@@ -11,14 +10,14 @@ export async function createSession(idToken: string) {
   try {
     // Verify the ID token
     const decodedToken = await adminAuth.verifyIdToken(idToken);
-    
+
     if (!decodedToken) {
       return { error: "Token inválido." };
     }
 
     // Sync with the database
     const { uid, email, name, picture } = decodedToken;
-    
+
     if (!email) {
       return { error: "El token de Firebase no contiene un email válido." };
     }
@@ -58,5 +57,4 @@ export async function createSession(idToken: string) {
 export async function removeSession() {
   const cookieStore = await cookies();
   cookieStore.delete("firebase_session");
-  redirect("/login");
 }

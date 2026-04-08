@@ -8,19 +8,6 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 
 export default async function AdminRootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
-  const session = cookieStore.get("firebase_session")
-
-  if (!session) {
-    redirect("/login")
-  }
-
-  try {
-    // Verify the session token on the server
-    await adminAuth.verifyIdToken(session.value)
-  } catch (error) {
-    console.error("Invalid session:", error)
-    redirect("/login")
-  }
 
   const theme = cookieStore.get("certa-admin-theme")?.value as any || "neutral"
   const mode = cookieStore.get("certa-admin-mode")?.value as any || "light"

@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -23,11 +24,12 @@ import {
 } from "@/components/ui/pagination";
 import {
   SearchIcon, FilterIcon, MoreHorizontalIcon,
-  MessageSquareIcon, FileTextIcon, TrashIcon, UserCheckIcon,
-  BuildingIcon, UserIcon, Loader2Icon,
+  MessageSquareIcon, TrashIcon, UserCheckIcon,
+  BuildingIcon, UserIcon, Loader2Icon, PencilIcon,
 } from "lucide-react";
 import { fetchClients, type ClientRecord } from "@/lib/api-client";
 import { updateClientStatus, deleteClient } from "@/app/admin/actions";
+import { EditarProspectoDialog } from "@/components/admin/prospectos/editar-prospecto-dialog";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
@@ -61,6 +63,7 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [page, setPage] = React.useState(1);
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
+  const [editingClient, setEditingClient] = React.useState<ClientRecord | null>(null);
 
   // Client-side fetch when filters change
   React.useEffect(() => {
@@ -86,12 +89,13 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
   const totalPages = Math.max(1, Math.ceil(clients.length / PAGE_SIZE));
   const paginated = clients.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const handleMarkContacted = async (id: string) => {
+  const handleStatusChange = async (id: string, newStatus: string) => {
+    console.log("update client status", id, newStatus);
     setActionLoading(id);
-    const result = await updateClientStatus(id, "CONTACTADO");
+    const result = await updateClientStatus(id, newStatus);
     if (result.success) {
-      setClients((prev) => prev.map((c) => c.id === id ? { ...c, status: "CONTACTADO" } : c));
-      toast.success("Prospecto marcado como contactado");
+      setClients((prev) => prev.map((c) => c.id === id ? { ...c, status: newStatus } : c));
+      toast.success(`Estado actualizado a ${statusLabel[newStatus]}`);
     } else {
       toast.error(result.error);
     }
@@ -99,6 +103,7 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
   };
 
   const handleDelete = async (id: string, name: string) => {
+    console.log("delete client", id);
     if (!confirm(`¿Eliminar a "${name}"? Esta acción no se puede deshacer.`)) return;
     setActionLoading(id);
     const result = await deleteClient(id);
@@ -225,19 +230,39 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
                       <DropdownMenuContent align="end" className="w-[180px]">
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setEditingClient(client)}>
+                            <PencilIcon data-icon="inline-start" className="size-4" />
+                            Editar Información
+                          </DropdownMenuItem>
                           <DropdownMenuItem>
                             <MessageSquareIcon data-icon="inline-start" className="size-4" />
                             WhatsApp
                           </DropdownMenuItem>
-                          <DropdownMenuItem onSelect={() => handleMarkContacted(client.id)}>
-                            <UserCheckIcon data-icon="inline-start" className="size-4" />
-                            Marcar Contactado
-                          </DropdownMenuItem>
+
+                          <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
+                              <UserCheckIcon data-icon="inline-start" className="size-4" />
+                              Cambiar estado
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuPortal>
+                              <DropdownMenuSubContent>
+                                {Object.entries(statusLabel).map(([val, label]) => (
+                                  <DropdownMenuItem
+                                    key={val}
+                                    onClick={() => handleStatusChange(client.id, val)}
+                                    disabled={client.status === val}
+                                  >
+                                    {label}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuSubContent>
+                            </DropdownMenuPortal>
+                          </DropdownMenuSub>
+
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                            onSelect={() => handleDelete(client.id, client.name)}
+                            onClick={() => handleDelete(client.id, client.name)}
                           >
                             <TrashIcon data-icon="inline-start" className="size-4 text-destructive" />
                             Eliminar
@@ -294,6 +319,15 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
           </div>
         )}
       </CardContent>
+
+      <EditarProspectoDialog
+        client={editingClient}
+        onClose={() => setEditingClient(null)}
+        onSuccess={(updated) => {
+          setClients((prev) => prev.map((c) => (c.id === updated.id ? { ...c, ...updated } : c)));
+          setEditingClient(null);
+        }}
+      />
     </Card>
   );
 }

@@ -107,6 +107,39 @@ export async function createClient(
   }
 }
 
+export async function updateClient(
+  id: string,
+  formData: Record<string, string>
+): Promise<ActionResult> {
+  try {
+    const validated = clientCreateSchema.parse(formData);
+    await prisma.client.update({
+      where: { id },
+      data: {
+        ...validated,
+        email: validated.email || null,
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: `Datos actualizados: ${validated.name}`,
+        type: "INFO",
+        clientId: id,
+      },
+    });
+
+    revalidatePath("/admin/prospectos");
+    return { success: true, data: undefined };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { success: false, error: err.issues[0].message };
+    }
+    console.error("updateClient error:", err);
+    return { success: false, error: "No se pudo actualizar el prospecto" };
+  }
+}
+
 export async function updateClientStatus(
   id: string,
   status: string
