@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { fetchDashboardStats, type DashboardStats } from "@/lib/api-client"
 import {
   Area,
   AreaChart,
@@ -44,7 +45,7 @@ import {
 } from "lucide-react"
 
 // ═══════════════════════════════════════════════════
-// MOCK DATA - Optimized for an Insurance CRM Dashboard
+// STATIC CHART DATA (historical — will be replaced by API in Phase 2)
 // ═══════════════════════════════════════════════════
 
 const revenueData = [
@@ -136,20 +137,11 @@ const targets = [
   { name: "Renovaciones", current: 312, goal: 350, unit: "renovaciones" },
 ]
 
-const recentActivity = [
-  { action: "Nueva póliza SOAT emitida", client: "Transportes Andinos S.A.", time: "Hace 12 min", type: "success" as const },
-  { action: "Prospecto contactado", client: "María Fernanda Lopez", time: "Hace 34 min", type: "info" as const },
-  { action: "Renovación pendiente", client: "Constructora Horizonte", time: "Hace 1h", type: "warning" as const },
-  { action: "Cotización enviada", client: "Logística Express", time: "Hace 2h", type: "info" as const },
-  { action: "Pago recibido", client: "Ferretería El Roble", time: "Hace 3h", type: "success" as const },
-  { action: "Siniestro reportado", client: "Distribuidora Nacional", time: "Hace 4h", type: "danger" as const },
-]
-
 const activityBadgeVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  success: "default",
-  info: "secondary",
-  warning: "outline",
-  danger: "destructive",
+  SUCCESS: "default",
+  INFO: "secondary",
+  WARNING: "outline",
+  ERROR: "destructive",
 }
 
 const formatCOP = (value: number) => {
@@ -158,7 +150,36 @@ const formatCOP = (value: number) => {
   return `$${value}`
 }
 
+const formatCOPCompact = (v: number) => {
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
+  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
+  return `$${v}`;
+}
+
+const relativeTime = (iso: string) => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Ahora";
+  if (mins < 60) return `Hace ${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `Hace ${hrs}h`;
+  return `Hace ${Math.floor(hrs / 24)}d`;
+};
+
 export default function MetricsDashboardPage() {
+  const [dashData, setDashData] = React.useState<DashboardStats | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetchDashboardStats(6)
+      .then(setDashData)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const stats = dashData?.stats;
+  const feed = dashData?.feed ?? [];
+
   return (
     <div className="flex flex-col gap-6">
       {/* Page Header */}
@@ -172,32 +193,32 @@ export default function MetricsDashboardPage() {
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:grid-cols-2 xl:grid-cols-4 dark:*:data-[slot=card]:bg-card">
         <SectionCard
-          title="Primas del Mes"
-          value="$24.5M"
+          title="Ingresos del Mes"
+          value={loading ? "…" : formatCOPCompact(stats?.monthlyRevenue ?? 0)}
           trend="up"
-          trendValue="+18.2%"
-          footerTitle="vs. mes anterior"
+          trendValue="Facturas pagas"
+          footerTitle="Mes actual"
         />
         <SectionCard
-          title="Total Clientes"
-          value="1,847"
+          title="Clientes Activos"
+          value={loading ? "…" : (stats?.totalClients ?? 0).toLocaleString("es-CO")}
           trend="up"
-          trendValue="+8.4%"
-          footerTitle="Activos este trimestre"
+          trendValue="Estado: ACTIVO"
+          footerTitle="En base de datos"
         />
         <SectionCard
           title="Pólizas Activas"
-          value="2,156"
+          value={loading ? "…" : (stats?.activePolicies ?? 0).toLocaleString("es-CO")}
           trend="up"
-          trendValue="+12%"
-          footerTitle="Crecimiento constante"
+          trendValue="Estado: ACTIVE"
+          footerTitle="Vigentes actualmente"
         />
         <SectionCard
-          title="Tasa de Renovación"
-          value="87.3%"
+          title="Recordatorios Pendientes"
+          value={loading ? "…" : (stats?.pendingReminders ?? 0).toLocaleString("es-CO")}
           trend="down"
-          trendValue="-1.2%"
-          footerTitle="Meta: 90%"
+          trendValue="Por atender"
+          footerTitle="Estado: PENDIENTE"
         />
       </div>
 
@@ -536,7 +557,7 @@ export default function MetricsDashboardPage() {
           </CardFooter>
         </Card>
 
-        {/* Recent Activity Feed */}
+        {/* Real Activity Feed */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -549,24 +570,30 @@ export default function MetricsDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4">
-              {recentActivity.map((item, i) => (
+              {loading && (
+                <p className="text-sm text-muted-foreground text-center py-4">Cargando…</p>
+              )}
+              {!loading && feed.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No hay actividad registrada aún.</p>
+              )}
+              {feed.map((item) => (
                 <div
-                  key={i}
+                  key={item.id}
                   className="flex items-start gap-3 rounded-lg border border-border/50 p-3 transition-colors hover:bg-muted/50"
                 >
                   <div className="mt-0.5">
-                    <Badge variant={activityBadgeVariant[item.type]} className="text-[10px] px-1.5 leading-none">
-                      {item.type === "success" ? "✓" :
-                        item.type === "info" ? "→" :
-                          item.type === "warning" ? "!" : "✕"}
+                    <Badge variant={activityBadgeVariant[item.type] ?? "secondary"} className="text-[10px] px-1.5 leading-none">
+                      {item.type === "SUCCESS" ? "✓" : item.type === "INFO" ? "→" : item.type === "WARNING" ? "!" : "✕"}
                     </Badge>
                   </div>
                   <div className="flex flex-1 flex-col gap-0.5">
                     <span className="text-sm font-medium">{item.action}</span>
-                    <span className="text-xs text-muted-foreground">{item.client}</span>
+                    {item.client && (
+                      <span className="text-xs text-muted-foreground">{item.client.name}</span>
+                    )}
                   </div>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {item.time}
+                    {relativeTime(item.createdAt)}
                   </span>
                 </div>
               ))}
@@ -574,9 +601,7 @@ export default function MetricsDashboardPage() {
           </CardContent>
           <CardFooter className="border-t pt-4">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Actualizado automáticamente</span>
-              <span>·</span>
-              <span className="font-medium text-foreground">Hoy, 10:45 AM</span>
+              <span>Datos en tiempo real de la base de datos</span>
             </div>
           </CardFooter>
         </Card>
