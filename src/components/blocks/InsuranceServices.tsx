@@ -39,15 +39,32 @@ const services = [
 
 const duplicatedServices = [...services, ...services, ...services];
 
-// Ancho de cada card + gap
-const CARD_WIDTH = 380 + 32; // w-[380px] + gap-8
-const TOTAL_WIDTH = services.length * CARD_WIDTH;
-
 const InsuranceServices = () => {
+  // Use a state for render variables to ensure updates
+  const [cardWidth, setCardWidth] = React.useState(380 + 32); 
+  const totalWidthRef = useRef(services.length * (380 + 32));
+
   const x = useMotionValue(0);
   const isDragging = useRef(false);
   const animFrameRef = useRef<number | null>(null);
   const speedRef = useRef(0.6); // px por frame
+
+  useEffect(() => {
+    const handleResize = () => {
+      let newCardWidth;
+      if (window.innerWidth < 768) {
+        newCardWidth = 280 + 16; // w-[280px] + gap-4 (16px)
+      } else {
+        newCardWidth = 380 + 32; // w-[380px] + gap-8 (32px)
+      }
+      setCardWidth(newCardWidth);
+      totalWidthRef.current = services.length * newCardWidth;
+    };
+    
+    handleResize(); // Set on mount
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const startAutoScroll = () => {
     if (animFrameRef.current) return;
@@ -58,8 +75,8 @@ const InsuranceServices = () => {
         current -= speedRef.current;
 
         // Loop: cuando llega al segundo bloque, salta al primero
-        if (current <= -TOTAL_WIDTH) {
-          current += TOTAL_WIDTH;
+        if (current <= -totalWidthRef.current) {
+          current += totalWidthRef.current;
         }
 
         x.set(current);
@@ -90,8 +107,8 @@ const InsuranceServices = () => {
     isDragging.current = false;
     // Normalizar posición para que el loop funcione bien tras el drag
     let current = x.get();
-    if (current > 0) x.set(current % -TOTAL_WIDTH - TOTAL_WIDTH);
-    if (current < -TOTAL_WIDTH * 2) x.set(current % -TOTAL_WIDTH);
+    if (current > 0) x.set(current % -totalWidthRef.current - totalWidthRef.current);
+    if (current < -totalWidthRef.current * 2) x.set(current % -totalWidthRef.current);
   };
 
   return (
@@ -112,11 +129,11 @@ const InsuranceServices = () => {
 
       <div className="relative flex overflow-hidden cursor-grab active:cursor-grabbing">
         <motion.div
-          className="flex gap-8 py-6 px-4"
+          className="flex gap-4 md:gap-8 py-6 px-4"
           role="list"
           style={{ x }}
           drag="x"
-          dragConstraints={{ left: -TOTAL_WIDTH * 2, right: 0 }}
+          dragConstraints={{ left: -totalWidthRef.current * 2, right: 0 }}
           dragElastic={0.05}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
@@ -125,7 +142,7 @@ const InsuranceServices = () => {
             <div
               key={index}
               role="listitem"
-              className="shrink-0 w-[380px] bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-2 select-none flex flex-col"
+              className="shrink-0 w-[280px] md:w-[380px] bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:-translate-y-2 select-none flex flex-col"
               style={{
                 boxShadow: '0 8px 40px rgba(24, 46, 107, 0.15), 0 2px 12px rgba(24, 46, 107, 0.10)',
               }}
@@ -139,21 +156,21 @@ const InsuranceServices = () => {
               }}
             >
               {/* Imagen del servicio */}
-              <div className="relative w-full h-[140px] overflow-hidden bg-white flex items-center justify-center p-4">
+              <div className="relative w-full h-[120px] md:h-[140px] overflow-hidden bg-white flex items-center justify-center p-4">
                 <Image
                   src={service.image}
                   alt={service.title}
                   fill
-                  sizes="380px"
+                  sizes="(max-width: 768px) 280px, 380px"
                   className="object-contain transition-transform duration-500 hover:scale-105 p-3"
                 />
               </div>
 
-              <div className="p-8 pt-6 flex flex-col grow">
-                <h3 className="text-xl font-bold text-[#041c32] mb-3 font-montserrat leading-tight">
+              <div className="p-6 md:p-8 pt-4 md:pt-6 flex flex-col grow">
+                <h3 className="text-lg md:text-xl font-bold text-[#041c32] mb-2 md:mb-3 font-montserrat leading-tight">
                   {service.title}
                 </h3>
-                <p className="text-gray-700 text-sm leading-relaxed font-poppins grow">
+                <p className="text-gray-700 text-[13px] md:text-sm leading-relaxed font-poppins grow">
                   {service.description}
                 </p>
               </div>
