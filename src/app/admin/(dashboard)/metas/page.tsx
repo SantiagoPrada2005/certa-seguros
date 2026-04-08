@@ -11,11 +11,22 @@ export default async function MetasPage() {
   ]);
 
   // Average progress (currentValue / targetValue)
-  const goals = await prisma.goal.findMany({
+  const goalsRaw = await prisma.goal.findMany({
     where: { isActive: true },
     include: { milestones: true },
     orderBy: { endDate: "asc" },
   });
+
+  const goals = goalsRaw.map(g => ({
+    ...g,
+    targetValue: g.targetValue.toNumber(),
+    currentValue: g.currentValue.toNumber(),
+    trend: g.trend.toNumber(),
+    milestones: g.milestones.map(m => ({
+      ...m,
+      value: m.value.toNumber()
+    }))
+  }));
 
   const avgProgress =
     goals.length === 0

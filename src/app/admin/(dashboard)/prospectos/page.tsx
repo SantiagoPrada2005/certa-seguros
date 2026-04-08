@@ -15,7 +15,7 @@ export default async function ProspectosPage() {
   ]);
 
   // — Initial data for the table (first page rendered without loading state)
-  const initialClients = await prisma.client.findMany({
+  const clientsRaw = await prisma.client.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       services: {
@@ -23,6 +23,17 @@ export default async function ProspectosPage() {
       },
     },
   });
+
+  const initialClients = clientsRaw.map(client => ({
+    ...client,
+    services: client.services.map(cs => ({
+      ...cs,
+      service: cs.service ? {
+        ...cs.service,
+        price: cs.service.price ? cs.service.price.toNumber() : null
+      } : null
+    }))
+  }));
 
   return (
     <div className="flex flex-col gap-6">

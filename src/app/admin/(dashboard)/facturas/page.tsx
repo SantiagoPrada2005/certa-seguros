@@ -20,13 +20,27 @@ export default async function FacturasPage() {
     SELECT COALESCE(SUM(total), 0) as total FROM invoices WHERE status IN ('PENDING', 'OVERDUE')
   `;
 
-  const initialInvoices = await prisma.invoice.findMany({
+  const invoicesRaw = await prisma.invoice.findMany({
     orderBy: { date: "desc" },
     include: {
       client: { select: { id: true, name: true, email: true } },
       items: true,
     },
   });
+
+  const initialInvoices = invoicesRaw.map(i => ({
+    ...i,
+    subtotal: i.subtotal.toNumber(),
+    discountAmount: i.discountAmount.toNumber(),
+    taxRate: i.taxRate.toNumber(),
+    taxAmount: i.taxAmount.toNumber(),
+    total: i.total.toNumber(),
+    items: i.items.map(item => ({
+      ...item,
+      unitPrice: item.unitPrice.toNumber(),
+      total: item.total.toNumber()
+    }))
+  }));
 
   const formatCOP = (n: number | bigint) => {
     const num = typeof n === "bigint" ? Number(n) : n;

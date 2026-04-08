@@ -63,7 +63,32 @@ export async function getClientDetails(clientId: string) {
     
     if (!client) return { success: false, error: "Cliente no encontrado" }
     
-    return { success: true, data: client }
+    // Serialize Prisma Decimal to number for Next.js Client Components
+    const serializedClient = {
+      ...client,
+      services: client.services.map(cs => ({
+        ...cs,
+        service: {
+          ...cs.service,
+          price: cs.service.price ? cs.service.price.toNumber() : null
+        }
+      })),
+      policies: client.policies.map(p => ({
+        ...p,
+        premiumAmount: p.premiumAmount.toNumber(),
+        commissionAmount: p.commissionAmount.toNumber()
+      })),
+      invoices: client.invoices.map(i => ({
+        ...i,
+        subtotal: i.subtotal.toNumber(),
+        discountAmount: i.discountAmount.toNumber(),
+        taxRate: i.taxRate.toNumber(),
+        taxAmount: i.taxAmount.toNumber(),
+        total: i.total.toNumber()
+      }))
+    }
+    
+    return { success: true, data: serializedClient }
   } catch (error) {
     console.error("Error fetching client details:", error)
     return { success: false, error: "No se pudieron cargar los detalles del cliente" }
@@ -86,7 +111,12 @@ export async function getAvailableServices() {
       }
     })
     
-    return { success: true, data: services }
+    const serializedServices = services.map(s => ({
+      ...s,
+      price: s.price ? s.price.toNumber() : null
+    }))
+    
+    return { success: true, data: serializedServices }
   } catch (error) {
     console.error("Error fetching services:", error)
     return { success: false, error: "Error al cargar los servicios" }

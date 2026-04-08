@@ -22,7 +22,7 @@ export default async function ServiciosPage() {
     orderBy: { name: "asc" },
   });
 
-  const initialServices = await prisma.service.findMany({
+  const servicesRaw = await prisma.service.findMany({
     include: {
       subcategory: {
         include: { category: true },
@@ -30,6 +30,11 @@ export default async function ServiciosPage() {
     },
     orderBy: { name: "asc" },
   });
+
+  const initialServices = servicesRaw.map(s => ({
+    ...s,
+    price: s.price ? s.price.toNumber() : null
+  }));
 
   return (
     <div className="flex flex-col gap-6">
