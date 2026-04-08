@@ -52,6 +52,11 @@ export function RecordatoriosTable({ initialReminders }: RecordatoriosTableProps
   const [loading, setLoading] = React.useState(false);
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
 
+  // Sync state when Server Component re-renders (e.g. after revalidatePath)
+  React.useEffect(() => {
+    setReminders(initialReminders);
+  }, [initialReminders]);
+
   React.useEffect(() => {
     setLoading(true);
     fetchReminders({ status: statusFilter !== "all" ? statusFilter : undefined })

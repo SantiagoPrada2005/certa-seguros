@@ -65,6 +65,11 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
   const [editingClient, setEditingClient] = React.useState<ClientRecord | null>(null);
 
+  // Sync state when Server Component re-renders (e.g. after revalidatePath)
+  React.useEffect(() => {
+    setClients(initialClients);
+  }, [initialClients]);
+
   // Client-side fetch when filters change
   React.useEffect(() => {
     const timer = setTimeout(async () => {

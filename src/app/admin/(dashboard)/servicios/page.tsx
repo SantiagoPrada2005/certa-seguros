@@ -4,12 +4,10 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter,
   DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { FolderPlusIcon, FolderTreeIcon } from "lucide-react";
 import { ServiciosTable } from "@/components/admin/servicios/servicios-table";
 import { NuevoServicioDialog } from "@/components/admin/servicios/nuevo-servicio-dialog";
+import { NuevaCategoriaDialog } from "@/components/admin/servicios/nueva-categoria-dialog";
+import { NuevaSubcategoriaDialog } from "@/components/admin/servicios/nueva-subcategoria-dialog";
 import prisma from "@/lib/prisma";
 
 export default async function ServiciosPage() {
@@ -18,6 +16,11 @@ export default async function ServiciosPage() {
     prisma.service.count({ where: { isActive: true } }),
     prisma.service.count({ where: { isActive: false } }),
   ]);
+
+  const categories = await prisma.serviceCategory.findMany({
+    include: { subcategories: { orderBy: { name: "asc" } } },
+    orderBy: { name: "asc" },
+  });
 
   const initialServices = await prisma.service.findMany({
     include: {
@@ -38,61 +41,9 @@ export default async function ServiciosPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {/* Nueva Categoría — static dialog, sin API en esta iteración */}
-          <Dialog>
-            <DialogTrigger render={<Button variant="outline" />}>
-              <FolderPlusIcon data-icon="inline-start" />
-              Nueva Categoría
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Crear Categoría</DialogTitle>
-                <DialogDescription>
-                  Define una nueva categoría principal para agrupar servicios relacionados.
-                </DialogDescription>
-              </DialogHeader>
-              <FieldGroup className="py-4">
-                <Field>
-                  <FieldLabel htmlFor="cat-nombre">Nombre de Categoría</FieldLabel>
-                  <Input id="cat-nombre" placeholder="Ej. Seguros de Vida" />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="cat-desc">Descripción (Opcional)</FieldLabel>
-                  <Textarea id="cat-desc" placeholder="Breve explicación del alcance..." className="min-h-[80px]" />
-                </Field>
-              </FieldGroup>
-              <DialogFooter>
-                <Button type="submit">Crear Categoría</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          {/* Nueva Subcategoría */}
-          <Dialog>
-            <DialogTrigger render={<Button variant="outline" />}>
-              <FolderTreeIcon data-icon="inline-start" />
-              Nueva Subcategoría
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Crear Subcategoría</DialogTitle>
-                <DialogDescription>
-                  Crea una división específica dentro de una categoría existente.
-                </DialogDescription>
-              </DialogHeader>
-              <FieldGroup className="py-4">
-                <Field>
-                  <FieldLabel htmlFor="sub-nombre">Nombre de Subcategoría</FieldLabel>
-                  <Input id="sub-nombre" placeholder="Ej. Accidentes Personales" />
-                </Field>
-              </FieldGroup>
-              <DialogFooter>
-                <Button type="submit">Crear Subcategoría</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
-          <NuevoServicioDialog />
+          <NuevaCategoriaDialog />
+          <NuevaSubcategoriaDialog categories={categories} />
+          <NuevoServicioDialog categories={categories} />
         </div>
       </div>
 
@@ -119,7 +70,7 @@ export default async function ServiciosPage() {
         />
         <SectionCard
           title="Categorías"
-          value="—"
+          value={categories.length.toLocaleString("es-CO")}
           footerTitle="Ver catálogo completo"
         />
       </div>

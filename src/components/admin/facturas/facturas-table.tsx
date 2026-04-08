@@ -45,6 +45,11 @@ export function FacturasTable({ initialInvoices }: FacturasTableProps) {
   const [invoices, setInvoices] = React.useState<InvoiceRecord[]>(initialInvoices);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [loading, setLoading] = React.useState(false);
+
+  // Sync state when Server Component re-renders (e.g. after revalidatePath)
+  React.useEffect(() => {
+    setInvoices(initialInvoices);
+  }, [initialInvoices]);
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
 
   React.useEffect(() => {

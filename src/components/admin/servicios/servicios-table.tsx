@@ -29,6 +29,11 @@ export function ServiciosTable({ initialServices }: ServiciosTableProps) {
   const [search, setSearch] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
+  // Sync state when Server Component re-renders (e.g. after revalidatePath)
+  React.useEffect(() => {
+    setServices(initialServices);
+  }, [initialServices]);
+
   // Client-side filter by name (no need for API call for search here)
   const filtered = React.useMemo(() => {
     if (!search.trim()) return services;

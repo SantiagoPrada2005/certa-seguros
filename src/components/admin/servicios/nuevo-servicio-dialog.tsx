@@ -10,13 +10,21 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel,
 } from "@/components/ui/select";
 import { PlusIcon, Loader2Icon } from "lucide-react";
 import { createService } from "@/app/admin/actions";
 import { toast } from "sonner";
 
-export function NuevoServicioDialog() {
+interface NuevoServicioDialogProps {
+  categories: {
+    id: string;
+    name: string;
+    subcategories: { id: string; name: string }[];
+  }[];
+}
+
+export function NuevoServicioDialog({ categories }: NuevoServicioDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [form, setForm] = React.useState({
@@ -35,6 +43,10 @@ export function NuevoServicioDialog() {
     e.preventDefault();
     if (!form.name.trim()) {
       toast.error("El nombre del servicio es requerido");
+      return;
+    }
+    if (!form.subcategoryId) {
+      toast.error("Debes asociar el servicio a una subcategoría obligatoriamente");
       return;
     }
     setLoading(true);
@@ -73,6 +85,26 @@ export function NuevoServicioDialog() {
                 onChange={(e) => handleChange("name", e.target.value)}
                 required
               />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="svc-subcategory">Clasificación / Subcategoría *</FieldLabel>
+              <Select value={form.subcategoryId} onValueChange={(v) => handleChange("subcategoryId", v ?? "")} required>
+                <SelectTrigger id="svc-subcategory">
+                  <SelectValue placeholder="Seleccionar" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectGroup key={cat.id}>
+                      <SelectLabel>{cat.name}</SelectLabel>
+                      {cat.subcategories.map((sub) => (
+                        <SelectItem key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
             <Field>
               <FieldLabel htmlFor="svc-desc">Descripción</FieldLabel>
@@ -125,7 +157,7 @@ export function NuevoServicioDialog() {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || categories.length === 0}>
               {loading && <Loader2Icon data-icon="inline-start" className="animate-spin" />}
               Guardar Servicio
             </Button>

@@ -24,7 +24,17 @@ const serviceCreateSchema = z.object({
   validityType: z.enum(["UNICA_VEZ", "ANUAL", "MENSUAL", "TRIMESTRAL", "SEMESTRAL"]).optional(),
   price: z.coerce.number().optional(),
   priceDescription: z.string().optional(),
-  subcategoryId: z.string().optional(),
+  subcategoryId: z.string().min(1, "Subcategoría requerida"),
+});
+
+const categoryCreateSchema = z.object({
+  name: z.string().min(1, "Nombre requerido"),
+  description: z.string().optional(),
+});
+
+const subcategoryCreateSchema = z.object({
+  name: z.string().min(1, "Nombre requerido"),
+  categoryId: z.string().min(1, "Categoría requerida"),
 });
 
 const reminderCreateSchema = z.object({
@@ -201,7 +211,38 @@ export async function createService(
       return { success: false, error: err.issues[0].message };
     }
     console.error("createService error:", err);
+    console.error("createService error:", err);
     return { success: false, error: "No se pudo crear el servicio" };
+  }
+}
+
+export async function createServiceCategory(
+  formData: Record<string, string>
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const validated = categoryCreateSchema.parse(formData);
+    const category = await prisma.serviceCategory.create({ data: { name: validated.name, description: validated.description ?? null } });
+    revalidatePath("/admin/servicios");
+    return { success: true, data: { id: category.id } };
+  } catch (err) {
+    if (err instanceof z.ZodError) return { success: false, error: err.issues[0].message };
+    console.error(err);
+    return { success: false, error: "No se pudo crear la categoría (quizá ya existe otra con el mismo nombre)" };
+  }
+}
+
+export async function createServiceSubcategory(
+  formData: Record<string, string>
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const validated = subcategoryCreateSchema.parse(formData);
+    const subcategory = await prisma.serviceSubcategory.create({ data: { name: validated.name, categoryId: validated.categoryId } });
+    revalidatePath("/admin/servicios");
+    return { success: true, data: { id: subcategory.id } };
+  } catch (err) {
+    if (err instanceof z.ZodError) return { success: false, error: err.issues[0].message };
+    console.error(err);
+    return { success: false, error: "No se pudo crear la subcategoría" };
   }
 }
 
