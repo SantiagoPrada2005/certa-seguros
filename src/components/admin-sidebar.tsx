@@ -54,6 +54,10 @@ const data = {
           url: "/admin/servicios",
           icon: <BriefcaseIcon className="size-4" />,
         },
+        {
+          title: "Pólizas",
+          url: "/admin/polizas",
+        },
       ],
     },
     {

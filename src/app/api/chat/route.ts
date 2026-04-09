@@ -12,7 +12,7 @@ const getClientsTool = tool({
   inputSchema: z.object({
     status: z.enum(["NUEVO", "CONTACTADO", "EN_PROCESO", "ACTIVO", "INACTIVO", "DESCARTADO"]).optional().describe("Filtrar por estado del cliente"),
     limit: z.number().optional().default(10).describe("Límite de resultados a devolver (máximo 50)")
-  }),
+  }) as any,
   execute: async ({ status, limit }) => {
     try {
       const clients = await prisma.client.findMany({
@@ -32,7 +32,7 @@ const getClientDetailsTool = tool({
   description: "Obtener todos los detalles de un cliente específico por su ID.",
   inputSchema: z.object({
     id: z.string().describe("UUID del cliente")
-  }),
+  }) as any,
   execute: async ({ id }) => {
     const client = await prisma.client.findUnique({
       where: { id },
@@ -51,7 +51,7 @@ const getServicesTool = tool({
   description: "Obtener la lista de servicios ofrecidos.",
   inputSchema: z.object({
     activeOnly: z.boolean().optional().default(true).describe("Devolver solo los servicios activos")
-  }),
+  }) as any,
   execute: async ({ activeOnly }) => {
     const services = await prisma.service.findMany({
       where: activeOnly ? { isActive: true } : undefined,
@@ -66,7 +66,7 @@ const getServiceDetailsTool = tool({
   description: "Obtener detalles de un servicio específico por su ID.",
   inputSchema: z.object({
     id: z.string().describe("ID o UUID del servicio")
-  }),
+  }) as any,
   execute: async ({ id }) => {
     const service = await prisma.service.findUnique({
       where: { id },
