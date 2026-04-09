@@ -1,15 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { FilterIcon } from "lucide-react";
-import { fetchGoals, type GoalRecord } from "@/lib/api-client";
-import { toast } from "sonner";
+import { type GoalRecord } from "@/lib/api-client";
+import { NuevaMetaDialog } from "./nueva-meta-dialog";
 
 const categoryLabel: Record<string, string> = {
   VENTAS:       "Ventas",
@@ -31,26 +31,29 @@ interface MetasListProps {
 export function MetasList({ initialGoals }: MetasListProps) {
   const [goals, setGoals] = React.useState<GoalRecord[]>(initialGoals);
   const [category, setCategory] = React.useState("all");
-  const [loading, setLoading] = React.useState(false);
+  const [selectedGoal, setSelectedGoal] = React.useState<GoalRecord | undefined>();
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
-  // Client-side filter by category
+  // Sync state with props if they change
+  React.useEffect(() => {
+    setGoals(initialGoals);
+  }, [initialGoals]);
+
   const filtered = React.useMemo(() => {
     if (category === "all") return goals;
     return goals.filter((g) => g.category === category);
   }, [goals, category]);
-
-  const getProgress = (g: GoalRecord) => {
-    const target = Number(g.targetValue ?? 0);
-    const current = Number(g.currentValue ?? 0);
-    if (target === 0) return 0;
-    return Math.min(100, Math.round((current / target) * 100));
-  };
 
   const getStatus = (percent: number) => {
     if (percent >= 100) return { label: "Completada", colorClass: "bg-emerald-500/15 text-emerald-700 border-emerald-200 dark:text-emerald-400" };
     if (percent >= 70) return { label: "En camino", colorClass: "" };
     if (percent >= 40) return { label: "En progreso", colorClass: "bg-amber-500/15 text-amber-700 border-amber-200 dark:text-amber-400" };
     return { label: "En riesgo", colorClass: "bg-red-500/15 text-red-700 border-red-200 dark:text-red-400" };
+  };
+
+  const handleCardClick = (goal: GoalRecord) => {
+    setSelectedGoal(goal);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -89,7 +92,11 @@ export function MetasList({ initialGoals }: MetasListProps) {
           const statusInfo = getStatus(percent);
 
           return (
-            <Card key={goal.id} className="flex flex-col gap-3 p-5 transition-shadow hover:shadow-md">
+            <Card 
+              key={goal.id} 
+              className="flex cursor-pointer flex-col gap-3 p-5 transition-all hover:bg-muted/50 hover:shadow-md active:scale-[0.98]"
+              onClick={() => handleCardClick(goal)}
+            >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex flex-col gap-1">
                   <h3 className="font-semibold text-base">{goal.name}</h3>
@@ -126,6 +133,14 @@ export function MetasList({ initialGoals }: MetasListProps) {
           );
         })}
       </div>
+
+      {/* Edit Dialog */}
+      <NuevaMetaDialog 
+        goal={selectedGoal} 
+        open={isDialogOpen} 
+        onOpenChange={setIsDialogOpen} 
+        showTrigger={false}
+      />
     </div>
   );
 }

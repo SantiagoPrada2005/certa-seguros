@@ -17,16 +17,23 @@ export default async function MetasPage() {
     orderBy: { endDate: "asc" },
   });
 
-  const goals = goalsRaw.map(g => ({
-    ...g,
-    targetValue: g.targetValue.toNumber(),
-    currentValue: g.currentValue.toNumber(),
-    trend: g.trend.toNumber(),
-    milestones: g.milestones.map(m => ({
-      ...m,
-      value: m.value.toNumber()
-    }))
-  }));
+  const { calculateGoalProgress } = await import("@/app/admin/actions");
+
+  const goals = await Promise.all(
+    goalsRaw.map(async (g) => {
+      const current = await calculateGoalProgress(g as any);
+      return {
+        ...g,
+        targetValue: g.targetValue.toNumber(),
+        currentValue: current,
+        trend: g.trend.toNumber(),
+        milestones: g.milestones.map((m) => ({
+          ...m,
+          value: m.value.toNumber(),
+        })),
+      };
+    })
+  );
 
   const avgProgress =
     goals.length === 0
@@ -45,7 +52,7 @@ export default async function MetasPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Metas y Objetivos</h1>
           <p className="mt-2 text-muted-foreground">
-            Seguimiento de objetivos comerciales, de crecimiento y renovación.
+            Seguimiento de objetivos comerciales en tiempo real desde pólizas y facturas.
           </p>
         </div>
         <NuevaMetaDialog />

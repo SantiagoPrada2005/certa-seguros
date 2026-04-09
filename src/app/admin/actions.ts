@@ -46,15 +46,17 @@ const reminderCreateSchema = z.object({
   clientId: z.string().min(1, "Cliente requerido"),
 });
 
-const goalCreateSchema = z.object({
+const goalSchema = z.object({
   name: z.string().min(1, "Nombre requerido"),
   description: z.string().optional(),
   category: z.enum(["VENTAS", "CLIENTES", "RENOVACIONES", "INGRESOS"]),
   period: z.enum(["MENSUAL", "TRIMESTRAL", "ANUAL"]),
   targetValue: z.coerce.number().min(1, "Objetivo requerido"),
+  currentValue: z.coerce.number().optional(),
   unit: z.string().min(1, "Unidad requerida"),
   startDate: z.string().min(1, "Fecha inicio requerida"),
   endDate: z.string().min(1, "Fecha fin requerida"),
+  isActive: z.boolean().optional(),
 });
 
 const invoiceItemSchema = z.object({
@@ -347,10 +349,10 @@ export async function markReminderComplete(id: string): Promise<ActionResult> {
 // ─── Goal Actions ─────────────────────────────────────────────────────────────
 
 export async function createGoal(
-  formData: Record<string, string>
+  formData: Record<string, any>
 ): Promise<ActionResult<{ id: string }>> {
   try {
-    const validated = goalCreateSchema.parse(formData);
+    const validated = goalSchema.parse(formData);
     const goal = await prisma.goal.create({
       data: {
         name: validated.name,
@@ -359,7 +361,7 @@ export async function createGoal(
         period: validated.period,
         unit: validated.unit,
         targetValue: validated.targetValue,
-        currentValue: 0,
+        currentValue: validated.currentValue ?? 0,
         isActive: true,
         startDate: new Date(validated.startDate),
         endDate: new Date(validated.endDate),
@@ -374,5 +376,103 @@ export async function createGoal(
     }
     console.error("createGoal error:", err);
     return { success: false, error: "No se pudo crear la meta" };
+  }
+}
+
+export async function updateGoal(
+  id: string,
+  formData: Record<string, any>
+): Promise<ActionResult> {
+  try {
+    const validated = goalSchema.parse(formData);
+    await prisma.goal.update({
+      where: { id },
+      data: {
+        name: validated.name,
+        description: validated.description,
+        category: validated.category,
+        period: validated.period,
+        unit: validated.unit,
+        targetValue: validated.targetValue,
+        currentValue: validated.currentValue,
+        isActive: validated.isActive,
+        startDate: new Date(validated.startDate),
+        endDate: new Date(validated.endDate),
+      },
+    });
+
+    revalidatePath("/admin/metas");
+    return { success: true, data: undefined };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { success: false, error: err.issues[0].message };
+    }
+    console.error("updateGoal error:", err);
+    return { success: false, error: "No se pudo actualizar la meta" };
+  }
+}
+
+/**
+ * Calculates the current value for a goal based on live database data.
+ */
+export async function calculateGoalProgress(goal: {
+  category: string;
+  unit: string;
+  startDate: Date | string;
+  endDate: Date | string;
+}) {
+  const start = new Date(goal.startDate);
+  const end = new Date(goal.endDate);
+
+  switch (goal.category) {
+    case "VENTAS":
+      // If unit mentions COP/currency, sum the premium amounts
+      if (goal.unit.toUpperCase().includes("COP") || goal.unit.toUpperCase().includes("$")) {
+        const res = await prisma.policy.aggregate({
+          _sum: { premiumAmount: true },
+          where: { createdAt: { gte: start, lte: end } },
+        });
+        return Number(res._sum.premiumAmount || 0);
+      }
+      // Otherwise count policies
+      return await prisma.policy.count({
+        where: { createdAt: { gte: start, lte: end } },
+      });
+
+    case "CLIENTES":
+      // Count new clients registered in the period
+      return await prisma.client.count({
+        where: { createdAt: { gte: start, lte: end } },
+      });
+
+    case "RENOVACIONES":
+      // A renewal is a policy starting in range where the client had at least 
+      // one policy before this period.
+      return await prisma.policy.count({
+        where: {
+          startDate: { gte: start, lte: end },
+          client: {
+            policies: {
+              some: {
+                startDate: { lt: start },
+              },
+            },
+          },
+        },
+      });
+
+    case "INGRESOS":
+      // Sum of all PAID invoices in the range
+      const res = await prisma.invoice.aggregate({
+        _sum: { total: true },
+        where: {
+          status: "PAID",
+          date: { gte: start, lte: end },
+        },
+      });
+      return Number(res._sum.total || 0);
+
+    default:
+      return 0;
   }
 }

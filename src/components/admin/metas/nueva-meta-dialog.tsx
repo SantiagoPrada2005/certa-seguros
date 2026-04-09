@@ -12,12 +12,23 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { PlusIcon, Loader2Icon } from "lucide-react";
-import { createGoal } from "@/app/admin/actions";
+import { PlusIcon, Loader2Icon, SaveIcon } from "lucide-react";
+import { createGoal, updateGoal } from "@/app/admin/actions";
 import { toast } from "sonner";
+import { GoalRecord } from "@/lib/api-client";
 
-export function NuevaMetaDialog() {
-  const [open, setOpen] = React.useState(false);
+interface MetaDialogProps {
+  goal?: GoalRecord;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  showTrigger?: boolean;
+}
+
+export function NuevaMetaDialog({ goal, open: controlledOpen, onOpenChange: setControlledOpen, showTrigger = true }: MetaDialogProps) {
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = setControlledOpen ?? setInternalOpen;
+
   const [loading, setLoading] = React.useState(false);
   const [form, setForm] = React.useState({
     name: "",
@@ -25,13 +36,67 @@ export function NuevaMetaDialog() {
     category: "",
     period: "",
     targetValue: "",
+    currentValue: "",
     unit: "",
     startDate: "",
     endDate: "",
   });
 
-  const handleChange = (key: string, value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  // Pre-fill form if goal is provided
+  React.useEffect(() => {
+    if (goal) {
+      setForm({
+        name: goal.name,
+        description: goal.description ?? "",
+        category: goal.category,
+        period: goal.period,
+        targetValue: goal.targetValue.toString(),
+        currentValue: goal.currentValue.toString(),
+        unit: goal.unit,
+        startDate: new Date(goal.startDate).toISOString().split("T")[0],
+        endDate: new Date(goal.endDate).toISOString().split("T")[0],
+      });
+    } else {
+      setForm({
+        name: "",
+        description: "",
+        category: "",
+        period: "",
+        targetValue: "",
+        currentValue: "",
+        unit: "",
+        startDate: "",
+        endDate: "",
+      });
+    }
+  }, [goal, open]);
+
+  const handleChange = (key: string, value: string) => {
+    setForm((prev) => {
+      const next = { ...prev, [key]: value };
+      
+      // Auto-calculate endDate if startDate or period changes
+      if (key === "startDate" || key === "period") {
+        const start = key === "startDate" ? value : prev.startDate;
+        const period = key === "period" ? value : prev.period;
+
+        if (start && period) {
+          const date = new Date(start + "T00:00:00");
+          if (!isNaN(date.getTime())) {
+            if (period === "MENSUAL") date.setMonth(date.getMonth() + 1);
+            else if (period === "TRIMESTRAL") date.setMonth(date.getMonth() + 3);
+            else if (period === "ANUAL") date.setFullYear(date.getFullYear() + 1);
+            
+            // End on the previous day to respect the period length
+            date.setDate(date.getDate() - 1);
+            next.endDate = date.toISOString().split("T")[0];
+          }
+        }
+      }
+      
+      return next;
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +105,24 @@ export function NuevaMetaDialog() {
       return;
     }
     setLoading(true);
-    const result = await createGoal(form);
+
+    const data = {
+      ...form,
+      targetValue: Number(form.targetValue),
+      currentValue: Number(form.currentValue || 0),
+    };
+
+    const result = goal 
+      ? await updateGoal(goal.id, data)
+      : await createGoal(data);
+
     setLoading(false);
     if (result.success) {
-      toast.success("Meta creada exitosamente");
+      toast.success(goal ? "Meta actualizada exitosamente" : "Meta creada exitosamente");
       setOpen(false);
-      setForm({ name: "", description: "", category: "", period: "", targetValue: "", unit: "", startDate: "", endDate: "" });
+      if (!goal) {
+        setForm({ name: "", description: "", category: "", period: "", targetValue: "", currentValue: "", unit: "", startDate: "", endDate: "" });
+      }
     } else {
       toast.error(result.error);
     }
@@ -53,16 +130,20 @@ export function NuevaMetaDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button />}>
-        <PlusIcon data-icon="inline-start" />
-        Nueva Meta
-      </DialogTrigger>
+      {showTrigger && (
+        <DialogTrigger render={<Button />}>
+          <PlusIcon data-icon="inline-start" />
+          Nueva Meta
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-[450px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Crear Meta</DialogTitle>
+            <DialogTitle>{goal ? "Editar Meta" : "Crear Meta"}</DialogTitle>
             <DialogDescription>
-              Define una meta cuantificable de crecimiento con un período y objetivo claros.
+              {goal 
+                ? "Modifica los detalles de la meta para ajustar el seguimiento." 
+                : "Define una meta cuantificable de crecimiento con un período y objetivo claros."}
             </DialogDescription>
           </DialogHeader>
           <FieldGroup className="py-4">
@@ -139,6 +220,19 @@ export function NuevaMetaDialog() {
                 />
               </Field>
             </div>
+            {goal && (
+              <Field>
+                <FieldLabel htmlFor="m-current">Valor Actual</FieldLabel>
+                <Input
+                  id="m-current"
+                  type="number"
+                  min="0"
+                  placeholder="Ej. 25"
+                  value={form.currentValue}
+                  onChange={(e) => handleChange("currentValue", e.target.value)}
+                />
+              </Field>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <Field>
                 <FieldLabel htmlFor="m-start">Fecha Inicio *</FieldLabel>
@@ -167,8 +261,14 @@ export function NuevaMetaDialog() {
               Cancelar
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading && <Loader2Icon data-icon="inline-start" className="animate-spin" />}
-              Crear Meta
+              {loading ? (
+                <Loader2Icon data-icon="inline-start" className="animate-spin" />
+              ) : goal ? (
+                <SaveIcon data-icon="inline-start" />
+              ) : (
+                <PlusIcon data-icon="inline-start" />
+              )}
+              {goal ? "Guardar Cambios" : "Crear Meta"}
             </Button>
           </DialogFooter>
         </form>
