@@ -39,12 +39,12 @@ export default async function MetasPage() {
     goals.length === 0
       ? 0
       : Math.round(
-          goals.reduce((acc, g) => {
-            const target = Number(g.targetValue);
-            const current = Number(g.currentValue);
-            return acc + (target === 0 ? 0 : Math.min(100, (current / target) * 100));
-          }, 0) / goals.length
-        );
+        goals.reduce((acc, g) => {
+          const target = Number(g.targetValue);
+          const current = Number(g.currentValue);
+          return acc + (target === 0 ? 0 : Math.min(100, (current / target) * 100));
+        }, 0) / goals.length
+      );
 
   return (
     <div className="flex flex-col gap-6">

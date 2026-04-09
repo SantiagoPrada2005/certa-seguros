@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Shield, CheckCircle, ArrowRight, MousePointer2 } from 'lucide-react';
+import Image from 'next/image';
 
 export const HeroContent = () => {
   return (

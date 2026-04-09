@@ -160,7 +160,7 @@ function ScrollIndicator() {
 
       {/* Texto sutil opcional (puedes comentarlo si prefieres solo el icono) */}
       <span className="font-poppins text-[9px] font-bold tracking-[0.3em] text-white/40 uppercase">
-        Desliza para conocer nuestros servic
+        Desliza para conocer nuestros servicios
       </span>
     </div>
   );
@@ -184,7 +184,7 @@ function HeroImage({ scrollYProgress }: { scrollYProgress: any }) {
 
       <div className="relative h-full w-full overflow-hidden rounded-[40px] border border-white/20 bg-[#0a2540]/50 backdrop-blur-md shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
         <video
-          src="/images/hero-en-movimiento.mp4"
+          src="/images/hero.movimiento.mp4"
           autoPlay
           loop
           muted
@@ -283,7 +283,7 @@ export default function HeroSection() {
             {/* Subheading — Tipografía refinada y destaque de SURA */}
             <motion.p
               variants={itemVariants}
-              className="mb-12 max-w-xl font-poppins text-lg font-medium leading-relaxed text-white/70 md:text-xl lg:text-1.5xl"
+              className="mb-8 max-w-xl font-poppins text-lg font-medium leading-relaxed text-white/70 md:text-xl lg:text-1.5xl"
             >
               {HERO.subheading.split("SURA").map((text, i, arr) => (
                 <span key={i}>
@@ -296,6 +296,28 @@ export default function HeroSection() {
                 </span>
               ))}
             </motion.p>
+
+            {/* Logos adicionales de respaldo */}
+            <motion.div variants={itemVariants} className="mb-12 flex items-center gap-4">
+              <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-white p-1.5 shadow-[0_0_15px_rgba(47,171,203,0.2)] border border-white/10">
+                <Image
+                  src="/images/logo-sura.png"
+                  alt="SURA"
+                  width={60}
+                  height={60}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-white p-1 shadow-[0_0_15px_rgba(47,171,203,0.2)] border border-white/10">
+                <Image
+                  src="/images/logo-gruposolidaria.jpg"
+                  alt="Grupo Solidaria"
+                  width={60}
+                  height={60}
+                  className="h-full w-full object-contain rounded-full"
+                />
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* Hero Image Section — visible only on desktop or carefully on mobile */}
