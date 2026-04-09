@@ -46,6 +46,10 @@ const data = {
           url: "/admin/prospectos",
         },
         {
+          title: "Clientes",
+          url: "/admin/clientes",
+        },
+        {
           title: "Servicios",
           url: "/admin/servicios",
           icon: <BriefcaseIcon className="size-4" />,

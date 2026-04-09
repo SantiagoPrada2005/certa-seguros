@@ -65,10 +65,10 @@ export function Client360Dialog({ clientId, isOpen, onOpenChange, availableServi
                 )}
               </div>
               <div>
-                <DialogTitle className="text-2xl leading-none">
+                <DialogTitle className="text-2xl leading-none" render={<div />}>
                   {loading ? <Skeleton className="h-6 w-48" /> : data?.name}
                 </DialogTitle>
-                <DialogDescription className="mt-1">
+                <DialogDescription className="mt-1" render={<div />}>
                   {loading ? (
                     <Skeleton className="h-4 w-32 mt-2" />
                   ) : (
