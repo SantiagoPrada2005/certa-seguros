@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, Sparkles, FileTextIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
@@ -24,7 +25,6 @@ const data = {
       title: "Métricas",
       url: "/admin",
       icon: <BarChart3Icon />,
-      isActive: true,
       items: [
         {
           title: "Dashboard",
@@ -46,13 +46,14 @@ const data = {
           url: "/admin/polizas",
         },
         {
-          title: "Prospectos",
-          url: "/admin/prospectos",
-        },
-        {
           title: "Clientes",
           url: "/admin/clientes",
         },
+        {
+          title: "Prospectos",
+          url: "/admin/prospectos",
+        },
+
         {
           title: "Servicios",
           url: "/admin/servicios",
@@ -117,7 +118,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<a href="/admin" />}>
+            <SidebarMenuButton size="lg" render={<Link href="/admin" />}>
               <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <ShieldCheckIcon className="size-4" />
               </div>
