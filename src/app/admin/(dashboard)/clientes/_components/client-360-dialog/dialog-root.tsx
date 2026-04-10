@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getClientDetails } from "../../actions"
 import { OverviewTab } from "./tabs/overview-tab"
 import { ServicesTab } from "./tabs/services-tab"
+import { PoliciesTab } from "./tabs/policies-tab"
+import { InvoicesTab } from "./tabs/invoices-tab"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Building2, User2 } from "lucide-react"
 
@@ -121,15 +123,11 @@ export function Client360Dialog({ clientId, isOpen, onOpenChange, availableServi
               </TabsContent>
               
               <TabsContent value="policies" className="mt-0 outline-none">
-                <div className="text-sm text-muted-foreground p-8 text-center border border-dashed rounded-lg">
-                  El historial de pólizas será implementado en la siguiente fase.
-                </div>
+                <PoliciesTab client={data} availableServices={availableServices} onUpdate={refreshData} />
               </TabsContent>
               
               <TabsContent value="invoices" className="mt-0 outline-none">
-                <div className="text-sm text-muted-foreground p-8 text-center border border-dashed rounded-lg">
-                  El historial de facturación será implementado en la siguiente fase.
-                </div>
+                <InvoicesTab client={data} onUpdate={refreshData} />
               </TabsContent>
             </Tabs>
           )}
