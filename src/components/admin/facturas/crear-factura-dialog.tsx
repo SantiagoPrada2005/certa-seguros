@@ -30,22 +30,89 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-const mockServicios = [
-  { id: '1', nombre: "Seguro Todo Riesgo", valor: 1200000 },
-  { id: '2', nombre: "Asesoría Legal", valor: 200000 },
-  { id: '3', nombre: "Póliza de Salud", valor: 800000 },
-  { id: '4', nombre: "Actualización SST", valor: 500000 },
-];
 
-export function CrearFacturaDialog() {
-  const [open, setOpen] = useState(false);
+export interface CrearFacturaDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactElement;
+  defaultClientName?: string;
+  defaultClientDocument?: string;
+  defaultClientId?: string;
+  defaultServiceId?: string;
+  defaultAmount?: number;
+  defaultDescription?: string;
+}
+
+export function CrearFacturaDialog({
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
+  trigger,
+  defaultClientName,
+  defaultClientDocument,
+  defaultClientId,
+  defaultServiceId,
+  defaultAmount,
+  defaultDescription,
+}: CrearFacturaDialogProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = isControlled && externalOnOpenChange ? externalOnOpenChange : setInternalOpen;
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [fechaVence, setFechaVence] = useState<Date | undefined>(undefined);
-  const [items, setItems] = useState([
-    { id: '1', description: '', quantity: 1, unitPrice: 0 }
+  const [items, setItems] = useState<Array<{ id: string, serviceId?: string, description: string, quantity: number, unitPrice: number }>>([
+    { id: '1', serviceId: '', description: '', quantity: 1, unitPrice: 0 }
   ]);
   const [taxRate, setTaxRate] = useState(0.19); // Default 19% IVA
   const [discountAmount, setDiscountAmount] = useState(0);
   const [discountDescription, setDiscountDescription] = useState('');
+  
+  const [clientName, setClientName] = useState('');
+  const [clientNit, setClientNit] = useState('');
+  const [clientId, setClientId] = useState('');
+
+  const [dbServices, setDbServices] = useState<any[]>([]);
+  const [dbClients, setDbClients] = useState<any[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(false);
+
+  React.useEffect(() => {
+    if (open) {
+      setIsLoadingData(true);
+      import("@/app/admin/actions").then((actions) => {
+        Promise.all([
+          actions.getServicesForInvoicing(),
+          actions.getClientsForInvoicing()
+        ]).then(([servicesRes, clientsRes]) => {
+           if (servicesRes.success && servicesRes.data) setDbServices(servicesRes.data);
+           if (clientsRes.success && clientsRes.data) setDbClients(clientsRes.data);
+           setIsLoadingData(false);
+        });
+      });
+    }
+  }, [open]);
+
+  // Reset form when dialog opens
+  React.useEffect(() => {
+    if (open) {
+      setFechaVence(undefined);
+      setDiscountAmount(0);
+      setDiscountDescription('');
+      setClientName(defaultClientName || '');
+      setClientNit(defaultClientDocument || '');
+      setClientId(defaultClientId || '');
+      setItems([
+        { 
+          id: '1', 
+          serviceId: defaultServiceId,
+          description: defaultDescription || (defaultAmount ? 'Prima de Póliza' : ''), 
+          quantity: 1, 
+          unitPrice: defaultAmount ?? 0 
+        }
+      ]);
+    }
+  }, [open, defaultClientName, defaultClientDocument, defaultClientId, defaultServiceId, defaultAmount, defaultDescription]);
 
   const handleAddItem = () => {
     setItems([
@@ -65,10 +132,15 @@ export function CrearFacturaDialog() {
 
         // If selecting a service from the dropdown
         if (field === 'serviceId') {
-          const service = mockServicios.find(s => s.id === value);
-          if (service) {
-            updatedItem.description = service.nombre;
-            updatedItem.unitPrice = service.valor;
+          if (value === 'manual') {
+            updatedItem.description = '';
+            updatedItem.unitPrice = 0;
+          } else {
+            const service = dbServices.find(s => s.id === value);
+            if (service) {
+              updatedItem.description = service.name;
+              updatedItem.unitPrice = Number(service.price) || 0;
+            }
           }
         }
 
@@ -85,32 +157,89 @@ export function CrearFacturaDialog() {
   const taxAmount = taxableAmount * taxRate;
   const total = taxableAmount + taxAmount;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!clientId) {
+      toast.error("Error: Cliente no identificado.", {
+        description: "Se necesita asociar la factura a un cliente válido en el sistema."
+      });
+      return;
+    }
 
-    // Simulate invoice creation
-    const invoiceId = Math.floor(1000 + Math.random() * 9000);
+    const missingService = items.some(item => !item.serviceId);
+    if (missingService) {
+      toast.error("Servicio requerido", {
+        description: "Debes seleccionar un servicio para cada ítem de la factura."
+      });
+      return;
+    }
 
-    toast.success(`Factura #${invoiceId} emitida con éxito`, {
-      description: `Se ha registrado el cobro por ${total.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}`,
-    });
+    setIsSubmitting(true);
 
-    // Reset state and close
-    setItems([{ id: '1', description: '', quantity: 1, unitPrice: 0 }]);
-    setFechaVence(undefined);
-    setDiscountAmount(0);
-    setDiscountDescription('');
-    setOpen(false);
+    try {
+      // Import on demand to avoid client component issues if any
+      const { createInvoice } = await import("@/app/admin/actions");
+
+      const invoiceNumber = `FAC-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      const formData = {
+        number: invoiceNumber,
+        date: new Date().toISOString(),
+        dueDate: fechaVence ? fechaVence.toISOString() : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        clientId: clientId,
+        subtotal,
+        discountAmount,
+        taxRate,
+        taxAmount,
+        total,
+        notes: "Factura generada automáticamente.",
+        items: items.map(item => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          total: item.quantity * item.unitPrice
+        }))
+      };
+
+      const result = await createInvoice(formData);
+
+      if (result.success) {
+        toast.success(`Factura #${invoiceNumber} emitida con éxito`, {
+          description: `Se ha registrado el cobro por ${total.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}`,
+        });
+
+        // Reset state and close
+        setItems([{ id: '1', description: '', quantity: 1, unitPrice: 0 }]);
+        setFechaVence(undefined);
+        setDiscountAmount(0);
+        setDiscountDescription('');
+        setOpen(false);
+      } else {
+        toast.error("Error al crear la factura", {
+          description: result.error,
+        });
+      }
+    } catch (error) {
+      toast.error("Error inesperado", {
+        description: "No se pudo completar la solicitud.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={
-        <Button>
-          <PlusIcon data-icon="inline-start" />
-          Crear Factura
-        </Button>
-      } />
+      {trigger ? (
+        <DialogTrigger render={trigger} />
+      ) : (
+        <DialogTrigger render={
+          <Button>
+            <PlusIcon data-icon="inline-start" />
+            Crear Factura
+          </Button>
+        } />
+      )}
       <DialogContent
         className="max-w-[calc(100vw-1rem)] sm:max-w-4xl flex flex-col p-0 overflow-hidden top-[2vh] translate-y-0 h-[96vh] sm:h-[90vh] max-h-[900px] gap-0 border-none shadow-2xl rounded-2xl"
       >
@@ -133,12 +262,48 @@ export function CrearFacturaDialog() {
                 </div>
                 <FieldGroup className="grid gap-6 sm:grid-cols-2">
                   <Field className="sm:col-span-2">
-                    <FieldLabel htmlFor="cliente-nombre">Nombre o Razón Social</FieldLabel>
-                    <Input id="cliente-nombre" required placeholder="Ej. ACME Corporation S.A.S." className="bg-background shadow-xs h-11" />
+                    <FieldLabel htmlFor="cliente-select">Seleccionar Cliente</FieldLabel>
+                    <Select 
+                      value={clientId} 
+                      onValueChange={(val: string | null) => {
+                        const finalVal = val ?? "";
+                        setClientId(finalVal);
+                        if (finalVal) {
+                          const client = dbClients.find(c => c.id === finalVal);
+                          if (client) {
+                            setClientName(client.name);
+                            setClientNit(client.documentNumber || "");
+                          }
+                        } else {
+                          setClientName("");
+                          setClientNit("");
+                        }
+                      }}
+                      disabled={!!defaultClientId}
+                    >
+                      <SelectTrigger className="bg-background shadow-xs h-11" id="cliente-select">
+                        <SelectValue placeholder={isLoadingData ? "Cargando clientes..." : "Seleccionar o buscar cliente..."}>
+                          {clientId && (
+                            <span>{clientName || dbClients.find(c => c.id === clientId)?.name}</span>
+                          )}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {dbClients.map(c => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name} {c.documentNumber ? `(${c.documentNumber})` : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <Field className="hidden sm:block">
+                    <FieldLabel htmlFor="cliente-nombre">Razón Social</FieldLabel>
+                    <Input id="cliente-nombre" disabled value={clientName} placeholder="Seleccionar arriba..." className="bg-muted/50 shadow-xs h-11 border-muted" />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="cliente-nit">NIT / Documento</FieldLabel>
-                    <Input id="cliente-nit" required placeholder="900.000.000-0" className="bg-background shadow-xs h-11" />
+                    <Input id="cliente-nit" disabled value={clientNit} placeholder="Seleccionar arriba..." className="bg-muted/50 shadow-xs h-11 border-muted" />
                   </Field>
                   <Field>
                     <FieldLabel>Fecha de Vencimiento</FieldLabel>
@@ -196,14 +361,23 @@ export function CrearFacturaDialog() {
                         <div className="grid gap-6 sm:grid-cols-2">
                           <Field>
                             <FieldLabel>Tipo de Servicio</FieldLabel>
-                            <Select onValueChange={(val) => updateItem(item.id, 'serviceId', val)}>
-                              <SelectTrigger className="bg-muted/30 border-muted h-11">
-                                <SelectValue placeholder="Seleccionar del catálogo..." />
+                            <Select 
+                              value={item.serviceId ?? ""} 
+                              onValueChange={(val: string | null) => updateItem(item.id, 'serviceId', val ?? "")}
+                              disabled={isLoadingData}
+                            >
+                              <SelectTrigger className={cn("bg-muted/30 border-muted h-11", !item.serviceId && "border-destructive/50")}>
+                                <SelectValue placeholder={isLoadingData ? "Cargando..." : "Seleccionar del catálogo..."} />
                               </SelectTrigger>
                               <SelectContent>
-                                {mockServicios.map(s => (
-                                  <SelectItem key={s.id} value={s.id}>{s.nombre}</SelectItem>
+                                {dbServices.map(s => (
+                                  <SelectItem key={s.id} value={s.id}>
+                                    {s.name} {s.price ? ` - $${Number(s.price).toLocaleString('es-CO')}` : ''}
+                                  </SelectItem>
                                 ))}
+                                <SelectItem value="manual" className="font-medium text-amber-600 dark:text-amber-500">
+                                  + Servicio Personalizado / Otro
+                                </SelectItem>
                               </SelectContent>
                             </Select>
                           </Field>
@@ -212,9 +386,10 @@ export function CrearFacturaDialog() {
                             <Input
                               id={`desc-${item.id}`}
                               required
-                              value={item.description}
+                              value={item.description} 
                               onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                              className="bg-muted/30 border-muted h-11"
+                              disabled={!!(item.serviceId && item.serviceId !== 'manual')}
+                              className={cn("bg-muted/30 border-muted h-11", item.serviceId && item.serviceId !== 'manual' && "opacity-60")}
                             />
                           </Field>
                         </div>
@@ -241,7 +416,8 @@ export function CrearFacturaDialog() {
                               required
                               value={item.unitPrice}
                               onChange={(e) => updateItem(item.id, 'unitPrice', parseInt(e.target.value) || 0)}
-                              className="bg-muted/20 border-transparent focus:bg-background h-11"
+                              disabled={!!(item.serviceId && item.serviceId !== 'manual' && item.unitPrice > 0)}
+                              className={cn("bg-muted/20 border-transparent focus:bg-background h-11", item.serviceId && item.serviceId !== 'manual' && item.unitPrice > 0 && "opacity-60")}
                             />
                           </Field>
                           <div className="sm:col-span-4 flex flex-col items-end pb-2">
@@ -343,11 +519,11 @@ export function CrearFacturaDialog() {
           </div>
 
           <DialogFooter className="m-0 border-t bg-background shrink-0 z-10 flex flex-row items-center justify-between gap-4 p-6 sm:px-10 rounded-b-2xl">
-            <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="hover:bg-muted text-muted-foreground font-medium h-11 px-6">
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)} disabled={isSubmitting} className="hover:bg-muted text-muted-foreground font-medium h-11 px-6">
               Descartar
             </Button>
-            <Button type="submit" className="px-10 h-11 text-base font-bold shadow-xl shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary hover:bg-primary/90 text-primary-foreground">
-              Emitir Factura
+            <Button type="submit" disabled={isSubmitting} className="px-10 h-11 text-base font-bold shadow-xl shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary hover:bg-primary/90 text-primary-foreground">
+              {isSubmitting ? "Emitiendo..." : "Emitir Factura"}
             </Button>
           </DialogFooter>
         </form>

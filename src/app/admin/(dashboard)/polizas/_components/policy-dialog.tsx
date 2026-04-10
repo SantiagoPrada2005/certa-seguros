@@ -40,9 +40,10 @@ interface PolicyDialogProps {
   policy?: PolicyData | null
   clients: { id: string, name: string, documentNumber: string | null }[]
   services: { id: string, name: string }[]
+  defaultClientId?: string
 }
 
-export function PolicyDialog({ open, onOpenChange, policy, clients, services }: PolicyDialogProps) {
+export function PolicyDialog({ open, onOpenChange, policy, clients, services, defaultClientId }: PolicyDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isEditing = !!policy
 
@@ -54,7 +55,7 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services }: 
       policyNumber: policy?.policyNumber || "",
       premiumAmount: policy ? Number(policy.premiumAmount) : 0,
       commissionAmount: policy ? Number(policy.commissionAmount) : 0,
-      clientId: policy?.client.id || "",
+      clientId: policy?.client.id || defaultClientId || "",
       serviceId: policy?.service?.id || "",
       startDate: policy ? new Date(policy.startDate) : new Date(),
       endDate: policy ? new Date(policy.endDate) : new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
@@ -70,7 +71,7 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services }: 
         policyNumber: policy?.policyNumber || "",
         premiumAmount: policy ? Number(policy.premiumAmount) : 0,
         commissionAmount: policy ? Number(policy.commissionAmount) : 0,
-        clientId: policy?.client.id || "",
+        clientId: policy?.client.id || defaultClientId || "",
         serviceId: policy?.service?.id || "",
         startDate: policy ? new Date(policy.startDate) : new Date(),
         endDate: policy ? new Date(policy.endDate) : new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
@@ -141,7 +142,7 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services }: 
             <Field data-invalid={!!form.formState.errors.type}>
               <FieldLabel htmlFor="type">Tipo de Seguro *</FieldLabel>
               <Select 
-                value={form.watch("type")} 
+                value={form.watch("type") ?? ""} 
                 onValueChange={(val) => form.setValue("type", val as PolicyType)}
               >
                 <SelectTrigger id="type" aria-invalid={!!form.formState.errors.type}>
@@ -160,7 +161,7 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services }: 
             <Field data-invalid={!!form.formState.errors.clientId}>
               <FieldLabel htmlFor="clientId">Cliente *</FieldLabel>
               <Select 
-                value={form.watch("clientId")} 
+                value={form.watch("clientId") ?? ""} 
                 onValueChange={(val) => form.setValue("clientId", val || "")}
               >
                 <SelectTrigger id="clientId" aria-invalid={!!form.formState.errors.clientId}>
@@ -179,7 +180,7 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services }: 
             <Field data-invalid={!!form.formState.errors.serviceId}>
               <FieldLabel htmlFor="serviceId">Servicio Relacionado (Opcional)</FieldLabel>
               <Select 
-                value={form.watch("serviceId") || "none"} 
+                value={form.watch("serviceId") ?? "none"} 
                 onValueChange={(val) => form.setValue("serviceId", val === "none" ? undefined : val)}
               >
                 <SelectTrigger id="serviceId">
@@ -286,7 +287,7 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services }: 
              <Field data-invalid={!!form.formState.errors.status} className="md:col-span-2">
               <FieldLabel htmlFor="status">Estado Inicial</FieldLabel>
               <Select 
-                value={form.watch("status")} 
+                value={form.watch("status") ?? ""} 
                 onValueChange={(val) => form.setValue("status", val as PolicyStatus)}
               >
                 <SelectTrigger id="status">

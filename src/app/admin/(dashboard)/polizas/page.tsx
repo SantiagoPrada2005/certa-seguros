@@ -12,8 +12,8 @@ export default async function PoliciesPage() {
   const policies = await prisma.policy.findMany({
     orderBy: { createdAt: "desc" },
     include: {
-      client: { select: { id: true, name: true } },
-      service: { select: { id: true, name: true } }
+      client: { select: { id: true, name: true, documentNumber: true } },
+      service: { select: { id: true, name: true, price: true } }
     }
   })
 
@@ -34,7 +34,11 @@ export default async function PoliciesPage() {
   const serializedPolicies = policies.map(p => ({
     ...p,
     premiumAmount: Number(p.premiumAmount),
-    commissionAmount: Number(p.commissionAmount)
+    commissionAmount: Number(p.commissionAmount),
+    service: p.service ? {
+      ...p.service,
+      price: p.service.price ? Number(p.service.price) : null
+    } : null
   }))
 
   return (

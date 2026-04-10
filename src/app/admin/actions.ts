@@ -476,3 +476,149 @@ export async function calculateGoalProgress(goal: {
       return 0;
   }
 }
+
+// ─── Dashboard Charts Actions ──────────────────────────────────────────────────
+
+export async function getDashboardChartData() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+  startOfWeek.setHours(0,0,0,0);
+
+  // 1. Revenue (Primas y comisiones por mes)
+  const policies = await prisma.policy.findMany({
+    where: { startDate: { gte: startOfYear } },
+    select: { startDate: true, premiumAmount: true, commissionAmount: true },
+  });
+
+  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const revenueDataMap = new Map();
+  months.forEach(m => revenueDataMap.set(m, { month: m, primas: 0, comisiones: 0 }));
+
+  policies.forEach(p => {
+    const monthName = months[p.startDate.getMonth()];
+    const current = revenueDataMap.get(monthName);
+    current.primas += Number(p.premiumAmount);
+    current.comisiones += Number(p.commissionAmount);
+  });
+  const revenueData = Array.from(revenueDataMap.values());
+
+  // 2. Service Distribution (Pólizas por tipo)
+  const serviceDistributionDist = await prisma.policy.groupBy({
+    by: ["type"],
+    where: { status: "ACTIVE" },
+    _count: { _all: true },
+  });
+  
+  const typeColors: Record<string, string> = {
+    SOAT: "var(--color-primary)",
+    VEHICULAR: "var(--color-chart-2)",
+    VIDA: "var(--color-chart-3)",
+    ARL: "var(--color-chart-4)",
+    TODO_RIESGO: "var(--color-chart-5)",
+  };
+
+  const serviceDistributionData = serviceDistributionDist.map(s => ({
+    servicio: s.type,
+    cantidad: s._count._all,
+    fill: typeColors[s.type] || "var(--color-muted)",
+  }));
+
+  // 3. Lead Sources
+  const leadSourcesDist = await prisma.client.groupBy({
+    by: ["source"],
+    where: { source: { not: null } },
+    _count: { _all: true },
+  });
+
+  const sourceColors: Record<string, string> = {
+    WEB_PUBLICA: "var(--color-primary)",
+    REFERIDOS: "var(--color-chart-2)",
+    REDES_SOCIALES: "var(--color-chart-3)",
+    DIRECTOS: "var(--color-chart-4)",
+  };
+  const sourceNames: Record<string, string> = {
+    WEB_PUBLICA: "Web Pública",
+    REFERIDOS: "Referidos",
+    REDES_SOCIALES: "Redes Sociales",
+    DIRECTOS: "Directos",
+  };
+
+  const leadSourcesData = leadSourcesDist.map(s => ({
+    fuente: sourceNames[s.source!] || s.source,
+    valor: s._count._all,
+    fill: sourceColors[s.source!] || "var(--color-muted)",
+  }));
+
+  // 4. Conversion Rate
+  const totalClients = await prisma.client.count();
+  const activeClients = await prisma.client.count({ where: { status: "ACTIVO" } });
+  const conversionRate = totalClients > 0 ? Math.round((activeClients / totalClients) * 100) : 0;
+  const conversionData = [{ name: "Conversión", valor: conversionRate, fill: "var(--color-primary)" }];
+
+  // 5. Weekly Activity
+  const recentLogs = await prisma.activityLog.findMany({
+    where: { createdAt: { gte: startOfWeek } },
+    select: { createdAt: true, type: true }
+  });
+
+  const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+  const weeklyMap = new Map();
+  const weekDays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+  weekDays.forEach(d => weeklyMap.set(d, { dia: d, contactados: 0, nuevos: 0, cerrados: 0 }));
+
+  recentLogs.forEach(log => {
+    const dayName = days[log.createdAt.getDay()];
+    if (weeklyMap.has(dayName)) {
+      const current = weeklyMap.get(dayName);
+      if (log.type === "INFO") current.contactados++;
+      if (log.type === "WARNING") current.nuevos++;
+      if (log.type === "SUCCESS") current.cerrados++;
+    }
+  });
+  const weeklyActivityData = Array.from(weeklyMap.values());
+
+  return {
+    revenueData,
+    serviceDistributionData,
+    leadSourcesData,
+    conversionData,
+    weeklyActivityData,
+  };
+}
+
+// ─── Fetch Actions for Forms ───────────────────────────────────────────────────
+
+export async function getServicesForInvoicing() {
+  try {
+    const services = await prisma.service.findMany({
+      where: { isActive: true },
+      include: { subcategory: { include: { category: true } } },
+      orderBy: { name: "asc" }
+    });
+    
+    const serializedServices = services.map(s => ({
+      ...s,
+      price: s.price ? Number(s.price) : null
+    }));
+
+    return { success: true, data: serializedServices };
+  } catch (error) {
+    console.error("getServicesForInvoicing error:", error);
+    return { success: false, error: "Error obteniendo servicios" };
+  }
+}
+
+export async function getClientsForInvoicing() {
+  try {
+    const clients = await prisma.client.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, documentType: true, documentNumber: true, email: true }
+    });
+    return { success: true, data: clients };
+  } catch (error) {
+    console.error("getClientsForInvoicing error:", error);
+    return { success: false, error: "Error obteniendo clientes" };
+  }
+}
