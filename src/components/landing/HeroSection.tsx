@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   containerVariants,
   itemVariants,
@@ -168,16 +168,25 @@ function ScrollIndicator() {
 
 // ─── Sub-componente: Video Hero ───────────────────
 function HeroImage({ scrollYProgress }: { scrollYProgress: any }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Ajuste sutil de paralaje para más peso visual
-  const y = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const yParallax = useTransform(scrollYProgress, [0, 1], [0, -90]);
 
   return (
     <motion.div
-      style={{ y }}
+      style={{ y: isMobile ? 0 : yParallax }}
       initial={{ opacity: 0, x: 70 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 1.3, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative aspect-16/10 w-full max-w-[680px] lg:max-w-none lg:w-full lg:ml-auto"
+      className="relative aspect-16/10 w-full max-w-[680px] -mt-20 lg:mt-0 lg:max-w-none lg:w-full lg:ml-auto"
     >
       {/* Resplandor de fondo más difuminado y amplio */}
       <div className="absolute -inset-6 rounded-[50px] bg-cyan-500/15 blur-3xl opacity-60" />

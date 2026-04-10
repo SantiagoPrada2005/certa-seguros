@@ -164,16 +164,7 @@ const ContactSection = () => {
                   </div>
                   <div>
                     <p className="text-[#2fabcb] text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Escríbenos</p>
-                    <p className="font-semibold text-sm">maria.zapata@asesorsura.com  mfz.asesoriasempresariales@gmail.com</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5 text-[#2fabcb]" />
-                  </div>
-                  <div>
-                    <p className="text-[#2fabcb] text-xs mb-0.5 font-montserrat font-bold uppercase tracking-wider">Visítanos</p>
-                    <p className="font-semibold text-sm">Roldanillo </p>
+                    <p className="font-semibold text-xs">maria.zapata@asesorsura.com  mfz.asesoriasempresariales@gmail.com</p>
                   </div>
                 </div>
               </div>
@@ -186,7 +177,7 @@ const ContactSection = () => {
                 <CheckCircle className="w-16 h-16 text-[#1c80a8]" />
                 <h3 className="text-2xl font-bold text-[#182e6b] font-montserrat">¡Cotización Solicitada!</h3>
                 <p className="text-gray-500 max-w-xs text-sm leading-relaxed">
-                  Un asesor de Certa Seguros se comunicará contigo en las próximas horas por WhatsApp o correo.
+                  Un asesor de Certa Seguros se comunicará contigo en las próximas horas.
                 </p>
                 <button
                   onClick={() => {
