@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { fetchDashboardStats, type DashboardStats } from "@/lib/api-client"
+import { getDashboardChartData } from "../actions"
 import {
   Area,
   AreaChart,
@@ -45,23 +46,8 @@ import {
 } from "lucide-react"
 
 // ═══════════════════════════════════════════════════
-// STATIC CHART DATA (historical — will be replaced by API in Phase 2)
+// DYNAMIC CHART DATA
 // ═══════════════════════════════════════════════════
-
-const revenueData = [
-  { month: "Ene", primas: 12400000, comisiones: 2480000 },
-  { month: "Feb", primas: 14200000, comisiones: 2840000 },
-  { month: "Mar", primas: 11800000, comisiones: 2360000 },
-  { month: "Abr", primas: 16700000, comisiones: 3340000 },
-  { month: "May", primas: 15300000, comisiones: 3060000 },
-  { month: "Jun", primas: 18900000, comisiones: 3780000 },
-  { month: "Jul", primas: 17100000, comisiones: 3420000 },
-  { month: "Ago", primas: 19500000, comisiones: 3900000 },
-  { month: "Sep", primas: 21200000, comisiones: 4240000 },
-  { month: "Oct", primas: 20100000, comisiones: 4020000 },
-  { month: "Nov", primas: 22800000, comisiones: 4560000 },
-  { month: "Dic", primas: 24500000, comisiones: 4900000 },
-]
 
 const revenueConfig = {
   primas: {
@@ -74,13 +60,7 @@ const revenueConfig = {
   },
 } satisfies ChartConfig
 
-const serviceDistributionData = [
-  { servicio: "SOAT", cantidad: 342, fill: "var(--color-soat)" },
-  { servicio: "Vehicular", cantidad: 287, fill: "var(--color-vehicular)" },
-  { servicio: "Vida", cantidad: 196, fill: "var(--color-vida)" },
-  { servicio: "ARL", cantidad: 154, fill: "var(--color-arl)" },
-  { servicio: "Todo Riesgo", cantidad: 98, fill: "var(--color-todoriesgo)" },
-]
+
 
 const serviceConfig = {
   cantidad: { label: "Cantidad" },
@@ -91,12 +71,7 @@ const serviceConfig = {
   todoriesgo: { label: "Todo Riesgo", color: "var(--color-chart-5)" },
 } satisfies ChartConfig
 
-const leadSourcesData = [
-  { fuente: "Web Pública", valor: 45, fill: "var(--color-primary)" },
-  { fuente: "Referidos", valor: 28, fill: "var(--color-chart-2)" },
-  { fuente: "Redes Sociales", valor: 15, fill: "var(--color-chart-3)" },
-  { fuente: "Directos", valor: 12, fill: "var(--color-chart-4)" },
-]
+
 
 const leadSourcesConfig = {
   valor: { label: "Leads" },
@@ -106,23 +81,13 @@ const leadSourcesConfig = {
   Directos: { label: "Directos", color: "var(--color-chart-4)" },
 } satisfies ChartConfig
 
-const conversionData = [
-  { name: "Conversión", valor: 73, fill: "var(--color-primary)" },
-]
+
 
 const conversionConfig = {
   valor: { label: "Tasa de Conversión" },
 } satisfies ChartConfig
 
-const weeklyActivityData = [
-  { dia: "Lun", contactados: 24, nuevos: 12, cerrados: 8 },
-  { dia: "Mar", contactados: 31, nuevos: 18, cerrados: 11 },
-  { dia: "Mié", contactados: 28, nuevos: 14, cerrados: 9 },
-  { dia: "Jue", contactados: 35, nuevos: 21, cerrados: 14 },
-  { dia: "Vie", contactados: 42, nuevos: 25, cerrados: 17 },
-  { dia: "Sáb", contactados: 15, nuevos: 8, cerrados: 5 },
-  { dia: "Dom", contactados: 5, nuevos: 3, cerrados: 1 },
-]
+
 
 const weeklyConfig = {
   contactados: { label: "Contactados", color: "var(--color-primary)" },
@@ -168,17 +133,35 @@ const relativeTime = (iso: string) => {
 
 export default function MetricsDashboardPage() {
   const [dashData, setDashData] = React.useState<DashboardStats | null>(null);
+  const [chartData, setChartData] = React.useState<{
+    revenueData: any[];
+    serviceDistributionData: any[];
+    leadSourcesData: any[];
+    conversionData: any[];
+    weeklyActivityData: any[];
+  } | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    fetchDashboardStats(6)
-      .then(setDashData)
+    Promise.all([
+      fetchDashboardStats(6),
+      getDashboardChartData()
+    ])
+      .then(([dash, charts]) => {
+        setDashData(dash);
+        setChartData(charts);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
   const stats = dashData?.stats;
   const feed = dashData?.feed ?? [];
+  const revenueData = chartData?.revenueData ?? [];
+  const serviceDistributionData = chartData?.serviceDistributionData ?? [];
+  const leadSourcesData = chartData?.leadSourcesData ?? [];
+  const conversionData = chartData?.conversionData ?? [{ name: "Conversión", valor: 0, fill: "var(--color-primary)" }];
+  const weeklyActivityData = chartData?.weeklyActivityData ?? [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -326,7 +309,7 @@ export default function MetricsDashboardPage() {
                   content={<ChartTooltipContent hideLabel />}
                 />
                 <Bar dataKey="cantidad" radius={[0, 6, 6, 0]}>
-                  {serviceDistributionData.map((entry, index) => (
+                  {serviceDistributionData.map((entry: { fill: string }, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Bar>
@@ -368,7 +351,7 @@ export default function MetricsDashboardPage() {
                   strokeWidth={3}
                   stroke="var(--color-background)"
                 >
-                  {leadSourcesData.map((_, index) => (
+                  {leadSourcesData.map((_: any, index: number) => (
                     <Cell key={`cell-${index}`} />
                   ))}
                 </Pie>
@@ -377,7 +360,7 @@ export default function MetricsDashboardPage() {
           </CardContent>
           <CardFooter className="border-t pt-4">
             <div className="flex flex-col gap-2 w-full">
-              {leadSourcesData.map((item, i) => (
+              {leadSourcesData.map((item: { fill: string; fuente: string; valor: number }, i: number) => (
                 <div key={i} className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <div
@@ -471,7 +454,7 @@ export default function MetricsDashboardPage() {
               <RadialBarChart
                 data={conversionData}
                 startAngle={180}
-                endAngle={180 - (180 * 2 * 0.73)}
+                endAngle={180 - (180 * 2 * (conversionData[0]?.valor / 100 || 0))}
                 innerRadius={60}
                 outerRadius={90}
               >
@@ -484,7 +467,7 @@ export default function MetricsDashboardPage() {
               </RadialBarChart>
             </ChartContainer>
             <div className="text-center -mt-10">
-              <p className="text-3xl font-bold tabular-nums">73%</p>
+              <p className="text-3xl font-bold tabular-nums">{Math.round(conversionData[0]?.valor || 0)}%</p>
               <p className="text-xs text-muted-foreground">
                 Meta trimestral: 75%
               </p>

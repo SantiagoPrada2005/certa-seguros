@@ -1,5 +1,5 @@
 "use client"
-
+import React from "react"
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { PolicyStatus, PolicyType } from "@/generated/prisma"
-import { ShieldCheck, MoreHorizontal, FileText, CalendarDays, AlertTriangle, XCircle, FileClock } from "lucide-react"
+import { ShieldCheck, MoreHorizontal, FileText, CalendarDays, AlertTriangle, XCircle, FileClock, ReceiptIcon } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +18,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { CrearFacturaDialog } from "@/components/admin/facturas/crear-factura-dialog"
 
 export type PolicyData = {
   id: string
@@ -30,7 +32,7 @@ export type PolicyData = {
   startDate: Date
   endDate: Date
   status: PolicyStatus
-  client: { id: string, name: string }
+  client: { id: string, name: string, documentNumber: string | null }
   service: { id: string, name: string } | null
 }
 
@@ -42,6 +44,13 @@ interface PoliciesTableProps {
 }
 
 export function PoliciesTable({ policies, onEdit, onChangeStatus, onDelete }: PoliciesTableProps) {
+  const [invoiceDialogOpen, setInvoiceDialogOpen] = React.useState(false)
+  const [selectedPolicy, setSelectedPolicy] = React.useState<PolicyData | null>(null)
+
+  const handleCreateInvoice = (policy: PolicyData) => {
+    setSelectedPolicy(policy)
+    setInvoiceDialogOpen(true)
+  }
   
   const getStatusInfo = (status: PolicyStatus) => {
     switch (status) {
@@ -179,30 +188,36 @@ export function PoliciesTable({ policies, onEdit, onChangeStatus, onDelete }: Po
                   }
                 />
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => onEdit(policy)}>
-                      Editar Póliza
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={() => onChangeStatus(policy.id, "PENDING_RENEWAL")}
-                      disabled={policy.status === "PENDING_RENEWAL"}
-                    >
-                      Marcar para Renovación
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => onChangeStatus(policy.id, "ACTIVE")}
-                      disabled={policy.status === "ACTIVE"}
-                    >
-                      Activar Póliza
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => onChangeStatus(policy.id, "CANCELLED")}
-                      disabled={policy.status === "CANCELLED"}
-                      className="text-amber-600 dark:text-amber-400"
-                    >
-                      Cancelar Póliza
-                    </DropdownMenuItem>
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                      <DropdownMenuItem onClick={() => onEdit(policy)}>
+                        Editar Póliza
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleCreateInvoice(policy)}>
+                        <ReceiptIcon data-icon="inline-start" className="size-4" />
+                        Crear Factura
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={() => onChangeStatus(policy.id, "PENDING_RENEWAL")}
+                        disabled={policy.status === "PENDING_RENEWAL"}
+                      >
+                        Marcar para Renovación
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => onChangeStatus(policy.id, "ACTIVE")}
+                        disabled={policy.status === "ACTIVE"}
+                      >
+                        Activar Póliza
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => onChangeStatus(policy.id, "CANCELLED")}
+                        disabled={policy.status === "CANCELLED"}
+                        className="text-amber-600 dark:text-amber-400"
+                      >
+                        Cancelar Póliza
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       onClick={() => onDelete(policy.id)}
@@ -217,6 +232,17 @@ export function PoliciesTable({ policies, onEdit, onChangeStatus, onDelete }: Po
           )})}
         </TableBody>
       </Table>
+      
+      <CrearFacturaDialog 
+        open={invoiceDialogOpen} 
+        onOpenChange={setInvoiceDialogOpen}
+        defaultClientName={selectedPolicy?.client.name}
+        defaultClientDocument={selectedPolicy?.client.documentNumber || undefined}
+        defaultClientId={selectedPolicy?.client.id}
+        defaultServiceId={selectedPolicy?.service?.id}
+        defaultAmount={selectedPolicy?.premiumAmount}
+        defaultDescription={selectedPolicy ? `Prima de Póliza #${selectedPolicy.policyNumber}` : undefined}
+      />
     </div>
   )
 }
