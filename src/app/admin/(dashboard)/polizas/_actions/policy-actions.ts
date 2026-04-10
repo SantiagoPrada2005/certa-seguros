@@ -37,7 +37,14 @@ export async function createPolicy(data: PolicyFormValues) {
     revalidatePath("/admin/polizas");
     revalidatePath(`/admin/clientes`);
     
-    return { success: true, data: policy };
+    return { 
+      success: true, 
+      data: {
+        ...policy,
+        premiumAmount: Number(policy.premiumAmount),
+        commissionAmount: Number(policy.commissionAmount)
+      } 
+    };
   } catch (error) {
     unstable_rethrow(error);
     console.error("Error creating policy:", error);
@@ -72,7 +79,14 @@ export async function updatePolicy(id: string, data: Partial<PolicyFormValues>) 
     });
 
     revalidatePath("/admin/polizas");
-    return { success: true, data: policy };
+    return { 
+      success: true, 
+      data: {
+        ...policy,
+        premiumAmount: Number(policy.premiumAmount),
+        commissionAmount: Number(policy.commissionAmount)
+      } 
+    };
   } catch (error) {
     unstable_rethrow(error);
     console.error("Error updating policy:", error);
@@ -125,7 +139,14 @@ export async function updatePolicyStatus(id: string, status: PolicyStatus) {
     });
 
     revalidatePath("/admin/polizas");
-    return { success: true, data: policy };
+    return { 
+      success: true, 
+      data: {
+        ...policy,
+        premiumAmount: Number(policy.premiumAmount),
+        commissionAmount: Number(policy.commissionAmount)
+      } 
+    };
   } catch (error) {
     unstable_rethrow(error);
     console.error("Error updating policy status:", error);

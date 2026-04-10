@@ -587,3 +587,38 @@ export async function getDashboardChartData() {
     weeklyActivityData,
   };
 }
+
+// ─── Fetch Actions for Forms ───────────────────────────────────────────────────
+
+export async function getServicesForInvoicing() {
+  try {
+    const services = await prisma.service.findMany({
+      where: { isActive: true },
+      include: { subcategory: { include: { category: true } } },
+      orderBy: { name: "asc" }
+    });
+    
+    const serializedServices = services.map(s => ({
+      ...s,
+      price: s.price ? Number(s.price) : null
+    }));
+
+    return { success: true, data: serializedServices };
+  } catch (error) {
+    console.error("getServicesForInvoicing error:", error);
+    return { success: false, error: "Error obteniendo servicios" };
+  }
+}
+
+export async function getClientsForInvoicing() {
+  try {
+    const clients = await prisma.client.findMany({
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, documentType: true, documentNumber: true, email: true }
+    });
+    return { success: true, data: clients };
+  } catch (error) {
+    console.error("getClientsForInvoicing error:", error);
+    return { success: false, error: "Error obteniendo clientes" };
+  }
+}
