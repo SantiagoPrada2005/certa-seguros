@@ -7,7 +7,7 @@ export const CONTACT = {
 
 export const ADVISOR = {
     title: "Agente y Consultora en Gestión de Protección Integral",
-    badge: "Asesora Autorizada · SURA Colombia | Grupo Solidiaria",
+    badge: "Asesora Autorizada · SURA Colombia | Aseguradora Solidaria",
 } as const;
 
 export const HERO = {

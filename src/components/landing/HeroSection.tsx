@@ -308,21 +308,21 @@ export default function HeroSection() {
 
             {/* Logos adicionales de respaldo */}
             <motion.div variants={itemVariants} className="mb-12 flex items-center gap-4">
-              <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-white p-1.5 shadow-[0_0_15px_rgba(47,171,203,0.2)] border border-white/10">
+              <div className="flex h-[85px] w-[85px] items-center justify-center rounded-full bg-white p-1.5 shadow-[0_0_15px_rgba(47,171,203,0.2)] border border-white/10">
                 <Image
                   src="/images/logo-sura.png"
                   alt="SURA"
-                  width={60}
-                  height={60}
+                  width={85}
+                  height={85}
                   className="h-full w-full object-contain"
                 />
               </div>
-              <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-white p-1 shadow-[0_0_15px_rgba(47,171,203,0.2)] border border-white/10">
+              <div className="flex h-[85px] w-[85px] items-center justify-center rounded-full bg-white p-1 shadow-[0_0_15px_rgba(47,171,203,0.2)] border border-white/10">
                 <Image
                   src="/images/logo-gruposolidaria.jpg"
                   alt="Grupo Solidaria"
-                  width={60}
-                  height={60}
+                  width={85}
+                  height={85}
                   className="h-full w-full object-contain rounded-full"
                 />
               </div>
