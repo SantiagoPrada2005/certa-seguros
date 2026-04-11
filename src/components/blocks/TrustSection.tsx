@@ -36,7 +36,7 @@ const stats = [
 
 const benefits = [
   'Cotizaciones instantáneas y personalizadas.',
-  'Acompañamiento jurídico en caso de siniestros.',
+  'Asesoría en caso de siniestralidad.',
   'Flexibilidad en los métodos de pago.',
   'Acceso a red preferencial de proveedores.',
 ];
