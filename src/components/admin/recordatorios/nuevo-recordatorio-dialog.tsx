@@ -77,7 +77,12 @@ export function NuevoRecordatorioDialog() {
               <FieldLabel htmlFor="r-client">Cliente *</FieldLabel>
               <Select value={form.clientId} onValueChange={(v) => handleChange("clientId", v ?? "")}>
                 <SelectTrigger id="r-client">
-                  <SelectValue placeholder="Seleccionar cliente..." />
+                  <SelectValue placeholder="Seleccionar cliente...">
+                    {form.clientId && (() => {
+                      const client = clients.find(c => c.id === form.clientId);
+                      return client ? <span>{client.name}</span> : null;
+                    })()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {clients.map((c) => (

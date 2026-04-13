@@ -361,13 +361,20 @@ export function CrearFacturaDialog({
                         <div className="grid gap-6 sm:grid-cols-2">
                           <Field>
                             <FieldLabel>Tipo de Servicio</FieldLabel>
-                            <Select 
-                              value={item.serviceId ?? ""} 
+                            <Select
+                              value={item.serviceId ?? ""}
                               onValueChange={(val: string | null) => updateItem(item.id, 'serviceId', val ?? "")}
                               disabled={isLoadingData}
                             >
                               <SelectTrigger className={cn("bg-muted/30 border-muted h-11", !item.serviceId && "border-destructive/50")}>
-                                <SelectValue placeholder={isLoadingData ? "Cargando..." : "Seleccionar del catálogo..."} />
+                                <SelectValue placeholder={isLoadingData ? "Cargando..." : "Seleccionar del catálogo..."}>
+                                  {item.serviceId && (() => {
+                                    if (item.serviceId === 'manual') return <span>+ Servicio Personalizado / Otro</span>;
+                                    const svc = dbServices.find(s => s.id === item.serviceId);
+                                    if (svc) return <span>{svc.name}</span>;
+                                    return null;
+                                  })()}
+                                </SelectValue>
                               </SelectTrigger>
                               <SelectContent>
                                 {dbServices.map(s => (

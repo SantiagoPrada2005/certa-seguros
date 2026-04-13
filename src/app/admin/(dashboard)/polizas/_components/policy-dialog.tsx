@@ -160,12 +160,17 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
 
             <Field data-invalid={!!form.formState.errors.clientId}>
               <FieldLabel htmlFor="clientId">Cliente *</FieldLabel>
-              <Select 
-                value={form.watch("clientId") ?? ""} 
+              <Select
+                value={form.watch("clientId") ?? ""}
                 onValueChange={(val) => form.setValue("clientId", val || "")}
               >
                 <SelectTrigger id="clientId" aria-invalid={!!form.formState.errors.clientId}>
-                  <SelectValue placeholder="Buscar cliente..." />
+                  <SelectValue placeholder="Buscar cliente...">
+                    {form.watch("clientId") && (() => {
+                      const client = clients.find(c => c.id === form.watch("clientId"));
+                      return client ? <span>{client.name}{client.documentNumber ? ` (${client.documentNumber})` : ""}</span> : null;
+                    })()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {clients.map((client) => (
@@ -179,12 +184,18 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
 
             <Field data-invalid={!!form.formState.errors.serviceId}>
               <FieldLabel htmlFor="serviceId">Servicio Relacionado (Opcional)</FieldLabel>
-              <Select 
-                value={form.watch("serviceId") ?? "none"} 
+              <Select
+                value={form.watch("serviceId") ?? "none"}
                 onValueChange={(val) => form.setValue("serviceId", val === "none" ? undefined : val)}
               >
                 <SelectTrigger id="serviceId">
-                  <SelectValue placeholder="Asignar a un servicio" />
+                  <SelectValue placeholder="Asignar a un servicio">
+                    {form.watch("serviceId") && (() => {
+                      if (form.watch("serviceId") === "none") return null;
+                      const service = services.find(s => s.id === form.watch("serviceId"));
+                      return service ? <span>{service.name}</span> : null;
+                    })()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No asignar servicio principal</SelectItem>

@@ -143,7 +143,16 @@ export function EditarServicioDialog({
               required
             >
               <SelectTrigger id="edit-svc-subcategory">
-                <SelectValue placeholder="Seleccionar" />
+                <SelectValue placeholder="Seleccionar">
+                  {form.subcategoryId && (() => {
+                    for (const cat of categories) {
+                      for (const sub of cat.subcategories) {
+                        if (sub.id === form.subcategoryId) return <span>{sub.name}</span>;
+                      }
+                    }
+                    return null;
+                  })()}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (

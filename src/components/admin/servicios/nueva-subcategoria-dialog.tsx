@@ -73,7 +73,12 @@ export function NuevaSubcategoriaDialog({ categories }: NuevaSubcategoriaDialogP
               <FieldLabel htmlFor="sub-categoria">Categoría Principal *</FieldLabel>
               <Select value={form.categoryId} onValueChange={(v) => handleChange("categoryId", v ?? "")}>
                 <SelectTrigger id="sub-categoria">
-                  <SelectValue placeholder="Seleccionar" />
+                  <SelectValue placeholder="Seleccionar">
+                    {form.categoryId && (() => {
+                      const cat = categories.find(c => c.id === form.categoryId);
+                      return cat ? <span>{cat.name}</span> : null;
+                    })()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (

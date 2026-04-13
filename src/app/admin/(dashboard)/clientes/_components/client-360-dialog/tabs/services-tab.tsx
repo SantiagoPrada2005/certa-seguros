@@ -69,7 +69,12 @@ export function ServicesTab({ client, availableServices, onUpdate }: { client: a
           <div className="flex flex-col sm:flex-row gap-3">
             <Select value={selectedService} onValueChange={(v) => setSelectedService(v || "")}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona un servicio del catálogo" />
+                <SelectValue placeholder="Selecciona un servicio del catálogo">
+                  {selectedService && selectedService !== "none" && (() => {
+                    const svc = unassignedServices.find(s => s.id === selectedService);
+                    return svc ? <span>{svc.subcategory?.name || "General"} - {svc.name}</span> : null;
+                  })()}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {unassignedServices.length === 0 ? (

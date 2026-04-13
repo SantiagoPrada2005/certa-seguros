@@ -90,7 +90,16 @@ export function NuevoServicioDialog({ categories }: NuevoServicioDialogProps) {
               <FieldLabel htmlFor="svc-subcategory">Clasificación / Subcategoría *</FieldLabel>
               <Select value={form.subcategoryId} onValueChange={(v) => handleChange("subcategoryId", v ?? "")} required>
                 <SelectTrigger id="svc-subcategory">
-                  <SelectValue placeholder="Seleccionar" />
+                  <SelectValue placeholder="Seleccionar">
+                    {form.subcategoryId && (() => {
+                      for (const cat of categories) {
+                        for (const sub of cat.subcategories) {
+                          if (sub.id === form.subcategoryId) return <span>{sub.name}</span>;
+                        }
+                      }
+                      return null;
+                    })()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
