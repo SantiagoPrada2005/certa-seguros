@@ -47,7 +47,7 @@ interface PolicyDialogProps {
 export function PolicyDialog({ open, onOpenChange, policy, clients, services, defaultClientId }: PolicyDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [useAutoCalculate, setUseAutoCalculate] = useState(false)
-  const [commissionPercentage, setCommissionPercentage] = useState<number>(0)
+  const [commissionPercentage, setCommissionPercentage] = useState<string>("")
   const isEditing = !!policy
 
   const form = useForm<PolicyFormValues>({
@@ -85,8 +85,9 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
   // Auto-calculate commission based on premium and percentage
   const premiumAmount = form.watch("premiumAmount")
   useEffect(() => {
-    if (useAutoCalculate && premiumAmount !== undefined) {
-      const calculated = Math.round(Number(premiumAmount) * (commissionPercentage / 100))
+    if (useAutoCalculate && premiumAmount !== undefined && commissionPercentage !== "") {
+      const percentage = Number(commissionPercentage)
+      const calculated = Math.round(Number(premiumAmount) * (percentage / 100))
       form.setValue("commissionAmount", calculated, { shouldValidate: true })
     }
   }, [useAutoCalculate, commissionPercentage, premiumAmount, form])
@@ -245,7 +246,7 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
                         onCheckedChange={setUseAutoCalculate}
                       />
                       <label htmlFor="auto-calculate" className="text-xs text-muted-foreground cursor-pointer">
-                        Auto {useAutoCalculate && `(${commissionPercentage}%)`}
+                        Auto {useAutoCalculate && commissionPercentage && `(${commissionPercentage}%)`}
                       </label>
                     </div>
                   </div>
@@ -281,9 +282,9 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
                     min="0"
                     max="100"
                     step="0.1"
-                    placeholder="0"
+                    placeholder="Ej. 15"
                     value={commissionPercentage}
-                    onChange={(e) => setCommissionPercentage(Number(e.target.value) || 0)}
+                    onChange={(e) => setCommissionPercentage(e.target.value)}
                     className="h-8 text-sm"
                   />
                   <span className="text-sm text-muted-foreground font-medium">%</span>

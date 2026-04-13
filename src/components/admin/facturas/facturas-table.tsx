@@ -4,6 +4,8 @@ import * as React from "react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,18 +24,37 @@ import { updateInvoiceStatus } from "@/app/admin/actions";
 import { PdfDownloadButton } from "@/components/admin/facturas/pdf-download-button";
 import { toast } from "sonner";
 
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(value);
+const formatCurrency = (value: number) => {
+  try {
+    return new Intl.NumberFormat("es-CO", { 
+      style: "currency", 
+      currency: "COP", 
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0 
+    }).format(value);
+  } catch (e) {
+    return `$ ${value.toLocaleString()}`;
+  }
+};
 
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("es-CO", { year: "numeric", month: "short", day: "numeric" });
+// Use a stable date format that doesn't depend on system locale during SSR
+const formatDate = (dateInput: string | Date) => {
+  if (!dateInput) return "";
+  const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+  // Fallback to a simple ISO-like format if format fails or to ensure consistency
+  try {
+    return format(date, "d 'de' MMM, yyyy", { locale: es });
+  } catch (e) {
+    return date.toLocaleDateString("es-CO");
+  }
+};
 
 type Status = "DRAFT" | "PENDING" | "PAID" | "OVERDUE";
 
 const statusStyles: Record<Status, { variant: "default" | "secondary" | "destructive" | "outline"; label: string; colorClass: string }> = {
   PAID:    { variant: "default",     label: "Pagada",    colorClass: "bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800" },
   PENDING: { variant: "secondary",   label: "Pendiente", colorClass: "bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:text-amber-400 border-amber-200 dark:border-amber-800" },
-  OVERDUE: { variant: "destructive", label: "Vencida",   colorClass: "" },
+  OVERDUE: { variant: "destructive", label: "Vencida",   colorClass: "bg-destructive/15 text-destructive border-destructive/20" },
   DRAFT:   { variant: "outline",     label: "Borrador",  colorClass: "text-muted-foreground" },
 };
 
@@ -45,20 +66,27 @@ export function FacturasTable({ initialInvoices }: FacturasTableProps) {
   const [invoices, setInvoices] = React.useState<InvoiceRecord[]>(initialInvoices);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [loading, setLoading] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Sync state when Server Component re-renders (e.g. after revalidatePath)
   React.useEffect(() => {
     setInvoices(initialInvoices);
   }, [initialInvoices]);
+
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    if (!isMounted) return;
     setLoading(true);
     fetchInvoices({ status: statusFilter !== "all" ? statusFilter : undefined })
       .then(setInvoices)
       .catch(() => toast.error("Error al cargar las facturas"))
       .finally(() => setLoading(false));
-  }, [statusFilter]);
+  }, [statusFilter, isMounted]);
 
   const handleMarkPaid = async (id: string) => {
     setActionLoading(id);
@@ -141,7 +169,7 @@ export function FacturasTable({ initialInvoices }: FacturasTableProps) {
             </TableHeader>
             <TableBody>
               {invoices.map((invoice) => {
-                const style = statusStyles[invoice.status] ?? statusStyles.DRAFT;
+                const style = statusStyles[invoice.status as Status] ?? statusStyles.DRAFT;
                 return (
                   <TableRow key={invoice.id}>
                     <TableCell className="font-medium">{invoice.number}</TableCell>
@@ -153,13 +181,17 @@ export function FacturasTable({ initialInvoices }: FacturasTableProps) {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{formatDate(invoice.date)}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{formatDate(invoice.dueDate)}</TableCell>
+                    <TableCell className="text-muted-foreground text-sm">
+                      {isMounted ? formatDate(invoice.date) : "---"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">
+                      {isMounted ? formatDate(invoice.dueDate) : "---"}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={style.variant} className={style.colorClass}>{style.label}</Badge>
                     </TableCell>
                     <TableCell className="text-right font-medium text-sm tabular-nums">
-                      {formatCurrency(invoice.total)}
+                      {isMounted ? formatCurrency(invoice.total) : "---"}
                     </TableCell>
                     <TableCell className="text-center">
                       <DropdownMenu>

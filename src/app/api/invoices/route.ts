@@ -35,13 +35,29 @@ export async function GET(request: Request) {
       where.status = status.toUpperCase();
     }
 
-    const invoices = await prisma.invoice.findMany({
+    const invoicesRaw = await prisma.invoice.findMany({
       where,
       include: {
         client: true,
+        items: true,
       },
       orderBy: { date: "desc" },
     });
+
+    // Convert Decimals to numbers for client-side serialization compatibility
+    const invoices = invoicesRaw.map(inv => ({
+      ...inv,
+      subtotal: Number(inv.subtotal),
+      discountAmount: Number(inv.discountAmount),
+      taxRate: Number(inv.taxRate),
+      taxAmount: Number(inv.taxAmount),
+      total: Number(inv.total),
+      items: inv.items.map(item => ({
+        ...item,
+        unitPrice: Number(item.unitPrice),
+        total: Number(item.total),
+      })),
+    }));
 
     return NextResponse.json(invoices);
   } catch (error) {
