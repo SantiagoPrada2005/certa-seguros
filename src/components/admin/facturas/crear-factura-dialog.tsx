@@ -414,10 +414,9 @@ export function CrearFacturaDialog({
                             <Input
                               id={`desc-${item.id}`}
                               required
-                              value={item.description} 
+                              value={item.description}
                               onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                              disabled={!!(item.serviceId && item.serviceId !== 'manual')}
-                              className={cn("bg-muted/30 border-muted h-11", item.serviceId && item.serviceId !== 'manual' && "opacity-60")}
+                              className="bg-muted/30 border-muted h-11"
                             />
                           </Field>
                         </div>
@@ -444,8 +443,7 @@ export function CrearFacturaDialog({
                               required
                               value={item.unitPrice}
                               onChange={(e) => updateItem(item.id, 'unitPrice', parseInt(e.target.value) || 0)}
-                              disabled={!!(item.serviceId && item.serviceId !== 'manual' && item.unitPrice > 0)}
-                              className={cn("bg-muted/20 border-transparent focus:bg-background h-11", item.serviceId && item.serviceId !== 'manual' && item.unitPrice > 0 && "opacity-60")}
+                              className="bg-muted/20 border-transparent focus:bg-background h-11"
                             />
                           </Field>
                           <div className="sm:col-span-4 flex flex-col items-end pb-2">
