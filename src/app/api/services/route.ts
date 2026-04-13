@@ -6,8 +6,18 @@ const serviceCreateSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
   validityType: z.enum(["UNICA_VEZ", "ANUAL", "MENSUAL", "TRIMESTRAL", "SEMESTRAL"]).optional(),
-  price: z.number().optional(),
-  priceDescription: z.string().optional(),
+  price: z.number().optional().nullable(),
+  priceDescription: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
+  subcategoryId: z.string().optional(),
+});
+
+const serviceUpdateSchema = z.object({
+  name: z.string().min(1, "Name is required").optional(),
+  description: z.string().optional(),
+  validityType: z.enum(["UNICA_VEZ", "ANUAL", "MENSUAL", "TRIMESTRAL", "SEMESTRAL"]).optional(),
+  price: z.number().optional().nullable(),
+  priceDescription: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
   subcategoryId: z.string().optional(),
 });
@@ -80,6 +90,48 @@ export async function POST(request: Request) {
     console.error("Error creating service:", error);
     return NextResponse.json(
       { error: "Failed to create service" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      return NextResponse.json(
+        { error: "Service ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const validatedData = serviceUpdateSchema.parse(body);
+
+    const service = await prisma.service.update({
+      where: { id },
+      data: validatedData,
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: `Servicio actualizado: ${service.name}`,
+        type: "INFO",
+      },
+    });
+
+    return NextResponse.json(service);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Validation error", details: error.format() },
+        { status: 400 }
+      );
+    }
+    console.error("Error updating service:", error);
+    return NextResponse.json(
+      { error: "Failed to update service" },
       { status: 500 }
     );
   }

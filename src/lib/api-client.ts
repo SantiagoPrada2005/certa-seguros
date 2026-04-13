@@ -66,6 +66,32 @@ export async function fetchServices(params?: {
   return res.json();
 }
 
+export async function updateService(
+  id: string,
+  data: {
+    price?: number | null;
+    priceDescription?: string | null;
+    name?: string;
+    description?: string;
+    validityType?: string;
+    isActive?: boolean;
+    subcategoryId?: string;
+  }
+): Promise<ServiceRecord> {
+  const url = new URL(`${BASE_URL}/api/services?id=${id}`);
+  const res = await fetch(url.toString(), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: "Error updating service" }));
+    throw new Error(error.error || "Error updating service");
+  }
+  return res.json();
+}
+
 // ─── Invoices ────────────────────────────────────────────────────────────────
 
 export interface InvoiceRecord {

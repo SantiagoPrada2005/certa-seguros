@@ -81,7 +81,7 @@ export default async function ServiciosPage() {
       </div>
 
       {/* Table — Client Component */}
-      <ServiciosTable initialServices={initialServices as any} />
+      <ServiciosTable initialServices={initialServices as any} categories={categories} />
     </div>
   );
 }

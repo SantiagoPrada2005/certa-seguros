@@ -27,6 +27,16 @@ const serviceCreateSchema = z.object({
   subcategoryId: z.string().min(1, "Subcategoría requerida"),
 });
 
+const serviceUpdateSchema = z.object({
+  name: z.string().min(1, "Nombre requerido").optional(),
+  description: z.string().optional(),
+  validityType: z.enum(["UNICA_VEZ", "ANUAL", "MENSUAL", "TRIMESTRAL", "SEMESTRAL"]).optional(),
+  price: z.coerce.number().optional().nullable(),
+  priceDescription: z.string().optional().nullable(),
+  isActive: z.boolean().optional(),
+  subcategoryId: z.string().min(1, "Subcategoría requerida").optional(),
+});
+
 const categoryCreateSchema = z.object({
   name: z.string().min(1, "Nombre requerido"),
   description: z.string().optional(),
@@ -215,6 +225,35 @@ export async function createService(
     console.error("createService error:", err);
     console.error("createService error:", err);
     return { success: false, error: "No se pudo crear el servicio" };
+  }
+}
+
+export async function updateService(
+  id: string,
+  data: z.infer<typeof serviceUpdateSchema>
+): Promise<ActionResult> {
+  try {
+    const validated = serviceUpdateSchema.parse(data);
+    await prisma.service.update({
+      where: { id },
+      data: validated,
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: `Servicio actualizado: ${validated.name ?? id}`,
+        type: "INFO",
+      },
+    });
+
+    revalidatePath("/admin/servicios");
+    return { success: true, data: undefined };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { success: false, error: err.issues[0].message };
+    }
+    console.error("updateService error:", err);
+    return { success: false, error: "No se pudo actualizar el servicio" };
   }
 }
 

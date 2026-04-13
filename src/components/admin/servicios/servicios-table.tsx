@@ -11,6 +11,7 @@ import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
 import { SearchIcon, Loader2Icon } from "lucide-react";
 import { fetchServices, type ServiceRecord } from "@/lib/api-client";
 import { toast } from "sonner";
+import { EditarServicioDialog } from "./editar-servicio-dialog";
 
 const validityLabel: Record<string, string> = {
   UNICA_VEZ: "Única vez",
@@ -22,12 +23,19 @@ const validityLabel: Record<string, string> = {
 
 interface ServiciosTableProps {
   initialServices: ServiceRecord[];
+  categories: {
+    id: string;
+    name: string;
+    subcategories: { id: string; name: string }[];
+  }[];
 }
 
-export function ServiciosTable({ initialServices }: ServiciosTableProps) {
+export function ServiciosTable({ initialServices, categories }: ServiciosTableProps) {
   const [services, setServices] = React.useState<ServiceRecord[]>(initialServices);
   const [search, setSearch] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [editingService, setEditingService] = React.useState<ServiceRecord | null>(null);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
 
   // Sync state when Server Component re-renders (e.g. after revalidatePath)
   React.useEffect(() => {
@@ -56,6 +64,11 @@ export function ServiciosTable({ initialServices }: ServiciosTableProps) {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const openEditDialog = React.useCallback((service: ServiceRecord) => {
+    setEditingService(service);
+    setDialogOpen(true);
   }, []);
 
   return (
@@ -98,7 +111,11 @@ export function ServiciosTable({ initialServices }: ServiciosTableProps) {
             </TableHeader>
             <TableBody>
               {filtered.map((service) => (
-                <TableRow key={service.id}>
+                <TableRow
+                  key={service.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => openEditDialog(service)}
+                >
                   <TableCell>
                     <div className="flex flex-col gap-1">
                       <span className="font-medium">{service.name}</span>
@@ -148,6 +165,13 @@ export function ServiciosTable({ initialServices }: ServiciosTableProps) {
           </Table>
         )}
       </CardContent>
+      <EditarServicioDialog
+        service={editingService}
+        categories={categories}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSaved={refreshServices}
+      />
     </Card>
   );
 }
