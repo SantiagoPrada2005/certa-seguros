@@ -88,7 +88,13 @@ export function FacturasTable({ initialInvoices }: FacturasTableProps) {
     taxAmount: inv.taxAmount,
     total: inv.total,
     status: inv.status.toLowerCase() as any,
-    items: inv.items ?? [],
+    items: (inv.items ?? []).map(item => ({
+      id: item.id,
+      description: item.description,
+      quantity: item.quantity,
+      unitPrice: typeof item.unitPrice === 'number' ? item.unitPrice : Number(item.unitPrice),
+      total: typeof item.total === 'number' ? item.total : Number(item.total),
+    })),
   });
 
   return (
