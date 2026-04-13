@@ -40,6 +40,7 @@ export interface CrearFacturaDialogProps {
   defaultClientId?: string;
   defaultServiceId?: string;
   defaultAmount?: number;
+  defaultCommissionAmount?: number;
   defaultDescription?: string;
 }
 
@@ -52,6 +53,7 @@ export function CrearFacturaDialog({
   defaultClientId,
   defaultServiceId,
   defaultAmount,
+  defaultCommissionAmount,
   defaultDescription,
 }: CrearFacturaDialogProps = {}) {
   const [internalOpen, setInternalOpen] = useState(false);
@@ -102,17 +104,36 @@ export function CrearFacturaDialog({
       setClientName(defaultClientName || '');
       setClientNit(defaultClientDocument || '');
       setClientId(defaultClientId || '');
-      setItems([
-        { 
-          id: '1', 
+
+      // Build initial items based on policy data
+      const initialItems: Array<{ id: string, serviceId?: string, description: string, quantity: number, unitPrice: number }> = [];
+
+      // Add premium item with commission included
+      if (defaultAmount) {
+        const commission = defaultCommissionAmount && defaultCommissionAmount > 0 ? defaultCommissionAmount : 0;
+        initialItems.push({
+          id: '1',
           serviceId: defaultServiceId,
-          description: defaultDescription || (defaultAmount ? 'Prima de Póliza' : ''), 
-          quantity: 1, 
-          unitPrice: defaultAmount ?? 0 
-        }
-      ]);
+          description: defaultDescription || 'Prima de Póliza',
+          quantity: 1,
+          unitPrice: defaultAmount + commission
+        });
+      }
+
+      // Fallback if no defaults provided
+      if (initialItems.length === 0) {
+        initialItems.push({
+          id: '1',
+          serviceId: '',
+          description: '',
+          quantity: 1,
+          unitPrice: 0
+        });
+      }
+
+      setItems(initialItems);
     }
-  }, [open, defaultClientName, defaultClientDocument, defaultClientId, defaultServiceId, defaultAmount, defaultDescription]);
+  }, [open, defaultClientName, defaultClientDocument, defaultClientId, defaultServiceId, defaultAmount, defaultCommissionAmount, defaultDescription]);
 
   const handleAddItem = () => {
     setItems([

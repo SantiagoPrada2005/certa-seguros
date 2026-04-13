@@ -233,14 +233,15 @@ export function PoliciesTable({ policies, onEdit, onChangeStatus, onDelete }: Po
         </TableBody>
       </Table>
       
-      <CrearFacturaDialog 
-        open={invoiceDialogOpen} 
+      <CrearFacturaDialog
+        open={invoiceDialogOpen}
         onOpenChange={setInvoiceDialogOpen}
         defaultClientName={selectedPolicy?.client.name}
         defaultClientDocument={selectedPolicy?.client.documentNumber || undefined}
         defaultClientId={selectedPolicy?.client.id}
         defaultServiceId={selectedPolicy?.service?.id}
         defaultAmount={selectedPolicy?.premiumAmount}
+        defaultCommissionAmount={selectedPolicy?.commissionAmount}
         defaultDescription={selectedPolicy ? `Prima de Póliza #${selectedPolicy.policyNumber}` : undefined}
       />
     </div>
