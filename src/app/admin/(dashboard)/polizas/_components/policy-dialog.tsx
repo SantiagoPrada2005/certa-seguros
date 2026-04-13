@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CalendarIcon, FileIcon } from "lucide-react"
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
+import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 
 import { PolicyType, PolicyStatus } from "@/generated/prisma"
@@ -45,6 +46,8 @@ interface PolicyDialogProps {
 
 export function PolicyDialog({ open, onOpenChange, policy, clients, services, defaultClientId }: PolicyDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [useAutoCalculate, setUseAutoCalculate] = useState(false)
+  const [commissionPercentage, setCommissionPercentage] = useState<number>(0)
   const isEditing = !!policy
 
   const form = useForm<PolicyFormValues>({
@@ -62,8 +65,8 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
     },
   })
 
-  // Hack para resetear correctamenute los default values si el policy cambia cuando ya está onOpenChange
-  useState(() => {
+  // Reset form values when dialog opens or policy changes
+  useEffect(() => {
     if (open) {
       form.reset({
         type: policy?.type || "SOAT",
@@ -77,7 +80,16 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
         endDate: policy ? new Date(policy.endDate) : new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
       })
     }
-  })
+  }, [open, policy?.id, form, policy, defaultClientId])
+
+  // Auto-calculate commission based on premium and percentage
+  const premiumAmount = form.watch("premiumAmount")
+  useEffect(() => {
+    if (useAutoCalculate && premiumAmount !== undefined) {
+      const calculated = Math.round(Number(premiumAmount) * (commissionPercentage / 100))
+      form.setValue("commissionAmount", calculated, { shouldValidate: true })
+    }
+  }, [useAutoCalculate, commissionPercentage, premiumAmount, form])
 
   async function onSubmit(data: PolicyFormValues) {
     setIsSubmitting(true)
@@ -212,25 +224,75 @@ export function PolicyDialog({ open, onOpenChange, policy, clients, services, de
           <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/30 p-4 rounded-xl border border-dashed border-border/60">
             <Field data-invalid={!!form.formState.errors.premiumAmount}>
               <FieldLabel htmlFor="premiumAmount">Prima Total (COP) *</FieldLabel>
-              <Input 
-                id="premiumAmount" 
+              <Input
+                id="premiumAmount"
                 type="number"
-                placeholder="0" 
+                placeholder="0"
                 {...form.register("premiumAmount")}
                 aria-invalid={!!form.formState.errors.premiumAmount}
               />
             </Field>
 
-            <Field data-invalid={!!form.formState.errors.commissionAmount}>
-              <FieldLabel htmlFor="commissionAmount">Comisión (COP) *</FieldLabel>
-              <Input 
-                id="commissionAmount" 
-                type="number" 
-                placeholder="0" 
-                {...form.register("commissionAmount")}
-                aria-invalid={!!form.formState.errors.commissionAmount}
-              />
-            </Field>
+            <div className="flex flex-col gap-2">
+              <Field data-invalid={!!form.formState.errors.commissionAmount}>
+                <FieldLabel htmlFor="commissionAmount">
+                  <div className="flex items-center justify-between">
+                    <span>Comisión (COP) *</span>
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        id="auto-calculate"
+                        checked={useAutoCalculate}
+                        onCheckedChange={setUseAutoCalculate}
+                      />
+                      <label htmlFor="auto-calculate" className="text-xs text-muted-foreground cursor-pointer">
+                        Auto {useAutoCalculate && `(${commissionPercentage}%)`}
+                      </label>
+                    </div>
+                  </div>
+                </FieldLabel>
+                {useAutoCalculate ? (
+                  <div className="flex gap-2">
+                    <Input
+                      id="commissionAmount"
+                      type="number"
+                      placeholder="0"
+                      value={form.watch("commissionAmount")}
+                      disabled
+                      aria-invalid={!!form.formState.errors.commissionAmount}
+                      className="flex-1 bg-muted/50"
+                    />
+                  </div>
+                ) : (
+                  <Input
+                    id="commissionAmount"
+                    type="number"
+                    placeholder="0"
+                    {...form.register("commissionAmount")}
+                    aria-invalid={!!form.formState.errors.commissionAmount}
+                  />
+                )}
+              </Field>
+
+              {useAutoCalculate && (
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="commissionPercentage"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    placeholder="0"
+                    value={commissionPercentage}
+                    onChange={(e) => setCommissionPercentage(Number(e.target.value) || 0)}
+                    className="h-8 text-sm"
+                  />
+                  <span className="text-sm text-muted-foreground font-medium">%</span>
+                  <span className="text-xs text-muted-foreground flex-1 text-right">
+                    de la prima
+                  </span>
+                </div>
+              )}
+            </div>
           </FieldGroup>
 
           <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
