@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search } from "lucide-react"
+import { CreateClientDialog } from "./create-client-dialog"
 
 interface ClientesToolbarProps {
   searchQuery: string
@@ -44,6 +45,7 @@ export function ClientesToolbar({
             <SelectItem value="INACTIVO">Inactivos</SelectItem>
           </SelectContent>
         </Select>
+        <CreateClientDialog />
       </div>
     </div>
   )

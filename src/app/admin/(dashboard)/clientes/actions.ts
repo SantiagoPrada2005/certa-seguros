@@ -174,3 +174,43 @@ export async function removeServiceFromClient(data: z.infer<typeof RemoveService
     return { success: false, error: "No se pudo remover el servicio" }
   }
 }
+
+const CreateClientSchema = z.object({
+  name: z.string().min(1, "El nombre es requerido"),
+  type: z.nativeEnum(ClientType).optional().default("INDIVIDUAL"),
+  documentType: z.string().optional().nullable(),
+  documentNumber: z.string().optional().nullable(),
+  email: z.string().email("Correo inválido").optional().nullable().or(z.literal("")),
+  phone: z.string().optional().nullable(),
+  status: z.nativeEnum(ClientStatus).optional().default("NUEVO"),
+})
+
+export async function createClient(data: z.infer<typeof CreateClientSchema>) {
+  try {
+    const validatedData = CreateClientSchema.parse(data)
+    
+    // Convert empty strings to null for optional unique fields if any
+    const emailToSave = validatedData.email === "" ? null : validatedData.email;
+    
+    const newClient = await db.client.create({
+      data: {
+        name: validatedData.name,
+        type: validatedData.type,
+        documentType: validatedData.documentType as any,
+        documentNumber: validatedData.documentNumber,
+        email: emailToSave,
+        phone: validatedData.phone,
+        status: validatedData.status,
+      }
+    })
+    
+    revalidatePath("/admin/clientes")
+    return { success: true, data: newClient }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: "Datos inválidos", validationErrors: error.errors }
+    }
+    console.error("Error creating client:", error)
+    return { success: false, error: "No se pudo crear el cliente" }
+  }
+}
