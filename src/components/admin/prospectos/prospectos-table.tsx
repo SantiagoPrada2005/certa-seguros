@@ -26,12 +26,13 @@ import {
   SearchIcon, FilterIcon, MoreHorizontalIcon,
   MessageSquareIcon, TrashIcon, UserCheckIcon,
   BuildingIcon, UserIcon, Loader2Icon, PencilIcon,
-  UserPlusIcon,
+  UserPlusIcon, EyeIcon, TargetIcon,
 } from "lucide-react";
 import { fetchProspects, type ProspectRecord } from "@/lib/api-client";
 import { updateProspectStatus, deleteProspect, convertProspectToClient } from "@/app/admin/(dashboard)/prospectos/_actions/prospect-actions";
 import { EditarProspectoDialog } from "@/components/admin/prospectos/editar-prospecto-dialog";
 import { ConvertirClienteDialog } from "@/components/admin/prospectos/convertir-cliente-dialog";
+import { Prospect360Dialog } from "@/components/admin/prospectos/prospect-360-dialog";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
@@ -54,17 +55,28 @@ const statusLabel: Record<string, string> = {
 
 interface ProspectosTableProps {
   initialProspects: ProspectRecord[];
+  externalStatusFilter?: string;
+  onStatusFilterChange?: (status: string) => void;
 }
 
-export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
+export function ProspectosTable({ initialProspects, externalStatusFilter, onStatusFilterChange }: ProspectosTableProps) {
   const [prospects, setProspects] = React.useState<ProspectRecord[]>(initialProspects);
   const [loading, setLoading] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [statusFilter, setStatusFilter] = React.useState(externalStatusFilter ?? "all");
+  const [sourceFilter, setSourceFilter] = React.useState("all");
   const [page, setPage] = React.useState(1);
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
   const [editingProspect, setEditingProspect] = React.useState<ProspectRecord | null>(null);
   const [convertingProspect, setConvertingProspect] = React.useState<ProspectRecord | null>(null);
+  const [viewingProspect, setViewingProspect] = React.useState<ProspectRecord | null>(null);
+
+  // Sync with external filter from KPI cards
+  React.useEffect(() => {
+    if (externalStatusFilter && externalStatusFilter !== "all") {
+      setStatusFilter(externalStatusFilter)
+    }
+  }, [externalStatusFilter])
 
   // Sync state when Server Component re-renders (e.g. after revalidatePath)
   React.useEffect(() => {
@@ -80,7 +92,12 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
           status: statusFilter !== "all" ? statusFilter : undefined,
           search: search || undefined,
         });
-        setProspects(data);
+        // Client-side filter for source
+        let filtered = data;
+        if (sourceFilter !== "all") {
+          filtered = data.filter(p => p.source === sourceFilter);
+        }
+        setProspects(filtered);
         setPage(1);
       } catch {
         toast.error("Error al cargar los prospectos");
@@ -89,7 +106,7 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
       }
     }, 300); // debounce
     return () => clearTimeout(timer);
-  }, [search, statusFilter]);
+  }, [search, statusFilter, sourceFilter]);
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(prospects.length / PAGE_SIZE));
@@ -154,7 +171,10 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </InputGroup>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "all")}>
+            <Select value={statusFilter} onValueChange={(v) => {
+              setStatusFilter(v ?? "all")
+              onStatusFilterChange?.(v ?? "all")
+            }}>
               <SelectTrigger className="w-[140px]">
                 <FilterIcon data-icon="inline-start" className="size-4" />
                 <SelectValue placeholder="Estado" />
@@ -166,6 +186,19 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
                 <SelectItem value="EN_PROCESO">En Proceso</SelectItem>
                 <SelectItem value="DESCARTADO">Descartado</SelectItem>
                 <SelectItem value="CONVERTIDO">Convertido</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sourceFilter} onValueChange={(v) => setSourceFilter(v ?? "all")}>
+              <SelectTrigger className="w-[160px]">
+                <TargetIcon data-icon="inline-start" className="size-4" />
+                <SelectValue placeholder="Fuente" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                <SelectItem value="WEB_PUBLICA">Web Pública</SelectItem>
+                <SelectItem value="REFERIDOS">Referidos</SelectItem>
+                <SelectItem value="REDES_SOCIALES">Redes Sociales</SelectItem>
+                <SelectItem value="DIRECTOS">Directos</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -183,6 +216,7 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
               <TableRow>
                 <TableHead>Prospecto</TableHead>
                 <TableHead>Contacto</TableHead>
+                <TableHead>Fuente</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Servicios</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
@@ -201,7 +235,12 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="font-medium text-sm">{prospect.name}</span>
+                        <button
+                          onClick={() => setViewingProspect(prospect)}
+                          className="font-medium text-sm text-left hover:text-primary transition-colors cursor-pointer"
+                        >
+                          {prospect.name}
+                        </button>
                         <span className="text-xs text-muted-foreground">
                           {prospect.documentType
                             ? `${prospect.documentType} ${prospect.documentNumber ?? ""}`
@@ -215,6 +254,20 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
                       <span className="text-sm">{prospect.email ?? "—"}</span>
                       <span className="text-xs text-muted-foreground">{prospect.phone ?? "—"}</span>
                     </div>
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {prospect.source ? (
+                      <Badge variant="secondary" className="text-[10px]">
+                        {{
+                          WEB_PUBLICA: "Web",
+                          REFERIDOS: "Referidos",
+                          REDES_SOCIALES: "Redes",
+                          DIRECTOS: "Directos",
+                        }[prospect.source] || prospect.source}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant={statusConfig[prospect.status] ?? "outline"}>
@@ -249,14 +302,24 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
                       <DropdownMenuContent align="end" className="w-[180px]">
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => setViewingProspect(prospect)}>
+                            <EyeIcon data-icon="inline-start" className="size-4" />
+                            Ver Detalle
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setEditingProspect(prospect)}>
                             <PencilIcon data-icon="inline-start" className="size-4" />
                             Editar Información
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <MessageSquareIcon data-icon="inline-start" className="size-4" />
-                            WhatsApp
-                          </DropdownMenuItem>
+                          {prospect.phone && (
+                            <DropdownMenuItem onClick={() => {
+                              const phone = prospect.phone!.replace(/\D/g, '')
+                              const message = encodeURIComponent(`Hola ${prospect.name}, te contactamos de Certa Seguros`)
+                              window.open(`https://wa.me/${phone}?text=${message}`, '_blank')
+                            }}>
+                              <MessageSquareIcon data-icon="inline-start" className="size-4" />
+                              WhatsApp
+                            </DropdownMenuItem>
+                          )}
 
                           {prospect.status !== "DESCARTADO" && prospect.status !== "CONVERTIDO" && (
                             <DropdownMenuItem onClick={() => setConvertingProspect(prospect)}>
@@ -301,7 +364,7 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
               ))}
               {paginated.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-10">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-10">
                     No hay prospectos que coincidan con los filtros.
                   </TableCell>
                 </TableRow>
@@ -359,6 +422,22 @@ export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
         prospect={convertingProspect}
         onClose={() => setConvertingProspect(null)}
         onSuccess={handleConvert}
+      />
+
+      <Prospect360Dialog
+        prospect={viewingProspect}
+        isOpen={!!viewingProspect}
+        onOpenChange={(open) => {
+          if (!open) setViewingProspect(null)
+        }}
+        onConverted={() => {
+          setViewingProspect(null)
+          // Refresh the list
+          fetchProspects({
+            status: statusFilter !== "all" ? statusFilter : undefined,
+            search: search || undefined,
+          }).then(setProspects)
+        }}
       />
     </Card>
   );
