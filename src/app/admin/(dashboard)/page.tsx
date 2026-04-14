@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { type GoalRecord } from "@/lib/api-client"
 import { fetchDashboardStats, type DashboardStats } from "@/lib/api-client"
 import { getDashboardChartData } from "../actions"
 import {
@@ -95,13 +96,6 @@ const weeklyConfig = {
   cerrados: { label: "Cerrados", color: "var(--color-chart-3)" },
 } satisfies ChartConfig
 
-const targets = [
-  { name: "Pólizas Emitidas", current: 847, goal: 1000, unit: "pólizas" },
-  { name: "Primas Recaudadas", current: 214.5, goal: 280, unit: "M COP" },
-  { name: "Clientes Nuevos", current: 156, goal: 200, unit: "clientes" },
-  { name: "Renovaciones", current: 312, goal: 350, unit: "renovaciones" },
-]
-
 const activityBadgeVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   SUCCESS: "default",
   INFO: "secondary",
@@ -149,15 +143,18 @@ export default function MetricsDashboardPage() {
     weeklyActivityData: any[];
   } | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [targets, setTargets] = React.useState<GoalRecord[]>([]);
 
   React.useEffect(() => {
     Promise.all([
       fetchDashboardStats(6),
-      getDashboardChartData()
+      getDashboardChartData(),
+      fetch('/api/goals').then(res => res.json())
     ])
-      .then(([dash, charts]) => {
+      .then(([dash, charts, goalsData]) => {
         setDashData(dash);
         setChartData(charts);
+        setTargets(goalsData.filter((g: GoalRecord) => g.isActive).slice(0, 4));
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -334,7 +331,7 @@ export default function MetricsDashboardPage() {
                   content={<ChartTooltipContent hideLabel />}
                 />
                 <Bar dataKey="cantidad" radius={[0, 6, 6, 0]}>
-                  {serviceDistributionData.map((entry: { fill: string }, index: number) => (
+                  {serviceDistributionData.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Bar>
@@ -376,7 +373,7 @@ export default function MetricsDashboardPage() {
                   strokeWidth={3}
                   stroke="var(--color-background)"
                 >
-                  {leadSourcesData.map((_: any, index: number) => (
+                  {leadSourcesData.map((_: unknown, index: number) => (
                     <Cell key={`cell-${index}`} />
                   ))}
                 </Pie>
@@ -385,7 +382,7 @@ export default function MetricsDashboardPage() {
           </CardContent>
           <CardFooter className="border-t pt-4">
             <div className="flex flex-col gap-2 w-full">
-              {leadSourcesData.map((item: { fill: string; fuente: string; valor: number }, i: number) => (
+              {leadSourcesData.map((item: any, i: number) => (
                 <div key={i} className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <div
@@ -534,14 +531,17 @@ export default function MetricsDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-6">
+              {targets.length === 0 && (
+                <p className="text-sm text-muted-foreground py-4">No hay metas activas registradas.</p>
+              )}
               {targets.map((target, i) => {
-                const percentage = Math.round((target.current / target.goal) * 100)
+                const percentage = Number(target.targetValue) === 0 ? 0 : Math.round((Number(target.currentValue) / Number(target.targetValue)) * 100)
                 return (
                   <div key={i} className="flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{target.name}</span>
                       <span className="text-sm text-muted-foreground tabular-nums">
-                        {target.current} / {target.goal} {target.unit}
+                        {Number(target.currentValue).toLocaleString("es-CO")} / {Number(target.targetValue).toLocaleString("es-CO")} {target.unit}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
