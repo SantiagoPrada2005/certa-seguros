@@ -38,11 +38,9 @@ export function ClientesToolbar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ALL">Todos los estados</SelectItem>
-            <SelectItem value="NUEVO">Nuevos</SelectItem>
-            <SelectItem value="CONTACTADO">Contactados</SelectItem>
-            <SelectItem value="EN_PROCESO">En Proceso</SelectItem>
-            <SelectItem value="ACTIVO">Activos (Clientes)</SelectItem>
+            <SelectItem value="ACTIVO">Activos</SelectItem>
             <SelectItem value="INACTIVO">Inactivos</SelectItem>
+            <SelectItem value="MOROSO">Morosos</SelectItem>
           </SelectContent>
         </Select>
         <CreateClientDialog />

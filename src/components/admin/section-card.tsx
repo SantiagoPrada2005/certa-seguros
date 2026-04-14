@@ -17,7 +17,7 @@ export interface SectionCardProps {
   value?: string | number
   trend?: "up" | "down"
   trendValue?: string
-  footerTitle?: string
+  footerTitle?: React.ReactNode
   footerDescription?: string
   className?: string
 }
@@ -63,7 +63,7 @@ export function SectionCard({
       {(footerTitle || footerDescription) && (
         <CardFooter className="flex-col items-start gap-1.5 text-sm border-t-0 bg-transparent">
           {footerTitle && (
-            <div className="line-clamp-1 flex gap-2 font-medium">
+            <div className="flex gap-2 font-medium">
               {footerTitle}
               {trend === "up" ? (
                 <IconTrendingUp className="size-4" />

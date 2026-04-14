@@ -18,8 +18,10 @@ export default async function PoliciesPage() {
   })
 
   // Obtener catálogos para los selectores del formulario
+  // Only active clients can have policies
   const [clients, services] = await Promise.all([
     prisma.client.findMany({
+      where: { status: "ACTIVO" },
       select: { id: true, name: true, documentNumber: true },
       orderBy: { name: 'asc' }
     }),

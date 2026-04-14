@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
   DialogTitle,
   DialogDescription
 } from "@/components/ui/dialog"
@@ -15,7 +15,8 @@ import { ServicesTab } from "./tabs/services-tab"
 import { PoliciesTab } from "./tabs/policies-tab"
 import { InvoicesTab } from "./tabs/invoices-tab"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Building2, User2 } from "lucide-react"
+import { Building2, User2, Tag } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 interface Client360DialogProps {
   clientId: string
@@ -74,11 +75,31 @@ export function Client360Dialog({ clientId, isOpen, onOpenChange, availableServi
                   {loading ? (
                     <Skeleton className="h-4 w-32 mt-2" />
                   ) : (
-                    <span>
-                      {data?.documentType || "Doc"}: {data?.documentNumber || "No registrado"} 
-                      {" • "}
-                      {data?.type === "BUSINESS" ? "Empresa" : "Natural"}
-                    </span>
+                    <div className="flex flex-col gap-1.5 mt-2">
+                      <span>
+                        {data?.documentType || "Doc"}: {data?.documentNumber || "No registrado"}
+                        {" • "}
+                        {data?.type === "BUSINESS" ? "Empresa" : "Natural"}
+                      </span>
+                      {data?.tags && data.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {data.tags.map((tag: { id: string; name: string; color: string | null }) => (
+                            <Badge
+                              key={tag.id}
+                              variant="outline"
+                              className="gap-0.5 text-[10px]"
+                              style={tag.color ? {
+                                borderColor: tag.color,
+                                color: tag.color,
+                              } : undefined}
+                            >
+                              <Tag className="size-2.5" />
+                              {tag.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </DialogDescription>
               </div>

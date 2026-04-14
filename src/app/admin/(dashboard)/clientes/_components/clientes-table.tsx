@@ -21,6 +21,7 @@ type ClientData = {
   email: string | null
   phone: string | null
   status: ClientStatus
+  tags: { id: string; name: string; color: string | null }[]
   _count: { services: number; policies: number }
 }
 
@@ -33,24 +34,18 @@ export function ClientesTable({ clients, onSelectClient }: ClientesTableProps) {
   
   const getStatusColor = (status: ClientStatus) => {
     switch (status) {
-      case "NUEVO": return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-      case "CONTACTADO": return "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400"
-      case "EN_PROCESO": return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
       case "ACTIVO": return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
       case "INACTIVO": return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
-      case "DESCARTADO": return "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-400"
+      case "MOROSO": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
       default: return "bg-gray-100 text-gray-800"
     }
   }
 
   const getStatusLabel = (status: ClientStatus) => {
     switch (status) {
-      case "NUEVO": return "Nuevo Prospecto"
-      case "CONTACTADO": return "Contactado"
-      case "EN_PROCESO": return "En Proceso"
-      case "ACTIVO": return "Cliente Activo"
+      case "ACTIVO": return "Activo"
       case "INACTIVO": return "Inactivo"
-      case "DESCARTADO": return "Descartado"
+      case "MOROSO": return "Moroso"
       default: return status
     }
   }

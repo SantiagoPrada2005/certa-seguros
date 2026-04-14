@@ -43,6 +43,7 @@ import {
   TargetIcon,
   ArrowUpRightIcon,
   ArrowDownRightIcon,
+  PipelineIcon,
 } from "lucide-react"
 
 // ═══════════════════════════════════════════════════
@@ -131,6 +132,14 @@ const relativeTime = (iso: string) => {
   return `Hace ${Math.floor(hrs / 24)}d`;
 };
 
+const prospectStatusLabel: Record<string, string> = {
+  NUEVO: "Nuevos",
+  CONTACTADO: "Contactados",
+  EN_PROCESO: "En Proceso",
+  DESCARTADO: "Descartados",
+  CONVERTIDO: "Convertidos",
+};
+
 export default function MetricsDashboardPage() {
   const [dashData, setDashData] = React.useState<DashboardStats | null>(null);
   const [chartData, setChartData] = React.useState<{
@@ -174,7 +183,7 @@ export default function MetricsDashboardPage() {
       </div>
 
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:grid-cols-2 xl:grid-cols-4 dark:*:data-[slot=card]:bg-card">
+      <div className="grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:grid-cols-2 xl:grid-cols-5 dark:*:data-[slot=card]:bg-card">
         <SectionCard
           title="Ingresos del Mes"
           value={loading ? "…" : formatCOPCompact(stats?.monthlyRevenue ?? 0)}
@@ -188,6 +197,23 @@ export default function MetricsDashboardPage() {
           trend="up"
           trendValue="Estado: ACTIVO"
           footerTitle="En base de datos"
+        />
+        <SectionCard
+          title="Prospectos en Pipeline"
+          value={loading ? "…" : (stats?.totalProspects ?? 0).toLocaleString("es-CO")}
+          trend="up"
+          trendValue="Activos (no descartados)"
+          footerTitle={
+            loading ? "…" : (
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                {stats?.prospectsBreakdown && Object.entries(stats.prospectsBreakdown).map(([status, count]) => (
+                  <span key={status} className="text-muted-foreground">
+                    {prospectStatusLabel[status] || status}: <strong className="text-foreground">{count}</strong>
+                  </span>
+                ))}
+              </div>
+            )
+          }
         />
         <SectionCard
           title="Pólizas Activas"

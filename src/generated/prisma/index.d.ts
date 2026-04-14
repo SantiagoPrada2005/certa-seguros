@@ -21,11 +21,26 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
  * Model Client
- * Clientes y prospectos unificados.
- * El campo `status` diferencia si es prospecto (NUEVO, CONTACTADO, EN_PROCESO)
- * o cliente activo (ACTIVO).
+ * Clientes activos del sistema.
+ * Solo clientes que han sido convertidos de prospectos y tienen pólizas o potencial de negocio.
  */
 export type Client = $Result.DefaultSelection<Prisma.$ClientPayload>
+/**
+ * Model Prospect
+ * Prospectos (leads) que aún no se han convertido en clientes.
+ * Se gestionan en el pipeline de ventas hasta su conversión o descarte.
+ */
+export type Prospect = $Result.DefaultSelection<Prisma.$ProspectPayload>
+/**
+ * Model ClientTag
+ * Tags normalizados para clientes (etiquetas personalizables)
+ */
+export type ClientTag = $Result.DefaultSelection<Prisma.$ClientTagPayload>
+/**
+ * Model ProspectService
+ * Tabla pivote: servicios de interés de cada prospecto
+ */
+export type ProspectService = $Result.DefaultSelection<Prisma.$ProspectServicePayload>
 /**
  * Model ServiceCategory
  * Categorías principales de servicios (Seguros, Asesorías, Servicios Adicionales)
@@ -104,15 +119,23 @@ export type ClientType = (typeof ClientType)[keyof typeof ClientType]
 
 
 export const ClientStatus: {
-  NUEVO: 'NUEVO',
-  CONTACTADO: 'CONTACTADO',
-  EN_PROCESO: 'EN_PROCESO',
   ACTIVO: 'ACTIVO',
   INACTIVO: 'INACTIVO',
-  DESCARTADO: 'DESCARTADO'
+  MOROSO: 'MOROSO'
 };
 
 export type ClientStatus = (typeof ClientStatus)[keyof typeof ClientStatus]
+
+
+export const ProspectStatus: {
+  NUEVO: 'NUEVO',
+  CONTACTADO: 'CONTACTADO',
+  EN_PROCESO: 'EN_PROCESO',
+  DESCARTADO: 'DESCARTADO',
+  CONVERTIDO: 'CONVERTIDO'
+};
+
+export type ProspectStatus = (typeof ProspectStatus)[keyof typeof ProspectStatus]
 
 
 export const LeadSource: {
@@ -266,6 +289,10 @@ export const ClientType: typeof $Enums.ClientType
 export type ClientStatus = $Enums.ClientStatus
 
 export const ClientStatus: typeof $Enums.ClientStatus
+
+export type ProspectStatus = $Enums.ProspectStatus
+
+export const ProspectStatus: typeof $Enums.ProspectStatus
 
 export type LeadSource = $Enums.LeadSource
 
@@ -459,6 +486,36 @@ export class PrismaClient<
     * ```
     */
   get client(): Prisma.ClientDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.prospect`: Exposes CRUD operations for the **Prospect** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Prospects
+    * const prospects = await prisma.prospect.findMany()
+    * ```
+    */
+  get prospect(): Prisma.ProspectDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.clientTag`: Exposes CRUD operations for the **ClientTag** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ClientTags
+    * const clientTags = await prisma.clientTag.findMany()
+    * ```
+    */
+  get clientTag(): Prisma.ClientTagDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.prospectService`: Exposes CRUD operations for the **ProspectService** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProspectServices
+    * const prospectServices = await prisma.prospectService.findMany()
+    * ```
+    */
+  get prospectService(): Prisma.ProspectServiceDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.serviceCategory`: Exposes CRUD operations for the **ServiceCategory** model.
@@ -1005,6 +1062,9 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     Client: 'Client',
+    Prospect: 'Prospect',
+    ClientTag: 'ClientTag',
+    ProspectService: 'ProspectService',
     ServiceCategory: 'ServiceCategory',
     ServiceSubcategory: 'ServiceSubcategory',
     Service: 'Service',
@@ -1031,7 +1091,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "client" | "serviceCategory" | "serviceSubcategory" | "service" | "clientService" | "policy" | "invoice" | "invoiceItem" | "reminder" | "goal" | "goalMilestone" | "activityLog"
+      modelProps: "user" | "client" | "prospect" | "clientTag" | "prospectService" | "serviceCategory" | "serviceSubcategory" | "service" | "clientService" | "policy" | "invoice" | "invoiceItem" | "reminder" | "goal" | "goalMilestone" | "activityLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1180,6 +1240,228 @@ export namespace Prisma {
           count: {
             args: Prisma.ClientCountArgs<ExtArgs>
             result: $Utils.Optional<ClientCountAggregateOutputType> | number
+          }
+        }
+      }
+      Prospect: {
+        payload: Prisma.$ProspectPayload<ExtArgs>
+        fields: Prisma.ProspectFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProspectFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProspectFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>
+          }
+          findFirst: {
+            args: Prisma.ProspectFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProspectFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>
+          }
+          findMany: {
+            args: Prisma.ProspectFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>[]
+          }
+          create: {
+            args: Prisma.ProspectCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>
+          }
+          createMany: {
+            args: Prisma.ProspectCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProspectCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>[]
+          }
+          delete: {
+            args: Prisma.ProspectDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>
+          }
+          update: {
+            args: Prisma.ProspectUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProspectDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProspectUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProspectUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>[]
+          }
+          upsert: {
+            args: Prisma.ProspectUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectPayload>
+          }
+          aggregate: {
+            args: Prisma.ProspectAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProspect>
+          }
+          groupBy: {
+            args: Prisma.ProspectGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProspectGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProspectCountArgs<ExtArgs>
+            result: $Utils.Optional<ProspectCountAggregateOutputType> | number
+          }
+        }
+      }
+      ClientTag: {
+        payload: Prisma.$ClientTagPayload<ExtArgs>
+        fields: Prisma.ClientTagFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ClientTagFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ClientTagFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>
+          }
+          findFirst: {
+            args: Prisma.ClientTagFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ClientTagFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>
+          }
+          findMany: {
+            args: Prisma.ClientTagFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>[]
+          }
+          create: {
+            args: Prisma.ClientTagCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>
+          }
+          createMany: {
+            args: Prisma.ClientTagCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ClientTagCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>[]
+          }
+          delete: {
+            args: Prisma.ClientTagDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>
+          }
+          update: {
+            args: Prisma.ClientTagUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>
+          }
+          deleteMany: {
+            args: Prisma.ClientTagDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ClientTagUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ClientTagUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>[]
+          }
+          upsert: {
+            args: Prisma.ClientTagUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientTagPayload>
+          }
+          aggregate: {
+            args: Prisma.ClientTagAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateClientTag>
+          }
+          groupBy: {
+            args: Prisma.ClientTagGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ClientTagGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ClientTagCountArgs<ExtArgs>
+            result: $Utils.Optional<ClientTagCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProspectService: {
+        payload: Prisma.$ProspectServicePayload<ExtArgs>
+        fields: Prisma.ProspectServiceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProspectServiceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProspectServiceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>
+          }
+          findFirst: {
+            args: Prisma.ProspectServiceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProspectServiceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>
+          }
+          findMany: {
+            args: Prisma.ProspectServiceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>[]
+          }
+          create: {
+            args: Prisma.ProspectServiceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>
+          }
+          createMany: {
+            args: Prisma.ProspectServiceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProspectServiceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>[]
+          }
+          delete: {
+            args: Prisma.ProspectServiceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>
+          }
+          update: {
+            args: Prisma.ProspectServiceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>
+          }
+          deleteMany: {
+            args: Prisma.ProspectServiceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProspectServiceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProspectServiceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>[]
+          }
+          upsert: {
+            args: Prisma.ProspectServiceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProspectServicePayload>
+          }
+          aggregate: {
+            args: Prisma.ProspectServiceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProspectService>
+          }
+          groupBy: {
+            args: Prisma.ProspectServiceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProspectServiceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProspectServiceCountArgs<ExtArgs>
+            result: $Utils.Optional<ProspectServiceCountAggregateOutputType> | number
           }
         }
       }
@@ -2107,6 +2389,9 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     user?: UserOmit
     client?: ClientOmit
+    prospect?: ProspectOmit
+    clientTag?: ClientTagOmit
+    prospectService?: ProspectServiceOmit
     serviceCategory?: ServiceCategoryOmit
     serviceSubcategory?: ServiceSubcategoryOmit
     service?: ServiceOmit
@@ -2243,6 +2528,7 @@ export namespace Prisma {
     reminders: number
     activityLogs: number
     services: number
+    tags: number
   }
 
   export type ClientCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2251,6 +2537,7 @@ export namespace Prisma {
     reminders?: boolean | ClientCountOutputTypeCountRemindersArgs
     activityLogs?: boolean | ClientCountOutputTypeCountActivityLogsArgs
     services?: boolean | ClientCountOutputTypeCountServicesArgs
+    tags?: boolean | ClientCountOutputTypeCountTagsArgs
   }
 
   // Custom InputTypes
@@ -2297,6 +2584,93 @@ export namespace Prisma {
    */
   export type ClientCountOutputTypeCountServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClientServiceWhereInput
+  }
+
+  /**
+   * ClientCountOutputType without action
+   */
+  export type ClientCountOutputTypeCountTagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClientTagWhereInput
+  }
+
+
+  /**
+   * Count Type ProspectCountOutputType
+   */
+
+  export type ProspectCountOutputType = {
+    reminders: number
+    activityLogs: number
+    services: number
+  }
+
+  export type ProspectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reminders?: boolean | ProspectCountOutputTypeCountRemindersArgs
+    activityLogs?: boolean | ProspectCountOutputTypeCountActivityLogsArgs
+    services?: boolean | ProspectCountOutputTypeCountServicesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ProspectCountOutputType without action
+   */
+  export type ProspectCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectCountOutputType
+     */
+    select?: ProspectCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProspectCountOutputType without action
+   */
+  export type ProspectCountOutputTypeCountRemindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReminderWhereInput
+  }
+
+  /**
+   * ProspectCountOutputType without action
+   */
+  export type ProspectCountOutputTypeCountActivityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ActivityLogWhereInput
+  }
+
+  /**
+   * ProspectCountOutputType without action
+   */
+  export type ProspectCountOutputTypeCountServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProspectServiceWhereInput
+  }
+
+
+  /**
+   * Count Type ClientTagCountOutputType
+   */
+
+  export type ClientTagCountOutputType = {
+    clients: number
+  }
+
+  export type ClientTagCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    clients?: boolean | ClientTagCountOutputTypeCountClientsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ClientTagCountOutputType without action
+   */
+  export type ClientTagCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTagCountOutputType
+     */
+    select?: ClientTagCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ClientTagCountOutputType without action
+   */
+  export type ClientTagCountOutputTypeCountClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClientWhereInput
   }
 
 
@@ -2369,11 +2743,13 @@ export namespace Prisma {
   export type ServiceCountOutputType = {
     policies: number
     clients: number
+    prospects: number
   }
 
   export type ServiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     policies?: boolean | ServiceCountOutputTypeCountPoliciesArgs
     clients?: boolean | ServiceCountOutputTypeCountClientsArgs
+    prospects?: boolean | ServiceCountOutputTypeCountProspectsArgs
   }
 
   // Custom InputTypes
@@ -2399,6 +2775,13 @@ export namespace Prisma {
    */
   export type ServiceCountOutputTypeCountClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClientServiceWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
+  export type ServiceCountOutputTypeCountProspectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProspectServiceWhereInput
   }
 
 
@@ -3642,6 +4025,9 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     address: string | null
+    birthDate: Date | null
+    city: string | null
+    notes: string | null
     status: $Enums.ClientStatus | null
     source: $Enums.LeadSource | null
     createdAt: Date | null
@@ -3657,6 +4043,9 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     address: string | null
+    birthDate: Date | null
+    city: string | null
+    notes: string | null
     status: $Enums.ClientStatus | null
     source: $Enums.LeadSource | null
     createdAt: Date | null
@@ -3672,6 +4061,9 @@ export namespace Prisma {
     email: number
     phone: number
     address: number
+    birthDate: number
+    city: number
+    notes: number
     status: number
     source: number
     createdAt: number
@@ -3689,6 +4081,9 @@ export namespace Prisma {
     email?: true
     phone?: true
     address?: true
+    birthDate?: true
+    city?: true
+    notes?: true
     status?: true
     source?: true
     createdAt?: true
@@ -3704,6 +4099,9 @@ export namespace Prisma {
     email?: true
     phone?: true
     address?: true
+    birthDate?: true
+    city?: true
+    notes?: true
     status?: true
     source?: true
     createdAt?: true
@@ -3719,6 +4117,9 @@ export namespace Prisma {
     email?: true
     phone?: true
     address?: true
+    birthDate?: true
+    city?: true
+    notes?: true
     status?: true
     source?: true
     createdAt?: true
@@ -3807,6 +4208,9 @@ export namespace Prisma {
     email: string | null
     phone: string | null
     address: string | null
+    birthDate: Date | null
+    city: string | null
+    notes: string | null
     status: $Enums.ClientStatus
     source: $Enums.LeadSource | null
     createdAt: Date
@@ -3839,6 +4243,9 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     address?: boolean
+    birthDate?: boolean
+    city?: boolean
+    notes?: boolean
     status?: boolean
     source?: boolean
     createdAt?: boolean
@@ -3848,6 +4255,7 @@ export namespace Prisma {
     reminders?: boolean | Client$remindersArgs<ExtArgs>
     activityLogs?: boolean | Client$activityLogsArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
+    tags?: boolean | Client$tagsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["client"]>
 
@@ -3860,6 +4268,9 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     address?: boolean
+    birthDate?: boolean
+    city?: boolean
+    notes?: boolean
     status?: boolean
     source?: boolean
     createdAt?: boolean
@@ -3875,6 +4286,9 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     address?: boolean
+    birthDate?: boolean
+    city?: boolean
+    notes?: boolean
     status?: boolean
     source?: boolean
     createdAt?: boolean
@@ -3890,19 +4304,23 @@ export namespace Prisma {
     email?: boolean
     phone?: boolean
     address?: boolean
+    birthDate?: boolean
+    city?: boolean
+    notes?: boolean
     status?: boolean
     source?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "type" | "documentType" | "documentNumber" | "email" | "phone" | "address" | "status" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "type" | "documentType" | "documentNumber" | "email" | "phone" | "address" | "birthDate" | "city" | "notes" | "status" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     policies?: boolean | Client$policiesArgs<ExtArgs>
     invoices?: boolean | Client$invoicesArgs<ExtArgs>
     reminders?: boolean | Client$remindersArgs<ExtArgs>
     activityLogs?: boolean | Client$activityLogsArgs<ExtArgs>
     services?: boolean | Client$servicesArgs<ExtArgs>
+    tags?: boolean | Client$tagsArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3916,6 +4334,7 @@ export namespace Prisma {
       reminders: Prisma.$ReminderPayload<ExtArgs>[]
       activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
       services: Prisma.$ClientServicePayload<ExtArgs>[]
+      tags: Prisma.$ClientTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3926,6 +4345,9 @@ export namespace Prisma {
       email: string | null
       phone: string | null
       address: string | null
+      birthDate: Date | null
+      city: string | null
+      notes: string | null
       status: $Enums.ClientStatus
       source: $Enums.LeadSource | null
       createdAt: Date
@@ -4329,6 +4751,7 @@ export namespace Prisma {
     reminders<T extends Client$remindersArgs<ExtArgs> = {}>(args?: Subset<T, Client$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activityLogs<T extends Client$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, Client$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     services<T extends Client$servicesArgs<ExtArgs> = {}>(args?: Subset<T, Client$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tags<T extends Client$tagsArgs<ExtArgs> = {}>(args?: Subset<T, Client$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4366,6 +4789,9 @@ export namespace Prisma {
     readonly email: FieldRef<"Client", 'String'>
     readonly phone: FieldRef<"Client", 'String'>
     readonly address: FieldRef<"Client", 'String'>
+    readonly birthDate: FieldRef<"Client", 'DateTime'>
+    readonly city: FieldRef<"Client", 'String'>
+    readonly notes: FieldRef<"Client", 'String'>
     readonly status: FieldRef<"Client", 'ClientStatus'>
     readonly source: FieldRef<"Client", 'LeadSource'>
     readonly createdAt: FieldRef<"Client", 'DateTime'>
@@ -4883,6 +5309,30 @@ export namespace Prisma {
   }
 
   /**
+   * Client.tags
+   */
+  export type Client$tagsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    where?: ClientTagWhereInput
+    orderBy?: ClientTagOrderByWithRelationInput | ClientTagOrderByWithRelationInput[]
+    cursor?: ClientTagWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClientTagScalarFieldEnum | ClientTagScalarFieldEnum[]
+  }
+
+  /**
    * Client without action
    */
   export type ClientDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4898,6 +5348,3361 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ClientInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Prospect
+   */
+
+  export type AggregateProspect = {
+    _count: ProspectCountAggregateOutputType | null
+    _min: ProspectMinAggregateOutputType | null
+    _max: ProspectMaxAggregateOutputType | null
+  }
+
+  export type ProspectMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    type: $Enums.ClientType | null
+    documentType: $Enums.DocumentType | null
+    documentNumber: string | null
+    email: string | null
+    phone: string | null
+    address: string | null
+    status: $Enums.ProspectStatus | null
+    source: $Enums.LeadSource | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ProspectMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    type: $Enums.ClientType | null
+    documentType: $Enums.DocumentType | null
+    documentNumber: string | null
+    email: string | null
+    phone: string | null
+    address: string | null
+    status: $Enums.ProspectStatus | null
+    source: $Enums.LeadSource | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ProspectCountAggregateOutputType = {
+    id: number
+    name: number
+    type: number
+    documentType: number
+    documentNumber: number
+    email: number
+    phone: number
+    address: number
+    status: number
+    source: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ProspectMinAggregateInputType = {
+    id?: true
+    name?: true
+    type?: true
+    documentType?: true
+    documentNumber?: true
+    email?: true
+    phone?: true
+    address?: true
+    status?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ProspectMaxAggregateInputType = {
+    id?: true
+    name?: true
+    type?: true
+    documentType?: true
+    documentNumber?: true
+    email?: true
+    phone?: true
+    address?: true
+    status?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ProspectCountAggregateInputType = {
+    id?: true
+    name?: true
+    type?: true
+    documentType?: true
+    documentNumber?: true
+    email?: true
+    phone?: true
+    address?: true
+    status?: true
+    source?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ProspectAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Prospect to aggregate.
+     */
+    where?: ProspectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Prospects to fetch.
+     */
+    orderBy?: ProspectOrderByWithRelationInput | ProspectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProspectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Prospects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Prospects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Prospects
+    **/
+    _count?: true | ProspectCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProspectMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProspectMaxAggregateInputType
+  }
+
+  export type GetProspectAggregateType<T extends ProspectAggregateArgs> = {
+        [P in keyof T & keyof AggregateProspect]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProspect[P]>
+      : GetScalarType<T[P], AggregateProspect[P]>
+  }
+
+
+
+
+  export type ProspectGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProspectWhereInput
+    orderBy?: ProspectOrderByWithAggregationInput | ProspectOrderByWithAggregationInput[]
+    by: ProspectScalarFieldEnum[] | ProspectScalarFieldEnum
+    having?: ProspectScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProspectCountAggregateInputType | true
+    _min?: ProspectMinAggregateInputType
+    _max?: ProspectMaxAggregateInputType
+  }
+
+  export type ProspectGroupByOutputType = {
+    id: string
+    name: string
+    type: $Enums.ClientType
+    documentType: $Enums.DocumentType | null
+    documentNumber: string | null
+    email: string | null
+    phone: string | null
+    address: string | null
+    status: $Enums.ProspectStatus
+    source: $Enums.LeadSource | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ProspectCountAggregateOutputType | null
+    _min: ProspectMinAggregateOutputType | null
+    _max: ProspectMaxAggregateOutputType | null
+  }
+
+  type GetProspectGroupByPayload<T extends ProspectGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProspectGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProspectGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProspectGroupByOutputType[P]>
+            : GetScalarType<T[P], ProspectGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProspectSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    type?: boolean
+    documentType?: boolean
+    documentNumber?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    status?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    reminders?: boolean | Prospect$remindersArgs<ExtArgs>
+    activityLogs?: boolean | Prospect$activityLogsArgs<ExtArgs>
+    services?: boolean | Prospect$servicesArgs<ExtArgs>
+    _count?: boolean | ProspectCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["prospect"]>
+
+  export type ProspectSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    type?: boolean
+    documentType?: boolean
+    documentNumber?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    status?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["prospect"]>
+
+  export type ProspectSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    type?: boolean
+    documentType?: boolean
+    documentNumber?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    status?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["prospect"]>
+
+  export type ProspectSelectScalar = {
+    id?: boolean
+    name?: boolean
+    type?: boolean
+    documentType?: boolean
+    documentNumber?: boolean
+    email?: boolean
+    phone?: boolean
+    address?: boolean
+    status?: boolean
+    source?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ProspectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "type" | "documentType" | "documentNumber" | "email" | "phone" | "address" | "status" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["prospect"]>
+  export type ProspectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reminders?: boolean | Prospect$remindersArgs<ExtArgs>
+    activityLogs?: boolean | Prospect$activityLogsArgs<ExtArgs>
+    services?: boolean | Prospect$servicesArgs<ExtArgs>
+    _count?: boolean | ProspectCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ProspectIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ProspectIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ProspectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Prospect"
+    objects: {
+      reminders: Prisma.$ReminderPayload<ExtArgs>[]
+      activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
+      services: Prisma.$ProspectServicePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      type: $Enums.ClientType
+      documentType: $Enums.DocumentType | null
+      documentNumber: string | null
+      email: string | null
+      phone: string | null
+      address: string | null
+      status: $Enums.ProspectStatus
+      source: $Enums.LeadSource | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["prospect"]>
+    composites: {}
+  }
+
+  type ProspectGetPayload<S extends boolean | null | undefined | ProspectDefaultArgs> = $Result.GetResult<Prisma.$ProspectPayload, S>
+
+  type ProspectCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProspectFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProspectCountAggregateInputType | true
+    }
+
+  export interface ProspectDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Prospect'], meta: { name: 'Prospect' } }
+    /**
+     * Find zero or one Prospect that matches the filter.
+     * @param {ProspectFindUniqueArgs} args - Arguments to find a Prospect
+     * @example
+     * // Get one Prospect
+     * const prospect = await prisma.prospect.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProspectFindUniqueArgs>(args: SelectSubset<T, ProspectFindUniqueArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Prospect that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProspectFindUniqueOrThrowArgs} args - Arguments to find a Prospect
+     * @example
+     * // Get one Prospect
+     * const prospect = await prisma.prospect.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProspectFindUniqueOrThrowArgs>(args: SelectSubset<T, ProspectFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Prospect that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectFindFirstArgs} args - Arguments to find a Prospect
+     * @example
+     * // Get one Prospect
+     * const prospect = await prisma.prospect.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProspectFindFirstArgs>(args?: SelectSubset<T, ProspectFindFirstArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Prospect that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectFindFirstOrThrowArgs} args - Arguments to find a Prospect
+     * @example
+     * // Get one Prospect
+     * const prospect = await prisma.prospect.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProspectFindFirstOrThrowArgs>(args?: SelectSubset<T, ProspectFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Prospects that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Prospects
+     * const prospects = await prisma.prospect.findMany()
+     * 
+     * // Get first 10 Prospects
+     * const prospects = await prisma.prospect.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const prospectWithIdOnly = await prisma.prospect.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProspectFindManyArgs>(args?: SelectSubset<T, ProspectFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Prospect.
+     * @param {ProspectCreateArgs} args - Arguments to create a Prospect.
+     * @example
+     * // Create one Prospect
+     * const Prospect = await prisma.prospect.create({
+     *   data: {
+     *     // ... data to create a Prospect
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProspectCreateArgs>(args: SelectSubset<T, ProspectCreateArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Prospects.
+     * @param {ProspectCreateManyArgs} args - Arguments to create many Prospects.
+     * @example
+     * // Create many Prospects
+     * const prospect = await prisma.prospect.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProspectCreateManyArgs>(args?: SelectSubset<T, ProspectCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Prospects and returns the data saved in the database.
+     * @param {ProspectCreateManyAndReturnArgs} args - Arguments to create many Prospects.
+     * @example
+     * // Create many Prospects
+     * const prospect = await prisma.prospect.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Prospects and only return the `id`
+     * const prospectWithIdOnly = await prisma.prospect.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProspectCreateManyAndReturnArgs>(args?: SelectSubset<T, ProspectCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Prospect.
+     * @param {ProspectDeleteArgs} args - Arguments to delete one Prospect.
+     * @example
+     * // Delete one Prospect
+     * const Prospect = await prisma.prospect.delete({
+     *   where: {
+     *     // ... filter to delete one Prospect
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProspectDeleteArgs>(args: SelectSubset<T, ProspectDeleteArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Prospect.
+     * @param {ProspectUpdateArgs} args - Arguments to update one Prospect.
+     * @example
+     * // Update one Prospect
+     * const prospect = await prisma.prospect.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProspectUpdateArgs>(args: SelectSubset<T, ProspectUpdateArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Prospects.
+     * @param {ProspectDeleteManyArgs} args - Arguments to filter Prospects to delete.
+     * @example
+     * // Delete a few Prospects
+     * const { count } = await prisma.prospect.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProspectDeleteManyArgs>(args?: SelectSubset<T, ProspectDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Prospects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Prospects
+     * const prospect = await prisma.prospect.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProspectUpdateManyArgs>(args: SelectSubset<T, ProspectUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Prospects and returns the data updated in the database.
+     * @param {ProspectUpdateManyAndReturnArgs} args - Arguments to update many Prospects.
+     * @example
+     * // Update many Prospects
+     * const prospect = await prisma.prospect.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Prospects and only return the `id`
+     * const prospectWithIdOnly = await prisma.prospect.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProspectUpdateManyAndReturnArgs>(args: SelectSubset<T, ProspectUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Prospect.
+     * @param {ProspectUpsertArgs} args - Arguments to update or create a Prospect.
+     * @example
+     * // Update or create a Prospect
+     * const prospect = await prisma.prospect.upsert({
+     *   create: {
+     *     // ... data to create a Prospect
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Prospect we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProspectUpsertArgs>(args: SelectSubset<T, ProspectUpsertArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Prospects.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectCountArgs} args - Arguments to filter Prospects to count.
+     * @example
+     * // Count the number of Prospects
+     * const count = await prisma.prospect.count({
+     *   where: {
+     *     // ... the filter for the Prospects we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProspectCountArgs>(
+      args?: Subset<T, ProspectCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProspectCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Prospect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProspectAggregateArgs>(args: Subset<T, ProspectAggregateArgs>): Prisma.PrismaPromise<GetProspectAggregateType<T>>
+
+    /**
+     * Group by Prospect.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProspectGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProspectGroupByArgs['orderBy'] }
+        : { orderBy?: ProspectGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProspectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProspectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Prospect model
+   */
+  readonly fields: ProspectFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Prospect.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProspectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    reminders<T extends Prospect$remindersArgs<ExtArgs> = {}>(args?: Subset<T, Prospect$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    activityLogs<T extends Prospect$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, Prospect$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    services<T extends Prospect$servicesArgs<ExtArgs> = {}>(args?: Subset<T, Prospect$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Prospect model
+   */
+  interface ProspectFieldRefs {
+    readonly id: FieldRef<"Prospect", 'String'>
+    readonly name: FieldRef<"Prospect", 'String'>
+    readonly type: FieldRef<"Prospect", 'ClientType'>
+    readonly documentType: FieldRef<"Prospect", 'DocumentType'>
+    readonly documentNumber: FieldRef<"Prospect", 'String'>
+    readonly email: FieldRef<"Prospect", 'String'>
+    readonly phone: FieldRef<"Prospect", 'String'>
+    readonly address: FieldRef<"Prospect", 'String'>
+    readonly status: FieldRef<"Prospect", 'ProspectStatus'>
+    readonly source: FieldRef<"Prospect", 'LeadSource'>
+    readonly createdAt: FieldRef<"Prospect", 'DateTime'>
+    readonly updatedAt: FieldRef<"Prospect", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Prospect findUnique
+   */
+  export type ProspectFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * Filter, which Prospect to fetch.
+     */
+    where: ProspectWhereUniqueInput
+  }
+
+  /**
+   * Prospect findUniqueOrThrow
+   */
+  export type ProspectFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * Filter, which Prospect to fetch.
+     */
+    where: ProspectWhereUniqueInput
+  }
+
+  /**
+   * Prospect findFirst
+   */
+  export type ProspectFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * Filter, which Prospect to fetch.
+     */
+    where?: ProspectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Prospects to fetch.
+     */
+    orderBy?: ProspectOrderByWithRelationInput | ProspectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Prospects.
+     */
+    cursor?: ProspectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Prospects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Prospects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Prospects.
+     */
+    distinct?: ProspectScalarFieldEnum | ProspectScalarFieldEnum[]
+  }
+
+  /**
+   * Prospect findFirstOrThrow
+   */
+  export type ProspectFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * Filter, which Prospect to fetch.
+     */
+    where?: ProspectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Prospects to fetch.
+     */
+    orderBy?: ProspectOrderByWithRelationInput | ProspectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Prospects.
+     */
+    cursor?: ProspectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Prospects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Prospects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Prospects.
+     */
+    distinct?: ProspectScalarFieldEnum | ProspectScalarFieldEnum[]
+  }
+
+  /**
+   * Prospect findMany
+   */
+  export type ProspectFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * Filter, which Prospects to fetch.
+     */
+    where?: ProspectWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Prospects to fetch.
+     */
+    orderBy?: ProspectOrderByWithRelationInput | ProspectOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Prospects.
+     */
+    cursor?: ProspectWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Prospects from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Prospects.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Prospects.
+     */
+    distinct?: ProspectScalarFieldEnum | ProspectScalarFieldEnum[]
+  }
+
+  /**
+   * Prospect create
+   */
+  export type ProspectCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Prospect.
+     */
+    data: XOR<ProspectCreateInput, ProspectUncheckedCreateInput>
+  }
+
+  /**
+   * Prospect createMany
+   */
+  export type ProspectCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Prospects.
+     */
+    data: ProspectCreateManyInput | ProspectCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Prospect createManyAndReturn
+   */
+  export type ProspectCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * The data used to create many Prospects.
+     */
+    data: ProspectCreateManyInput | ProspectCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Prospect update
+   */
+  export type ProspectUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Prospect.
+     */
+    data: XOR<ProspectUpdateInput, ProspectUncheckedUpdateInput>
+    /**
+     * Choose, which Prospect to update.
+     */
+    where: ProspectWhereUniqueInput
+  }
+
+  /**
+   * Prospect updateMany
+   */
+  export type ProspectUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Prospects.
+     */
+    data: XOR<ProspectUpdateManyMutationInput, ProspectUncheckedUpdateManyInput>
+    /**
+     * Filter which Prospects to update
+     */
+    where?: ProspectWhereInput
+    /**
+     * Limit how many Prospects to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Prospect updateManyAndReturn
+   */
+  export type ProspectUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * The data used to update Prospects.
+     */
+    data: XOR<ProspectUpdateManyMutationInput, ProspectUncheckedUpdateManyInput>
+    /**
+     * Filter which Prospects to update
+     */
+    where?: ProspectWhereInput
+    /**
+     * Limit how many Prospects to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Prospect upsert
+   */
+  export type ProspectUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Prospect to update in case it exists.
+     */
+    where: ProspectWhereUniqueInput
+    /**
+     * In case the Prospect found by the `where` argument doesn't exist, create a new Prospect with this data.
+     */
+    create: XOR<ProspectCreateInput, ProspectUncheckedCreateInput>
+    /**
+     * In case the Prospect was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProspectUpdateInput, ProspectUncheckedUpdateInput>
+  }
+
+  /**
+   * Prospect delete
+   */
+  export type ProspectDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    /**
+     * Filter which Prospect to delete.
+     */
+    where: ProspectWhereUniqueInput
+  }
+
+  /**
+   * Prospect deleteMany
+   */
+  export type ProspectDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Prospects to delete
+     */
+    where?: ProspectWhereInput
+    /**
+     * Limit how many Prospects to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Prospect.reminders
+   */
+  export type Prospect$remindersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Reminder
+     */
+    select?: ReminderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Reminder
+     */
+    omit?: ReminderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReminderInclude<ExtArgs> | null
+    where?: ReminderWhereInput
+    orderBy?: ReminderOrderByWithRelationInput | ReminderOrderByWithRelationInput[]
+    cursor?: ReminderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReminderScalarFieldEnum | ReminderScalarFieldEnum[]
+  }
+
+  /**
+   * Prospect.activityLogs
+   */
+  export type Prospect$activityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ActivityLog
+     */
+    select?: ActivityLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ActivityLog
+     */
+    omit?: ActivityLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ActivityLogInclude<ExtArgs> | null
+    where?: ActivityLogWhereInput
+    orderBy?: ActivityLogOrderByWithRelationInput | ActivityLogOrderByWithRelationInput[]
+    cursor?: ActivityLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ActivityLogScalarFieldEnum | ActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * Prospect.services
+   */
+  export type Prospect$servicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    where?: ProspectServiceWhereInput
+    orderBy?: ProspectServiceOrderByWithRelationInput | ProspectServiceOrderByWithRelationInput[]
+    cursor?: ProspectServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProspectServiceScalarFieldEnum | ProspectServiceScalarFieldEnum[]
+  }
+
+  /**
+   * Prospect without action
+   */
+  export type ProspectDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ClientTag
+   */
+
+  export type AggregateClientTag = {
+    _count: ClientTagCountAggregateOutputType | null
+    _min: ClientTagMinAggregateOutputType | null
+    _max: ClientTagMaxAggregateOutputType | null
+  }
+
+  export type ClientTagMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    color: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ClientTagMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    color: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ClientTagCountAggregateOutputType = {
+    id: number
+    name: number
+    color: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ClientTagMinAggregateInputType = {
+    id?: true
+    name?: true
+    color?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ClientTagMaxAggregateInputType = {
+    id?: true
+    name?: true
+    color?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ClientTagCountAggregateInputType = {
+    id?: true
+    name?: true
+    color?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ClientTagAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClientTag to aggregate.
+     */
+    where?: ClientTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientTags to fetch.
+     */
+    orderBy?: ClientTagOrderByWithRelationInput | ClientTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ClientTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ClientTags
+    **/
+    _count?: true | ClientTagCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ClientTagMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ClientTagMaxAggregateInputType
+  }
+
+  export type GetClientTagAggregateType<T extends ClientTagAggregateArgs> = {
+        [P in keyof T & keyof AggregateClientTag]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateClientTag[P]>
+      : GetScalarType<T[P], AggregateClientTag[P]>
+  }
+
+
+
+
+  export type ClientTagGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClientTagWhereInput
+    orderBy?: ClientTagOrderByWithAggregationInput | ClientTagOrderByWithAggregationInput[]
+    by: ClientTagScalarFieldEnum[] | ClientTagScalarFieldEnum
+    having?: ClientTagScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ClientTagCountAggregateInputType | true
+    _min?: ClientTagMinAggregateInputType
+    _max?: ClientTagMaxAggregateInputType
+  }
+
+  export type ClientTagGroupByOutputType = {
+    id: string
+    name: string
+    color: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ClientTagCountAggregateOutputType | null
+    _min: ClientTagMinAggregateOutputType | null
+    _max: ClientTagMaxAggregateOutputType | null
+  }
+
+  type GetClientTagGroupByPayload<T extends ClientTagGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ClientTagGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ClientTagGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ClientTagGroupByOutputType[P]>
+            : GetScalarType<T[P], ClientTagGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ClientTagSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    color?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    clients?: boolean | ClientTag$clientsArgs<ExtArgs>
+    _count?: boolean | ClientTagCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["clientTag"]>
+
+  export type ClientTagSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    color?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["clientTag"]>
+
+  export type ClientTagSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    color?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["clientTag"]>
+
+  export type ClientTagSelectScalar = {
+    id?: boolean
+    name?: boolean
+    color?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ClientTagOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "color" | "createdAt" | "updatedAt", ExtArgs["result"]["clientTag"]>
+  export type ClientTagInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    clients?: boolean | ClientTag$clientsArgs<ExtArgs>
+    _count?: boolean | ClientTagCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ClientTagIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type ClientTagIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $ClientTagPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ClientTag"
+    objects: {
+      clients: Prisma.$ClientPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      color: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["clientTag"]>
+    composites: {}
+  }
+
+  type ClientTagGetPayload<S extends boolean | null | undefined | ClientTagDefaultArgs> = $Result.GetResult<Prisma.$ClientTagPayload, S>
+
+  type ClientTagCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ClientTagFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ClientTagCountAggregateInputType | true
+    }
+
+  export interface ClientTagDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ClientTag'], meta: { name: 'ClientTag' } }
+    /**
+     * Find zero or one ClientTag that matches the filter.
+     * @param {ClientTagFindUniqueArgs} args - Arguments to find a ClientTag
+     * @example
+     * // Get one ClientTag
+     * const clientTag = await prisma.clientTag.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ClientTagFindUniqueArgs>(args: SelectSubset<T, ClientTagFindUniqueArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ClientTag that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ClientTagFindUniqueOrThrowArgs} args - Arguments to find a ClientTag
+     * @example
+     * // Get one ClientTag
+     * const clientTag = await prisma.clientTag.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ClientTagFindUniqueOrThrowArgs>(args: SelectSubset<T, ClientTagFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ClientTag that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientTagFindFirstArgs} args - Arguments to find a ClientTag
+     * @example
+     * // Get one ClientTag
+     * const clientTag = await prisma.clientTag.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ClientTagFindFirstArgs>(args?: SelectSubset<T, ClientTagFindFirstArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ClientTag that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientTagFindFirstOrThrowArgs} args - Arguments to find a ClientTag
+     * @example
+     * // Get one ClientTag
+     * const clientTag = await prisma.clientTag.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ClientTagFindFirstOrThrowArgs>(args?: SelectSubset<T, ClientTagFindFirstOrThrowArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ClientTags that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientTagFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ClientTags
+     * const clientTags = await prisma.clientTag.findMany()
+     * 
+     * // Get first 10 ClientTags
+     * const clientTags = await prisma.clientTag.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const clientTagWithIdOnly = await prisma.clientTag.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ClientTagFindManyArgs>(args?: SelectSubset<T, ClientTagFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ClientTag.
+     * @param {ClientTagCreateArgs} args - Arguments to create a ClientTag.
+     * @example
+     * // Create one ClientTag
+     * const ClientTag = await prisma.clientTag.create({
+     *   data: {
+     *     // ... data to create a ClientTag
+     *   }
+     * })
+     * 
+     */
+    create<T extends ClientTagCreateArgs>(args: SelectSubset<T, ClientTagCreateArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ClientTags.
+     * @param {ClientTagCreateManyArgs} args - Arguments to create many ClientTags.
+     * @example
+     * // Create many ClientTags
+     * const clientTag = await prisma.clientTag.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ClientTagCreateManyArgs>(args?: SelectSubset<T, ClientTagCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ClientTags and returns the data saved in the database.
+     * @param {ClientTagCreateManyAndReturnArgs} args - Arguments to create many ClientTags.
+     * @example
+     * // Create many ClientTags
+     * const clientTag = await prisma.clientTag.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ClientTags and only return the `id`
+     * const clientTagWithIdOnly = await prisma.clientTag.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ClientTagCreateManyAndReturnArgs>(args?: SelectSubset<T, ClientTagCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ClientTag.
+     * @param {ClientTagDeleteArgs} args - Arguments to delete one ClientTag.
+     * @example
+     * // Delete one ClientTag
+     * const ClientTag = await prisma.clientTag.delete({
+     *   where: {
+     *     // ... filter to delete one ClientTag
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ClientTagDeleteArgs>(args: SelectSubset<T, ClientTagDeleteArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ClientTag.
+     * @param {ClientTagUpdateArgs} args - Arguments to update one ClientTag.
+     * @example
+     * // Update one ClientTag
+     * const clientTag = await prisma.clientTag.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ClientTagUpdateArgs>(args: SelectSubset<T, ClientTagUpdateArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ClientTags.
+     * @param {ClientTagDeleteManyArgs} args - Arguments to filter ClientTags to delete.
+     * @example
+     * // Delete a few ClientTags
+     * const { count } = await prisma.clientTag.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ClientTagDeleteManyArgs>(args?: SelectSubset<T, ClientTagDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ClientTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientTagUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ClientTags
+     * const clientTag = await prisma.clientTag.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ClientTagUpdateManyArgs>(args: SelectSubset<T, ClientTagUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ClientTags and returns the data updated in the database.
+     * @param {ClientTagUpdateManyAndReturnArgs} args - Arguments to update many ClientTags.
+     * @example
+     * // Update many ClientTags
+     * const clientTag = await prisma.clientTag.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ClientTags and only return the `id`
+     * const clientTagWithIdOnly = await prisma.clientTag.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ClientTagUpdateManyAndReturnArgs>(args: SelectSubset<T, ClientTagUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ClientTag.
+     * @param {ClientTagUpsertArgs} args - Arguments to update or create a ClientTag.
+     * @example
+     * // Update or create a ClientTag
+     * const clientTag = await prisma.clientTag.upsert({
+     *   create: {
+     *     // ... data to create a ClientTag
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ClientTag we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ClientTagUpsertArgs>(args: SelectSubset<T, ClientTagUpsertArgs<ExtArgs>>): Prisma__ClientTagClient<$Result.GetResult<Prisma.$ClientTagPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ClientTags.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientTagCountArgs} args - Arguments to filter ClientTags to count.
+     * @example
+     * // Count the number of ClientTags
+     * const count = await prisma.clientTag.count({
+     *   where: {
+     *     // ... the filter for the ClientTags we want to count
+     *   }
+     * })
+    **/
+    count<T extends ClientTagCountArgs>(
+      args?: Subset<T, ClientTagCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ClientTagCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ClientTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientTagAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ClientTagAggregateArgs>(args: Subset<T, ClientTagAggregateArgs>): Prisma.PrismaPromise<GetClientTagAggregateType<T>>
+
+    /**
+     * Group by ClientTag.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientTagGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ClientTagGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ClientTagGroupByArgs['orderBy'] }
+        : { orderBy?: ClientTagGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ClientTagGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetClientTagGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ClientTag model
+   */
+  readonly fields: ClientTagFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ClientTag.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ClientTagClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    clients<T extends ClientTag$clientsArgs<ExtArgs> = {}>(args?: Subset<T, ClientTag$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ClientTag model
+   */
+  interface ClientTagFieldRefs {
+    readonly id: FieldRef<"ClientTag", 'String'>
+    readonly name: FieldRef<"ClientTag", 'String'>
+    readonly color: FieldRef<"ClientTag", 'String'>
+    readonly createdAt: FieldRef<"ClientTag", 'DateTime'>
+    readonly updatedAt: FieldRef<"ClientTag", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ClientTag findUnique
+   */
+  export type ClientTagFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientTag to fetch.
+     */
+    where: ClientTagWhereUniqueInput
+  }
+
+  /**
+   * ClientTag findUniqueOrThrow
+   */
+  export type ClientTagFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientTag to fetch.
+     */
+    where: ClientTagWhereUniqueInput
+  }
+
+  /**
+   * ClientTag findFirst
+   */
+  export type ClientTagFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientTag to fetch.
+     */
+    where?: ClientTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientTags to fetch.
+     */
+    orderBy?: ClientTagOrderByWithRelationInput | ClientTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClientTags.
+     */
+    cursor?: ClientTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientTags.
+     */
+    distinct?: ClientTagScalarFieldEnum | ClientTagScalarFieldEnum[]
+  }
+
+  /**
+   * ClientTag findFirstOrThrow
+   */
+  export type ClientTagFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientTag to fetch.
+     */
+    where?: ClientTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientTags to fetch.
+     */
+    orderBy?: ClientTagOrderByWithRelationInput | ClientTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClientTags.
+     */
+    cursor?: ClientTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientTags.
+     */
+    distinct?: ClientTagScalarFieldEnum | ClientTagScalarFieldEnum[]
+  }
+
+  /**
+   * ClientTag findMany
+   */
+  export type ClientTagFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientTags to fetch.
+     */
+    where?: ClientTagWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientTags to fetch.
+     */
+    orderBy?: ClientTagOrderByWithRelationInput | ClientTagOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ClientTags.
+     */
+    cursor?: ClientTagWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientTags from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientTags.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientTags.
+     */
+    distinct?: ClientTagScalarFieldEnum | ClientTagScalarFieldEnum[]
+  }
+
+  /**
+   * ClientTag create
+   */
+  export type ClientTagCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ClientTag.
+     */
+    data: XOR<ClientTagCreateInput, ClientTagUncheckedCreateInput>
+  }
+
+  /**
+   * ClientTag createMany
+   */
+  export type ClientTagCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ClientTags.
+     */
+    data: ClientTagCreateManyInput | ClientTagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ClientTag createManyAndReturn
+   */
+  export type ClientTagCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * The data used to create many ClientTags.
+     */
+    data: ClientTagCreateManyInput | ClientTagCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ClientTag update
+   */
+  export type ClientTagUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ClientTag.
+     */
+    data: XOR<ClientTagUpdateInput, ClientTagUncheckedUpdateInput>
+    /**
+     * Choose, which ClientTag to update.
+     */
+    where: ClientTagWhereUniqueInput
+  }
+
+  /**
+   * ClientTag updateMany
+   */
+  export type ClientTagUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ClientTags.
+     */
+    data: XOR<ClientTagUpdateManyMutationInput, ClientTagUncheckedUpdateManyInput>
+    /**
+     * Filter which ClientTags to update
+     */
+    where?: ClientTagWhereInput
+    /**
+     * Limit how many ClientTags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ClientTag updateManyAndReturn
+   */
+  export type ClientTagUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * The data used to update ClientTags.
+     */
+    data: XOR<ClientTagUpdateManyMutationInput, ClientTagUncheckedUpdateManyInput>
+    /**
+     * Filter which ClientTags to update
+     */
+    where?: ClientTagWhereInput
+    /**
+     * Limit how many ClientTags to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ClientTag upsert
+   */
+  export type ClientTagUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ClientTag to update in case it exists.
+     */
+    where: ClientTagWhereUniqueInput
+    /**
+     * In case the ClientTag found by the `where` argument doesn't exist, create a new ClientTag with this data.
+     */
+    create: XOR<ClientTagCreateInput, ClientTagUncheckedCreateInput>
+    /**
+     * In case the ClientTag was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ClientTagUpdateInput, ClientTagUncheckedUpdateInput>
+  }
+
+  /**
+   * ClientTag delete
+   */
+  export type ClientTagDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+    /**
+     * Filter which ClientTag to delete.
+     */
+    where: ClientTagWhereUniqueInput
+  }
+
+  /**
+   * ClientTag deleteMany
+   */
+  export type ClientTagDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClientTags to delete
+     */
+    where?: ClientTagWhereInput
+    /**
+     * Limit how many ClientTags to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ClientTag.clients
+   */
+  export type ClientTag$clientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
+    orderBy?: ClientOrderByWithRelationInput | ClientOrderByWithRelationInput[]
+    cursor?: ClientWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClientScalarFieldEnum | ClientScalarFieldEnum[]
+  }
+
+  /**
+   * ClientTag without action
+   */
+  export type ClientTagDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientTag
+     */
+    select?: ClientTagSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientTag
+     */
+    omit?: ClientTagOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientTagInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProspectService
+   */
+
+  export type AggregateProspectService = {
+    _count: ProspectServiceCountAggregateOutputType | null
+    _min: ProspectServiceMinAggregateOutputType | null
+    _max: ProspectServiceMaxAggregateOutputType | null
+  }
+
+  export type ProspectServiceMinAggregateOutputType = {
+    id: string | null
+    prospectId: string | null
+    serviceId: string | null
+    assignedAt: Date | null
+  }
+
+  export type ProspectServiceMaxAggregateOutputType = {
+    id: string | null
+    prospectId: string | null
+    serviceId: string | null
+    assignedAt: Date | null
+  }
+
+  export type ProspectServiceCountAggregateOutputType = {
+    id: number
+    prospectId: number
+    serviceId: number
+    assignedAt: number
+    _all: number
+  }
+
+
+  export type ProspectServiceMinAggregateInputType = {
+    id?: true
+    prospectId?: true
+    serviceId?: true
+    assignedAt?: true
+  }
+
+  export type ProspectServiceMaxAggregateInputType = {
+    id?: true
+    prospectId?: true
+    serviceId?: true
+    assignedAt?: true
+  }
+
+  export type ProspectServiceCountAggregateInputType = {
+    id?: true
+    prospectId?: true
+    serviceId?: true
+    assignedAt?: true
+    _all?: true
+  }
+
+  export type ProspectServiceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProspectService to aggregate.
+     */
+    where?: ProspectServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProspectServices to fetch.
+     */
+    orderBy?: ProspectServiceOrderByWithRelationInput | ProspectServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProspectServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProspectServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProspectServices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProspectServices
+    **/
+    _count?: true | ProspectServiceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProspectServiceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProspectServiceMaxAggregateInputType
+  }
+
+  export type GetProspectServiceAggregateType<T extends ProspectServiceAggregateArgs> = {
+        [P in keyof T & keyof AggregateProspectService]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProspectService[P]>
+      : GetScalarType<T[P], AggregateProspectService[P]>
+  }
+
+
+
+
+  export type ProspectServiceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProspectServiceWhereInput
+    orderBy?: ProspectServiceOrderByWithAggregationInput | ProspectServiceOrderByWithAggregationInput[]
+    by: ProspectServiceScalarFieldEnum[] | ProspectServiceScalarFieldEnum
+    having?: ProspectServiceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProspectServiceCountAggregateInputType | true
+    _min?: ProspectServiceMinAggregateInputType
+    _max?: ProspectServiceMaxAggregateInputType
+  }
+
+  export type ProspectServiceGroupByOutputType = {
+    id: string
+    prospectId: string
+    serviceId: string
+    assignedAt: Date
+    _count: ProspectServiceCountAggregateOutputType | null
+    _min: ProspectServiceMinAggregateOutputType | null
+    _max: ProspectServiceMaxAggregateOutputType | null
+  }
+
+  type GetProspectServiceGroupByPayload<T extends ProspectServiceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProspectServiceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProspectServiceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProspectServiceGroupByOutputType[P]>
+            : GetScalarType<T[P], ProspectServiceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProspectServiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    prospectId?: boolean
+    serviceId?: boolean
+    assignedAt?: boolean
+    prospect?: boolean | ProspectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["prospectService"]>
+
+  export type ProspectServiceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    prospectId?: boolean
+    serviceId?: boolean
+    assignedAt?: boolean
+    prospect?: boolean | ProspectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["prospectService"]>
+
+  export type ProspectServiceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    prospectId?: boolean
+    serviceId?: boolean
+    assignedAt?: boolean
+    prospect?: boolean | ProspectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["prospectService"]>
+
+  export type ProspectServiceSelectScalar = {
+    id?: boolean
+    prospectId?: boolean
+    serviceId?: boolean
+    assignedAt?: boolean
+  }
+
+  export type ProspectServiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "prospectId" | "serviceId" | "assignedAt", ExtArgs["result"]["prospectService"]>
+  export type ProspectServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    prospect?: boolean | ProspectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ProspectServiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    prospect?: boolean | ProspectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ProspectServiceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    prospect?: boolean | ProspectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+
+  export type $ProspectServicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProspectService"
+    objects: {
+      prospect: Prisma.$ProspectPayload<ExtArgs>
+      service: Prisma.$ServicePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      prospectId: string
+      serviceId: string
+      assignedAt: Date
+    }, ExtArgs["result"]["prospectService"]>
+    composites: {}
+  }
+
+  type ProspectServiceGetPayload<S extends boolean | null | undefined | ProspectServiceDefaultArgs> = $Result.GetResult<Prisma.$ProspectServicePayload, S>
+
+  type ProspectServiceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProspectServiceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProspectServiceCountAggregateInputType | true
+    }
+
+  export interface ProspectServiceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProspectService'], meta: { name: 'ProspectService' } }
+    /**
+     * Find zero or one ProspectService that matches the filter.
+     * @param {ProspectServiceFindUniqueArgs} args - Arguments to find a ProspectService
+     * @example
+     * // Get one ProspectService
+     * const prospectService = await prisma.prospectService.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProspectServiceFindUniqueArgs>(args: SelectSubset<T, ProspectServiceFindUniqueArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ProspectService that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProspectServiceFindUniqueOrThrowArgs} args - Arguments to find a ProspectService
+     * @example
+     * // Get one ProspectService
+     * const prospectService = await prisma.prospectService.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProspectServiceFindUniqueOrThrowArgs>(args: SelectSubset<T, ProspectServiceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProspectService that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectServiceFindFirstArgs} args - Arguments to find a ProspectService
+     * @example
+     * // Get one ProspectService
+     * const prospectService = await prisma.prospectService.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProspectServiceFindFirstArgs>(args?: SelectSubset<T, ProspectServiceFindFirstArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProspectService that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectServiceFindFirstOrThrowArgs} args - Arguments to find a ProspectService
+     * @example
+     * // Get one ProspectService
+     * const prospectService = await prisma.prospectService.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProspectServiceFindFirstOrThrowArgs>(args?: SelectSubset<T, ProspectServiceFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ProspectServices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectServiceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProspectServices
+     * const prospectServices = await prisma.prospectService.findMany()
+     * 
+     * // Get first 10 ProspectServices
+     * const prospectServices = await prisma.prospectService.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const prospectServiceWithIdOnly = await prisma.prospectService.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProspectServiceFindManyArgs>(args?: SelectSubset<T, ProspectServiceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ProspectService.
+     * @param {ProspectServiceCreateArgs} args - Arguments to create a ProspectService.
+     * @example
+     * // Create one ProspectService
+     * const ProspectService = await prisma.prospectService.create({
+     *   data: {
+     *     // ... data to create a ProspectService
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProspectServiceCreateArgs>(args: SelectSubset<T, ProspectServiceCreateArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ProspectServices.
+     * @param {ProspectServiceCreateManyArgs} args - Arguments to create many ProspectServices.
+     * @example
+     * // Create many ProspectServices
+     * const prospectService = await prisma.prospectService.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProspectServiceCreateManyArgs>(args?: SelectSubset<T, ProspectServiceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ProspectServices and returns the data saved in the database.
+     * @param {ProspectServiceCreateManyAndReturnArgs} args - Arguments to create many ProspectServices.
+     * @example
+     * // Create many ProspectServices
+     * const prospectService = await prisma.prospectService.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ProspectServices and only return the `id`
+     * const prospectServiceWithIdOnly = await prisma.prospectService.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProspectServiceCreateManyAndReturnArgs>(args?: SelectSubset<T, ProspectServiceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ProspectService.
+     * @param {ProspectServiceDeleteArgs} args - Arguments to delete one ProspectService.
+     * @example
+     * // Delete one ProspectService
+     * const ProspectService = await prisma.prospectService.delete({
+     *   where: {
+     *     // ... filter to delete one ProspectService
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProspectServiceDeleteArgs>(args: SelectSubset<T, ProspectServiceDeleteArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ProspectService.
+     * @param {ProspectServiceUpdateArgs} args - Arguments to update one ProspectService.
+     * @example
+     * // Update one ProspectService
+     * const prospectService = await prisma.prospectService.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProspectServiceUpdateArgs>(args: SelectSubset<T, ProspectServiceUpdateArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ProspectServices.
+     * @param {ProspectServiceDeleteManyArgs} args - Arguments to filter ProspectServices to delete.
+     * @example
+     * // Delete a few ProspectServices
+     * const { count } = await prisma.prospectService.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProspectServiceDeleteManyArgs>(args?: SelectSubset<T, ProspectServiceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProspectServices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectServiceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProspectServices
+     * const prospectService = await prisma.prospectService.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProspectServiceUpdateManyArgs>(args: SelectSubset<T, ProspectServiceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProspectServices and returns the data updated in the database.
+     * @param {ProspectServiceUpdateManyAndReturnArgs} args - Arguments to update many ProspectServices.
+     * @example
+     * // Update many ProspectServices
+     * const prospectService = await prisma.prospectService.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ProspectServices and only return the `id`
+     * const prospectServiceWithIdOnly = await prisma.prospectService.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProspectServiceUpdateManyAndReturnArgs>(args: SelectSubset<T, ProspectServiceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ProspectService.
+     * @param {ProspectServiceUpsertArgs} args - Arguments to update or create a ProspectService.
+     * @example
+     * // Update or create a ProspectService
+     * const prospectService = await prisma.prospectService.upsert({
+     *   create: {
+     *     // ... data to create a ProspectService
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProspectService we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProspectServiceUpsertArgs>(args: SelectSubset<T, ProspectServiceUpsertArgs<ExtArgs>>): Prisma__ProspectServiceClient<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ProspectServices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectServiceCountArgs} args - Arguments to filter ProspectServices to count.
+     * @example
+     * // Count the number of ProspectServices
+     * const count = await prisma.prospectService.count({
+     *   where: {
+     *     // ... the filter for the ProspectServices we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProspectServiceCountArgs>(
+      args?: Subset<T, ProspectServiceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProspectServiceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProspectService.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectServiceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProspectServiceAggregateArgs>(args: Subset<T, ProspectServiceAggregateArgs>): Prisma.PrismaPromise<GetProspectServiceAggregateType<T>>
+
+    /**
+     * Group by ProspectService.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProspectServiceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProspectServiceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProspectServiceGroupByArgs['orderBy'] }
+        : { orderBy?: ProspectServiceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProspectServiceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProspectServiceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProspectService model
+   */
+  readonly fields: ProspectServiceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProspectService.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProspectServiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    prospect<T extends ProspectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProspectDefaultArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProspectService model
+   */
+  interface ProspectServiceFieldRefs {
+    readonly id: FieldRef<"ProspectService", 'String'>
+    readonly prospectId: FieldRef<"ProspectService", 'String'>
+    readonly serviceId: FieldRef<"ProspectService", 'String'>
+    readonly assignedAt: FieldRef<"ProspectService", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProspectService findUnique
+   */
+  export type ProspectServiceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProspectService to fetch.
+     */
+    where: ProspectServiceWhereUniqueInput
+  }
+
+  /**
+   * ProspectService findUniqueOrThrow
+   */
+  export type ProspectServiceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProspectService to fetch.
+     */
+    where: ProspectServiceWhereUniqueInput
+  }
+
+  /**
+   * ProspectService findFirst
+   */
+  export type ProspectServiceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProspectService to fetch.
+     */
+    where?: ProspectServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProspectServices to fetch.
+     */
+    orderBy?: ProspectServiceOrderByWithRelationInput | ProspectServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProspectServices.
+     */
+    cursor?: ProspectServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProspectServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProspectServices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProspectServices.
+     */
+    distinct?: ProspectServiceScalarFieldEnum | ProspectServiceScalarFieldEnum[]
+  }
+
+  /**
+   * ProspectService findFirstOrThrow
+   */
+  export type ProspectServiceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProspectService to fetch.
+     */
+    where?: ProspectServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProspectServices to fetch.
+     */
+    orderBy?: ProspectServiceOrderByWithRelationInput | ProspectServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProspectServices.
+     */
+    cursor?: ProspectServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProspectServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProspectServices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProspectServices.
+     */
+    distinct?: ProspectServiceScalarFieldEnum | ProspectServiceScalarFieldEnum[]
+  }
+
+  /**
+   * ProspectService findMany
+   */
+  export type ProspectServiceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProspectServices to fetch.
+     */
+    where?: ProspectServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProspectServices to fetch.
+     */
+    orderBy?: ProspectServiceOrderByWithRelationInput | ProspectServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProspectServices.
+     */
+    cursor?: ProspectServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProspectServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProspectServices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProspectServices.
+     */
+    distinct?: ProspectServiceScalarFieldEnum | ProspectServiceScalarFieldEnum[]
+  }
+
+  /**
+   * ProspectService create
+   */
+  export type ProspectServiceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ProspectService.
+     */
+    data: XOR<ProspectServiceCreateInput, ProspectServiceUncheckedCreateInput>
+  }
+
+  /**
+   * ProspectService createMany
+   */
+  export type ProspectServiceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProspectServices.
+     */
+    data: ProspectServiceCreateManyInput | ProspectServiceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProspectService createManyAndReturn
+   */
+  export type ProspectServiceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * The data used to create many ProspectServices.
+     */
+    data: ProspectServiceCreateManyInput | ProspectServiceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ProspectService update
+   */
+  export type ProspectServiceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ProspectService.
+     */
+    data: XOR<ProspectServiceUpdateInput, ProspectServiceUncheckedUpdateInput>
+    /**
+     * Choose, which ProspectService to update.
+     */
+    where: ProspectServiceWhereUniqueInput
+  }
+
+  /**
+   * ProspectService updateMany
+   */
+  export type ProspectServiceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProspectServices.
+     */
+    data: XOR<ProspectServiceUpdateManyMutationInput, ProspectServiceUncheckedUpdateManyInput>
+    /**
+     * Filter which ProspectServices to update
+     */
+    where?: ProspectServiceWhereInput
+    /**
+     * Limit how many ProspectServices to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProspectService updateManyAndReturn
+   */
+  export type ProspectServiceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * The data used to update ProspectServices.
+     */
+    data: XOR<ProspectServiceUpdateManyMutationInput, ProspectServiceUncheckedUpdateManyInput>
+    /**
+     * Filter which ProspectServices to update
+     */
+    where?: ProspectServiceWhereInput
+    /**
+     * Limit how many ProspectServices to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ProspectService upsert
+   */
+  export type ProspectServiceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ProspectService to update in case it exists.
+     */
+    where: ProspectServiceWhereUniqueInput
+    /**
+     * In case the ProspectService found by the `where` argument doesn't exist, create a new ProspectService with this data.
+     */
+    create: XOR<ProspectServiceCreateInput, ProspectServiceUncheckedCreateInput>
+    /**
+     * In case the ProspectService was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProspectServiceUpdateInput, ProspectServiceUncheckedUpdateInput>
+  }
+
+  /**
+   * ProspectService delete
+   */
+  export type ProspectServiceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    /**
+     * Filter which ProspectService to delete.
+     */
+    where: ProspectServiceWhereUniqueInput
+  }
+
+  /**
+   * ProspectService deleteMany
+   */
+  export type ProspectServiceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProspectServices to delete
+     */
+    where?: ProspectServiceWhereInput
+    /**
+     * Limit how many ProspectServices to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProspectService without action
+   */
+  export type ProspectServiceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
   }
 
 
@@ -7323,6 +11128,7 @@ export namespace Prisma {
     subcategory?: boolean | Service$subcategoryArgs<ExtArgs>
     policies?: boolean | Service$policiesArgs<ExtArgs>
     clients?: boolean | Service$clientsArgs<ExtArgs>
+    prospects?: boolean | Service$prospectsArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["service"]>
 
@@ -7372,6 +11178,7 @@ export namespace Prisma {
     subcategory?: boolean | Service$subcategoryArgs<ExtArgs>
     policies?: boolean | Service$policiesArgs<ExtArgs>
     clients?: boolean | Service$clientsArgs<ExtArgs>
+    prospects?: boolean | Service$prospectsArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ServiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7387,6 +11194,7 @@ export namespace Prisma {
       subcategory: Prisma.$ServiceSubcategoryPayload<ExtArgs> | null
       policies: Prisma.$PolicyPayload<ExtArgs>[]
       clients: Prisma.$ClientServicePayload<ExtArgs>[]
+      prospects: Prisma.$ProspectServicePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7796,6 +11604,7 @@ export namespace Prisma {
     subcategory<T extends Service$subcategoryArgs<ExtArgs> = {}>(args?: Subset<T, Service$subcategoryArgs<ExtArgs>>): Prisma__ServiceSubcategoryClient<$Result.GetResult<Prisma.$ServiceSubcategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     policies<T extends Service$policiesArgs<ExtArgs> = {}>(args?: Subset<T, Service$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     clients<T extends Service$clientsArgs<ExtArgs> = {}>(args?: Subset<T, Service$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    prospects<T extends Service$prospectsArgs<ExtArgs> = {}>(args?: Subset<T, Service$prospectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProspectServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8300,6 +12109,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ClientServiceScalarFieldEnum | ClientServiceScalarFieldEnum[]
+  }
+
+  /**
+   * Service.prospects
+   */
+  export type Service$prospectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProspectService
+     */
+    select?: ProspectServiceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProspectService
+     */
+    omit?: ProspectServiceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectServiceInclude<ExtArgs> | null
+    where?: ProspectServiceWhereInput
+    orderBy?: ProspectServiceOrderByWithRelationInput | ProspectServiceOrderByWithRelationInput[]
+    cursor?: ProspectServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProspectServiceScalarFieldEnum | ProspectServiceScalarFieldEnum[]
   }
 
   /**
@@ -13007,6 +16840,7 @@ export namespace Prisma {
     dueDate: Date | null
     description: string | null
     clientId: string | null
+    prospectId: string | null
     createdById: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -13020,6 +16854,7 @@ export namespace Prisma {
     dueDate: Date | null
     description: string | null
     clientId: string | null
+    prospectId: string | null
     createdById: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -13033,6 +16868,7 @@ export namespace Prisma {
     dueDate: number
     description: number
     clientId: number
+    prospectId: number
     createdById: number
     createdAt: number
     updatedAt: number
@@ -13048,6 +16884,7 @@ export namespace Prisma {
     dueDate?: true
     description?: true
     clientId?: true
+    prospectId?: true
     createdById?: true
     createdAt?: true
     updatedAt?: true
@@ -13061,6 +16898,7 @@ export namespace Prisma {
     dueDate?: true
     description?: true
     clientId?: true
+    prospectId?: true
     createdById?: true
     createdAt?: true
     updatedAt?: true
@@ -13074,6 +16912,7 @@ export namespace Prisma {
     dueDate?: true
     description?: true
     clientId?: true
+    prospectId?: true
     createdById?: true
     createdAt?: true
     updatedAt?: true
@@ -13159,7 +16998,8 @@ export namespace Prisma {
     status: $Enums.ReminderStatus
     dueDate: Date
     description: string | null
-    clientId: string
+    clientId: string | null
+    prospectId: string | null
     createdById: string | null
     createdAt: Date
     updatedAt: Date
@@ -13190,10 +17030,12 @@ export namespace Prisma {
     dueDate?: boolean
     description?: boolean
     clientId?: boolean
+    prospectId?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | Reminder$clientArgs<ExtArgs>
+    prospect?: boolean | Reminder$prospectArgs<ExtArgs>
     createdBy?: boolean | Reminder$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["reminder"]>
 
@@ -13205,10 +17047,12 @@ export namespace Prisma {
     dueDate?: boolean
     description?: boolean
     clientId?: boolean
+    prospectId?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | Reminder$clientArgs<ExtArgs>
+    prospect?: boolean | Reminder$prospectArgs<ExtArgs>
     createdBy?: boolean | Reminder$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["reminder"]>
 
@@ -13220,10 +17064,12 @@ export namespace Prisma {
     dueDate?: boolean
     description?: boolean
     clientId?: boolean
+    prospectId?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | Reminder$clientArgs<ExtArgs>
+    prospect?: boolean | Reminder$prospectArgs<ExtArgs>
     createdBy?: boolean | Reminder$createdByArgs<ExtArgs>
   }, ExtArgs["result"]["reminder"]>
 
@@ -13235,29 +17081,34 @@ export namespace Prisma {
     dueDate?: boolean
     description?: boolean
     clientId?: boolean
+    prospectId?: boolean
     createdById?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ReminderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "priority" | "status" | "dueDate" | "description" | "clientId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["reminder"]>
+  export type ReminderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "priority" | "status" | "dueDate" | "description" | "clientId" | "prospectId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["reminder"]>
   export type ReminderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | Reminder$clientArgs<ExtArgs>
+    prospect?: boolean | Reminder$prospectArgs<ExtArgs>
     createdBy?: boolean | Reminder$createdByArgs<ExtArgs>
   }
   export type ReminderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | Reminder$clientArgs<ExtArgs>
+    prospect?: boolean | Reminder$prospectArgs<ExtArgs>
     createdBy?: boolean | Reminder$createdByArgs<ExtArgs>
   }
   export type ReminderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    client?: boolean | ClientDefaultArgs<ExtArgs>
+    client?: boolean | Reminder$clientArgs<ExtArgs>
+    prospect?: boolean | Reminder$prospectArgs<ExtArgs>
     createdBy?: boolean | Reminder$createdByArgs<ExtArgs>
   }
 
   export type $ReminderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Reminder"
     objects: {
-      client: Prisma.$ClientPayload<ExtArgs>
+      client: Prisma.$ClientPayload<ExtArgs> | null
+      prospect: Prisma.$ProspectPayload<ExtArgs> | null
       createdBy: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -13267,7 +17118,8 @@ export namespace Prisma {
       status: $Enums.ReminderStatus
       dueDate: Date
       description: string | null
-      clientId: string
+      clientId: string | null
+      prospectId: string | null
       createdById: string | null
       createdAt: Date
       updatedAt: Date
@@ -13665,7 +17517,8 @@ export namespace Prisma {
    */
   export interface Prisma__ReminderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    client<T extends Reminder$clientArgs<ExtArgs> = {}>(args?: Subset<T, Reminder$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    prospect<T extends Reminder$prospectArgs<ExtArgs> = {}>(args?: Subset<T, Reminder$prospectArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     createdBy<T extends Reminder$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Reminder$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -13703,6 +17556,7 @@ export namespace Prisma {
     readonly dueDate: FieldRef<"Reminder", 'DateTime'>
     readonly description: FieldRef<"Reminder", 'String'>
     readonly clientId: FieldRef<"Reminder", 'String'>
+    readonly prospectId: FieldRef<"Reminder", 'String'>
     readonly createdById: FieldRef<"Reminder", 'String'>
     readonly createdAt: FieldRef<"Reminder", 'DateTime'>
     readonly updatedAt: FieldRef<"Reminder", 'DateTime'>
@@ -14104,6 +17958,44 @@ export namespace Prisma {
      * Limit how many Reminders to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Reminder.client
+   */
+  export type Reminder$clientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Client
+     */
+    omit?: ClientOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
+  }
+
+  /**
+   * Reminder.prospect
+   */
+  export type Reminder$prospectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    where?: ProspectWhereInput
   }
 
   /**
@@ -16503,6 +20395,7 @@ export namespace Prisma {
     action: string | null
     type: $Enums.ActivityType | null
     clientId: string | null
+    prospectId: string | null
     userId: string | null
     createdAt: Date | null
   }
@@ -16512,6 +20405,7 @@ export namespace Prisma {
     action: string | null
     type: $Enums.ActivityType | null
     clientId: string | null
+    prospectId: string | null
     userId: string | null
     createdAt: Date | null
   }
@@ -16522,6 +20416,7 @@ export namespace Prisma {
     type: number
     metadata: number
     clientId: number
+    prospectId: number
     userId: number
     createdAt: number
     _all: number
@@ -16533,6 +20428,7 @@ export namespace Prisma {
     action?: true
     type?: true
     clientId?: true
+    prospectId?: true
     userId?: true
     createdAt?: true
   }
@@ -16542,6 +20438,7 @@ export namespace Prisma {
     action?: true
     type?: true
     clientId?: true
+    prospectId?: true
     userId?: true
     createdAt?: true
   }
@@ -16552,6 +20449,7 @@ export namespace Prisma {
     type?: true
     metadata?: true
     clientId?: true
+    prospectId?: true
     userId?: true
     createdAt?: true
     _all?: true
@@ -16635,6 +20533,7 @@ export namespace Prisma {
     type: $Enums.ActivityType
     metadata: JsonValue | null
     clientId: string | null
+    prospectId: string | null
     userId: string | null
     createdAt: Date
     _count: ActivityLogCountAggregateOutputType | null
@@ -16662,9 +20561,11 @@ export namespace Prisma {
     type?: boolean
     metadata?: boolean
     clientId?: boolean
+    prospectId?: boolean
     userId?: boolean
     createdAt?: boolean
     client?: boolean | ActivityLog$clientArgs<ExtArgs>
+    prospect?: boolean | ActivityLog$prospectArgs<ExtArgs>
     user?: boolean | ActivityLog$userArgs<ExtArgs>
   }, ExtArgs["result"]["activityLog"]>
 
@@ -16674,9 +20575,11 @@ export namespace Prisma {
     type?: boolean
     metadata?: boolean
     clientId?: boolean
+    prospectId?: boolean
     userId?: boolean
     createdAt?: boolean
     client?: boolean | ActivityLog$clientArgs<ExtArgs>
+    prospect?: boolean | ActivityLog$prospectArgs<ExtArgs>
     user?: boolean | ActivityLog$userArgs<ExtArgs>
   }, ExtArgs["result"]["activityLog"]>
 
@@ -16686,9 +20589,11 @@ export namespace Prisma {
     type?: boolean
     metadata?: boolean
     clientId?: boolean
+    prospectId?: boolean
     userId?: boolean
     createdAt?: boolean
     client?: boolean | ActivityLog$clientArgs<ExtArgs>
+    prospect?: boolean | ActivityLog$prospectArgs<ExtArgs>
     user?: boolean | ActivityLog$userArgs<ExtArgs>
   }, ExtArgs["result"]["activityLog"]>
 
@@ -16698,21 +20603,25 @@ export namespace Prisma {
     type?: boolean
     metadata?: boolean
     clientId?: boolean
+    prospectId?: boolean
     userId?: boolean
     createdAt?: boolean
   }
 
-  export type ActivityLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "type" | "metadata" | "clientId" | "userId" | "createdAt", ExtArgs["result"]["activityLog"]>
+  export type ActivityLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "type" | "metadata" | "clientId" | "prospectId" | "userId" | "createdAt", ExtArgs["result"]["activityLog"]>
   export type ActivityLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ActivityLog$clientArgs<ExtArgs>
+    prospect?: boolean | ActivityLog$prospectArgs<ExtArgs>
     user?: boolean | ActivityLog$userArgs<ExtArgs>
   }
   export type ActivityLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ActivityLog$clientArgs<ExtArgs>
+    prospect?: boolean | ActivityLog$prospectArgs<ExtArgs>
     user?: boolean | ActivityLog$userArgs<ExtArgs>
   }
   export type ActivityLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ActivityLog$clientArgs<ExtArgs>
+    prospect?: boolean | ActivityLog$prospectArgs<ExtArgs>
     user?: boolean | ActivityLog$userArgs<ExtArgs>
   }
 
@@ -16720,6 +20629,7 @@ export namespace Prisma {
     name: "ActivityLog"
     objects: {
       client: Prisma.$ClientPayload<ExtArgs> | null
+      prospect: Prisma.$ProspectPayload<ExtArgs> | null
       user: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -16728,6 +20638,7 @@ export namespace Prisma {
       type: $Enums.ActivityType
       metadata: Prisma.JsonValue | null
       clientId: string | null
+      prospectId: string | null
       userId: string | null
       createdAt: Date
     }, ExtArgs["result"]["activityLog"]>
@@ -17125,6 +21036,7 @@ export namespace Prisma {
   export interface Prisma__ActivityLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ActivityLog$clientArgs<ExtArgs> = {}>(args?: Subset<T, ActivityLog$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    prospect<T extends ActivityLog$prospectArgs<ExtArgs> = {}>(args?: Subset<T, ActivityLog$prospectArgs<ExtArgs>>): Prisma__ProspectClient<$Result.GetResult<Prisma.$ProspectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     user<T extends ActivityLog$userArgs<ExtArgs> = {}>(args?: Subset<T, ActivityLog$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -17160,6 +21072,7 @@ export namespace Prisma {
     readonly type: FieldRef<"ActivityLog", 'ActivityType'>
     readonly metadata: FieldRef<"ActivityLog", 'Json'>
     readonly clientId: FieldRef<"ActivityLog", 'String'>
+    readonly prospectId: FieldRef<"ActivityLog", 'String'>
     readonly userId: FieldRef<"ActivityLog", 'String'>
     readonly createdAt: FieldRef<"ActivityLog", 'DateTime'>
   }
@@ -17582,6 +21495,25 @@ export namespace Prisma {
   }
 
   /**
+   * ActivityLog.prospect
+   */
+  export type ActivityLog$prospectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Prospect
+     */
+    select?: ProspectSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Prospect
+     */
+    omit?: ProspectOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProspectInclude<ExtArgs> | null
+    where?: ProspectWhereInput
+  }
+
+  /**
    * ActivityLog.user
    */
   export type ActivityLog$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17657,6 +21589,9 @@ export namespace Prisma {
     email: 'email',
     phone: 'phone',
     address: 'address',
+    birthDate: 'birthDate',
+    city: 'city',
+    notes: 'notes',
     status: 'status',
     source: 'source',
     createdAt: 'createdAt',
@@ -17664,6 +21599,45 @@ export namespace Prisma {
   };
 
   export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
+
+
+  export const ProspectScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    type: 'type',
+    documentType: 'documentType',
+    documentNumber: 'documentNumber',
+    email: 'email',
+    phone: 'phone',
+    address: 'address',
+    status: 'status',
+    source: 'source',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ProspectScalarFieldEnum = (typeof ProspectScalarFieldEnum)[keyof typeof ProspectScalarFieldEnum]
+
+
+  export const ClientTagScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    color: 'color',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ClientTagScalarFieldEnum = (typeof ClientTagScalarFieldEnum)[keyof typeof ClientTagScalarFieldEnum]
+
+
+  export const ProspectServiceScalarFieldEnum: {
+    id: 'id',
+    prospectId: 'prospectId',
+    serviceId: 'serviceId',
+    assignedAt: 'assignedAt'
+  };
+
+  export type ProspectServiceScalarFieldEnum = (typeof ProspectServiceScalarFieldEnum)[keyof typeof ProspectServiceScalarFieldEnum]
 
 
   export const ServiceCategoryScalarFieldEnum: {
@@ -17774,6 +21748,7 @@ export namespace Prisma {
     dueDate: 'dueDate',
     description: 'description',
     clientId: 'clientId',
+    prospectId: 'prospectId',
     createdById: 'createdById',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -17820,6 +21795,7 @@ export namespace Prisma {
     type: 'type',
     metadata: 'metadata',
     clientId: 'clientId',
+    prospectId: 'prospectId',
     userId: 'userId',
     createdAt: 'createdAt'
   };
@@ -17975,6 +21951,20 @@ export namespace Prisma {
    * Reference to a field of type 'LeadSource[]'
    */
   export type ListEnumLeadSourceFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadSource[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ProspectStatus'
+   */
+  export type EnumProspectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProspectStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ProspectStatus[]'
+   */
+  export type ListEnumProspectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProspectStatus[]'>
     
 
 
@@ -18281,6 +22271,9 @@ export namespace Prisma {
     email?: StringNullableFilter<"Client"> | string | null
     phone?: StringNullableFilter<"Client"> | string | null
     address?: StringNullableFilter<"Client"> | string | null
+    birthDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    city?: StringNullableFilter<"Client"> | string | null
+    notes?: StringNullableFilter<"Client"> | string | null
     status?: EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
     source?: EnumLeadSourceNullableFilter<"Client"> | $Enums.LeadSource | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
@@ -18290,6 +22283,7 @@ export namespace Prisma {
     reminders?: ReminderListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
     services?: ClientServiceListRelationFilter
+    tags?: ClientTagListRelationFilter
   }
 
   export type ClientOrderByWithRelationInput = {
@@ -18301,6 +22295,9 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
+    birthDate?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
     status?: SortOrder
     source?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -18310,6 +22307,7 @@ export namespace Prisma {
     reminders?: ReminderOrderByRelationAggregateInput
     activityLogs?: ActivityLogOrderByRelationAggregateInput
     services?: ClientServiceOrderByRelationAggregateInput
+    tags?: ClientTagOrderByRelationAggregateInput
   }
 
   export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -18324,6 +22322,9 @@ export namespace Prisma {
     email?: StringNullableFilter<"Client"> | string | null
     phone?: StringNullableFilter<"Client"> | string | null
     address?: StringNullableFilter<"Client"> | string | null
+    birthDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    city?: StringNullableFilter<"Client"> | string | null
+    notes?: StringNullableFilter<"Client"> | string | null
     status?: EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
     source?: EnumLeadSourceNullableFilter<"Client"> | $Enums.LeadSource | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
@@ -18333,6 +22334,7 @@ export namespace Prisma {
     reminders?: ReminderListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
     services?: ClientServiceListRelationFilter
+    tags?: ClientTagListRelationFilter
   }, "id">
 
   export type ClientOrderByWithAggregationInput = {
@@ -18344,6 +22346,9 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     phone?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
+    birthDate?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
     status?: SortOrder
     source?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -18365,10 +22370,218 @@ export namespace Prisma {
     email?: StringNullableWithAggregatesFilter<"Client"> | string | null
     phone?: StringNullableWithAggregatesFilter<"Client"> | string | null
     address?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    birthDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
+    city?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"Client"> | string | null
     status?: EnumClientStatusWithAggregatesFilter<"Client"> | $Enums.ClientStatus
     source?: EnumLeadSourceNullableWithAggregatesFilter<"Client"> | $Enums.LeadSource | null
     createdAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
+  }
+
+  export type ProspectWhereInput = {
+    AND?: ProspectWhereInput | ProspectWhereInput[]
+    OR?: ProspectWhereInput[]
+    NOT?: ProspectWhereInput | ProspectWhereInput[]
+    id?: StringFilter<"Prospect"> | string
+    name?: StringFilter<"Prospect"> | string
+    type?: EnumClientTypeFilter<"Prospect"> | $Enums.ClientType
+    documentType?: EnumDocumentTypeNullableFilter<"Prospect"> | $Enums.DocumentType | null
+    documentNumber?: StringNullableFilter<"Prospect"> | string | null
+    email?: StringNullableFilter<"Prospect"> | string | null
+    phone?: StringNullableFilter<"Prospect"> | string | null
+    address?: StringNullableFilter<"Prospect"> | string | null
+    status?: EnumProspectStatusFilter<"Prospect"> | $Enums.ProspectStatus
+    source?: EnumLeadSourceNullableFilter<"Prospect"> | $Enums.LeadSource | null
+    createdAt?: DateTimeFilter<"Prospect"> | Date | string
+    updatedAt?: DateTimeFilter<"Prospect"> | Date | string
+    reminders?: ReminderListRelationFilter
+    activityLogs?: ActivityLogListRelationFilter
+    services?: ProspectServiceListRelationFilter
+  }
+
+  export type ProspectOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    documentType?: SortOrderInput | SortOrder
+    documentNumber?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    status?: SortOrder
+    source?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    reminders?: ReminderOrderByRelationAggregateInput
+    activityLogs?: ActivityLogOrderByRelationAggregateInput
+    services?: ProspectServiceOrderByRelationAggregateInput
+  }
+
+  export type ProspectWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ProspectWhereInput | ProspectWhereInput[]
+    OR?: ProspectWhereInput[]
+    NOT?: ProspectWhereInput | ProspectWhereInput[]
+    name?: StringFilter<"Prospect"> | string
+    type?: EnumClientTypeFilter<"Prospect"> | $Enums.ClientType
+    documentType?: EnumDocumentTypeNullableFilter<"Prospect"> | $Enums.DocumentType | null
+    documentNumber?: StringNullableFilter<"Prospect"> | string | null
+    email?: StringNullableFilter<"Prospect"> | string | null
+    phone?: StringNullableFilter<"Prospect"> | string | null
+    address?: StringNullableFilter<"Prospect"> | string | null
+    status?: EnumProspectStatusFilter<"Prospect"> | $Enums.ProspectStatus
+    source?: EnumLeadSourceNullableFilter<"Prospect"> | $Enums.LeadSource | null
+    createdAt?: DateTimeFilter<"Prospect"> | Date | string
+    updatedAt?: DateTimeFilter<"Prospect"> | Date | string
+    reminders?: ReminderListRelationFilter
+    activityLogs?: ActivityLogListRelationFilter
+    services?: ProspectServiceListRelationFilter
+  }, "id">
+
+  export type ProspectOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    documentType?: SortOrderInput | SortOrder
+    documentNumber?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    status?: SortOrder
+    source?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ProspectCountOrderByAggregateInput
+    _max?: ProspectMaxOrderByAggregateInput
+    _min?: ProspectMinOrderByAggregateInput
+  }
+
+  export type ProspectScalarWhereWithAggregatesInput = {
+    AND?: ProspectScalarWhereWithAggregatesInput | ProspectScalarWhereWithAggregatesInput[]
+    OR?: ProspectScalarWhereWithAggregatesInput[]
+    NOT?: ProspectScalarWhereWithAggregatesInput | ProspectScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Prospect"> | string
+    name?: StringWithAggregatesFilter<"Prospect"> | string
+    type?: EnumClientTypeWithAggregatesFilter<"Prospect"> | $Enums.ClientType
+    documentType?: EnumDocumentTypeNullableWithAggregatesFilter<"Prospect"> | $Enums.DocumentType | null
+    documentNumber?: StringNullableWithAggregatesFilter<"Prospect"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Prospect"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Prospect"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Prospect"> | string | null
+    status?: EnumProspectStatusWithAggregatesFilter<"Prospect"> | $Enums.ProspectStatus
+    source?: EnumLeadSourceNullableWithAggregatesFilter<"Prospect"> | $Enums.LeadSource | null
+    createdAt?: DateTimeWithAggregatesFilter<"Prospect"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Prospect"> | Date | string
+  }
+
+  export type ClientTagWhereInput = {
+    AND?: ClientTagWhereInput | ClientTagWhereInput[]
+    OR?: ClientTagWhereInput[]
+    NOT?: ClientTagWhereInput | ClientTagWhereInput[]
+    id?: StringFilter<"ClientTag"> | string
+    name?: StringFilter<"ClientTag"> | string
+    color?: StringNullableFilter<"ClientTag"> | string | null
+    createdAt?: DateTimeFilter<"ClientTag"> | Date | string
+    updatedAt?: DateTimeFilter<"ClientTag"> | Date | string
+    clients?: ClientListRelationFilter
+  }
+
+  export type ClientTagOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    color?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    clients?: ClientOrderByRelationAggregateInput
+  }
+
+  export type ClientTagWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: ClientTagWhereInput | ClientTagWhereInput[]
+    OR?: ClientTagWhereInput[]
+    NOT?: ClientTagWhereInput | ClientTagWhereInput[]
+    color?: StringNullableFilter<"ClientTag"> | string | null
+    createdAt?: DateTimeFilter<"ClientTag"> | Date | string
+    updatedAt?: DateTimeFilter<"ClientTag"> | Date | string
+    clients?: ClientListRelationFilter
+  }, "id" | "name">
+
+  export type ClientTagOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    color?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ClientTagCountOrderByAggregateInput
+    _max?: ClientTagMaxOrderByAggregateInput
+    _min?: ClientTagMinOrderByAggregateInput
+  }
+
+  export type ClientTagScalarWhereWithAggregatesInput = {
+    AND?: ClientTagScalarWhereWithAggregatesInput | ClientTagScalarWhereWithAggregatesInput[]
+    OR?: ClientTagScalarWhereWithAggregatesInput[]
+    NOT?: ClientTagScalarWhereWithAggregatesInput | ClientTagScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ClientTag"> | string
+    name?: StringWithAggregatesFilter<"ClientTag"> | string
+    color?: StringNullableWithAggregatesFilter<"ClientTag"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ClientTag"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ClientTag"> | Date | string
+  }
+
+  export type ProspectServiceWhereInput = {
+    AND?: ProspectServiceWhereInput | ProspectServiceWhereInput[]
+    OR?: ProspectServiceWhereInput[]
+    NOT?: ProspectServiceWhereInput | ProspectServiceWhereInput[]
+    id?: StringFilter<"ProspectService"> | string
+    prospectId?: StringFilter<"ProspectService"> | string
+    serviceId?: StringFilter<"ProspectService"> | string
+    assignedAt?: DateTimeFilter<"ProspectService"> | Date | string
+    prospect?: XOR<ProspectScalarRelationFilter, ProspectWhereInput>
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }
+
+  export type ProspectServiceOrderByWithRelationInput = {
+    id?: SortOrder
+    prospectId?: SortOrder
+    serviceId?: SortOrder
+    assignedAt?: SortOrder
+    prospect?: ProspectOrderByWithRelationInput
+    service?: ServiceOrderByWithRelationInput
+  }
+
+  export type ProspectServiceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    prospectId_serviceId?: ProspectServiceProspectIdServiceIdCompoundUniqueInput
+    AND?: ProspectServiceWhereInput | ProspectServiceWhereInput[]
+    OR?: ProspectServiceWhereInput[]
+    NOT?: ProspectServiceWhereInput | ProspectServiceWhereInput[]
+    prospectId?: StringFilter<"ProspectService"> | string
+    serviceId?: StringFilter<"ProspectService"> | string
+    assignedAt?: DateTimeFilter<"ProspectService"> | Date | string
+    prospect?: XOR<ProspectScalarRelationFilter, ProspectWhereInput>
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }, "id" | "prospectId_serviceId">
+
+  export type ProspectServiceOrderByWithAggregationInput = {
+    id?: SortOrder
+    prospectId?: SortOrder
+    serviceId?: SortOrder
+    assignedAt?: SortOrder
+    _count?: ProspectServiceCountOrderByAggregateInput
+    _max?: ProspectServiceMaxOrderByAggregateInput
+    _min?: ProspectServiceMinOrderByAggregateInput
+  }
+
+  export type ProspectServiceScalarWhereWithAggregatesInput = {
+    AND?: ProspectServiceScalarWhereWithAggregatesInput | ProspectServiceScalarWhereWithAggregatesInput[]
+    OR?: ProspectServiceScalarWhereWithAggregatesInput[]
+    NOT?: ProspectServiceScalarWhereWithAggregatesInput | ProspectServiceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProspectService"> | string
+    prospectId?: StringWithAggregatesFilter<"ProspectService"> | string
+    serviceId?: StringWithAggregatesFilter<"ProspectService"> | string
+    assignedAt?: DateTimeWithAggregatesFilter<"ProspectService"> | Date | string
   }
 
   export type ServiceCategoryWhereInput = {
@@ -18507,6 +22720,7 @@ export namespace Prisma {
     subcategory?: XOR<ServiceSubcategoryNullableScalarRelationFilter, ServiceSubcategoryWhereInput> | null
     policies?: PolicyListRelationFilter
     clients?: ClientServiceListRelationFilter
+    prospects?: ProspectServiceListRelationFilter
   }
 
   export type ServiceOrderByWithRelationInput = {
@@ -18523,6 +22737,7 @@ export namespace Prisma {
     subcategory?: ServiceSubcategoryOrderByWithRelationInput
     policies?: PolicyOrderByRelationAggregateInput
     clients?: ClientServiceOrderByRelationAggregateInput
+    prospects?: ProspectServiceOrderByRelationAggregateInput
   }
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -18542,6 +22757,7 @@ export namespace Prisma {
     subcategory?: XOR<ServiceSubcategoryNullableScalarRelationFilter, ServiceSubcategoryWhereInput> | null
     policies?: PolicyListRelationFilter
     clients?: ClientServiceListRelationFilter
+    prospects?: ProspectServiceListRelationFilter
   }, "id">
 
   export type ServiceOrderByWithAggregationInput = {
@@ -18909,11 +23125,13 @@ export namespace Prisma {
     status?: EnumReminderStatusFilter<"Reminder"> | $Enums.ReminderStatus
     dueDate?: DateTimeFilter<"Reminder"> | Date | string
     description?: StringNullableFilter<"Reminder"> | string | null
-    clientId?: StringFilter<"Reminder"> | string
+    clientId?: StringNullableFilter<"Reminder"> | string | null
+    prospectId?: StringNullableFilter<"Reminder"> | string | null
     createdById?: StringNullableFilter<"Reminder"> | string | null
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
-    client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+    prospect?: XOR<ProspectNullableScalarRelationFilter, ProspectWhereInput> | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
@@ -18924,11 +23142,13 @@ export namespace Prisma {
     status?: SortOrder
     dueDate?: SortOrder
     description?: SortOrderInput | SortOrder
-    clientId?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    prospectId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
+    prospect?: ProspectOrderByWithRelationInput
     createdBy?: UserOrderByWithRelationInput
   }
 
@@ -18942,11 +23162,13 @@ export namespace Prisma {
     status?: EnumReminderStatusFilter<"Reminder"> | $Enums.ReminderStatus
     dueDate?: DateTimeFilter<"Reminder"> | Date | string
     description?: StringNullableFilter<"Reminder"> | string | null
-    clientId?: StringFilter<"Reminder"> | string
+    clientId?: StringNullableFilter<"Reminder"> | string | null
+    prospectId?: StringNullableFilter<"Reminder"> | string | null
     createdById?: StringNullableFilter<"Reminder"> | string | null
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
-    client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
+    client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+    prospect?: XOR<ProspectNullableScalarRelationFilter, ProspectWhereInput> | null
     createdBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
@@ -18957,7 +23179,8 @@ export namespace Prisma {
     status?: SortOrder
     dueDate?: SortOrder
     description?: SortOrderInput | SortOrder
-    clientId?: SortOrder
+    clientId?: SortOrderInput | SortOrder
+    prospectId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18976,7 +23199,8 @@ export namespace Prisma {
     status?: EnumReminderStatusWithAggregatesFilter<"Reminder"> | $Enums.ReminderStatus
     dueDate?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
     description?: StringNullableWithAggregatesFilter<"Reminder"> | string | null
-    clientId?: StringWithAggregatesFilter<"Reminder"> | string
+    clientId?: StringNullableWithAggregatesFilter<"Reminder"> | string | null
+    prospectId?: StringNullableWithAggregatesFilter<"Reminder"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"Reminder"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Reminder"> | Date | string
@@ -19155,9 +23379,11 @@ export namespace Prisma {
     type?: EnumActivityTypeFilter<"ActivityLog"> | $Enums.ActivityType
     metadata?: JsonNullableFilter<"ActivityLog">
     clientId?: StringNullableFilter<"ActivityLog"> | string | null
+    prospectId?: StringNullableFilter<"ActivityLog"> | string | null
     userId?: StringNullableFilter<"ActivityLog"> | string | null
     createdAt?: DateTimeFilter<"ActivityLog"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+    prospect?: XOR<ProspectNullableScalarRelationFilter, ProspectWhereInput> | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
@@ -19167,9 +23393,11 @@ export namespace Prisma {
     type?: SortOrder
     metadata?: SortOrderInput | SortOrder
     clientId?: SortOrderInput | SortOrder
+    prospectId?: SortOrderInput | SortOrder
     userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     client?: ClientOrderByWithRelationInput
+    prospect?: ProspectOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
 
@@ -19182,9 +23410,11 @@ export namespace Prisma {
     type?: EnumActivityTypeFilter<"ActivityLog"> | $Enums.ActivityType
     metadata?: JsonNullableFilter<"ActivityLog">
     clientId?: StringNullableFilter<"ActivityLog"> | string | null
+    prospectId?: StringNullableFilter<"ActivityLog"> | string | null
     userId?: StringNullableFilter<"ActivityLog"> | string | null
     createdAt?: DateTimeFilter<"ActivityLog"> | Date | string
     client?: XOR<ClientNullableScalarRelationFilter, ClientWhereInput> | null
+    prospect?: XOR<ProspectNullableScalarRelationFilter, ProspectWhereInput> | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
@@ -19194,6 +23424,7 @@ export namespace Prisma {
     type?: SortOrder
     metadata?: SortOrderInput | SortOrder
     clientId?: SortOrderInput | SortOrder
+    prospectId?: SortOrderInput | SortOrder
     userId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: ActivityLogCountOrderByAggregateInput
@@ -19210,6 +23441,7 @@ export namespace Prisma {
     type?: EnumActivityTypeWithAggregatesFilter<"ActivityLog"> | $Enums.ActivityType
     metadata?: JsonNullableWithAggregatesFilter<"ActivityLog">
     clientId?: StringNullableWithAggregatesFilter<"ActivityLog"> | string | null
+    prospectId?: StringNullableWithAggregatesFilter<"ActivityLog"> | string | null
     userId?: StringNullableWithAggregatesFilter<"ActivityLog"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ActivityLog"> | Date | string
   }
@@ -19315,6 +23547,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -19324,6 +23559,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogCreateNestedManyWithoutClientInput
     services?: ClientServiceCreateNestedManyWithoutClientInput
+    tags?: ClientTagCreateNestedManyWithoutClientsInput
   }
 
   export type ClientUncheckedCreateInput = {
@@ -19335,6 +23571,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -19344,6 +23583,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutClientInput
     services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    tags?: ClientTagUncheckedCreateNestedManyWithoutClientsInput
   }
 
   export type ClientUpdateInput = {
@@ -19355,6 +23595,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19364,6 +23607,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutClientNestedInput
     services?: ClientServiceUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUpdateManyWithoutClientsNestedInput
   }
 
   export type ClientUncheckedUpdateInput = {
@@ -19375,6 +23619,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19384,6 +23631,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutClientNestedInput
     services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUncheckedUpdateManyWithoutClientsNestedInput
   }
 
   export type ClientCreateManyInput = {
@@ -19395,6 +23643,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -19410,6 +23661,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19425,10 +23679,237 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectCreateInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderCreateNestedManyWithoutProspectInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutProspectInput
+    services?: ProspectServiceCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectUncheckedCreateInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderUncheckedCreateNestedManyWithoutProspectInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutProspectInput
+    services?: ProspectServiceUncheckedCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUpdateManyWithoutProspectNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutProspectNestedInput
+    services?: ProspectServiceUpdateManyWithoutProspectNestedInput
+  }
+
+  export type ProspectUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUncheckedUpdateManyWithoutProspectNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutProspectNestedInput
+    services?: ProspectServiceUncheckedUpdateManyWithoutProspectNestedInput
+  }
+
+  export type ProspectCreateManyInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ProspectUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientTagCreateInput = {
+    id?: string
+    name: string
+    color?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clients?: ClientCreateNestedManyWithoutTagsInput
+  }
+
+  export type ClientTagUncheckedCreateInput = {
+    id?: string
+    name: string
+    color?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clients?: ClientUncheckedCreateNestedManyWithoutTagsInput
+  }
+
+  export type ClientTagUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clients?: ClientUpdateManyWithoutTagsNestedInput
+  }
+
+  export type ClientTagUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clients?: ClientUncheckedUpdateManyWithoutTagsNestedInput
+  }
+
+  export type ClientTagCreateManyInput = {
+    id?: string
+    name: string
+    color?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClientTagUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientTagUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectServiceCreateInput = {
+    id?: string
+    assignedAt?: Date | string
+    prospect: ProspectCreateNestedOneWithoutServicesInput
+    service: ServiceCreateNestedOneWithoutProspectsInput
+  }
+
+  export type ProspectServiceUncheckedCreateInput = {
+    id?: string
+    prospectId: string
+    serviceId: string
+    assignedAt?: Date | string
+  }
+
+  export type ProspectServiceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    prospect?: ProspectUpdateOneRequiredWithoutServicesNestedInput
+    service?: ServiceUpdateOneRequiredWithoutProspectsNestedInput
+  }
+
+  export type ProspectServiceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prospectId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectServiceCreateManyInput = {
+    id?: string
+    prospectId: string
+    serviceId: string
+    assignedAt?: Date | string
+  }
+
+  export type ProspectServiceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectServiceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prospectId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ServiceCategoryCreateInput = {
@@ -19570,6 +24051,7 @@ export namespace Prisma {
     subcategory?: ServiceSubcategoryCreateNestedOneWithoutServicesInput
     policies?: PolicyCreateNestedManyWithoutServiceInput
     clients?: ClientServiceCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateInput = {
@@ -19585,6 +24067,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     policies?: PolicyUncheckedCreateNestedManyWithoutServiceInput
     clients?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUpdateInput = {
@@ -19600,6 +24083,7 @@ export namespace Prisma {
     subcategory?: ServiceSubcategoryUpdateOneWithoutServicesNestedInput
     policies?: PolicyUpdateManyWithoutServiceNestedInput
     clients?: ClientServiceUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateInput = {
@@ -19615,6 +24099,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     policies?: PolicyUncheckedUpdateManyWithoutServiceNestedInput
     clients?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceCreateManyInput = {
@@ -20005,7 +24490,8 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    client: ClientCreateNestedOneWithoutRemindersInput
+    client?: ClientCreateNestedOneWithoutRemindersInput
+    prospect?: ProspectCreateNestedOneWithoutRemindersInput
     createdBy?: UserCreateNestedOneWithoutRemindersInput
   }
 
@@ -20016,7 +24502,8 @@ export namespace Prisma {
     status?: $Enums.ReminderStatus
     dueDate: Date | string
     description?: string | null
-    clientId: string
+    clientId?: string | null
+    prospectId?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20031,7 +24518,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    client?: ClientUpdateOneRequiredWithoutRemindersNestedInput
+    client?: ClientUpdateOneWithoutRemindersNestedInput
+    prospect?: ProspectUpdateOneWithoutRemindersNestedInput
     createdBy?: UserUpdateOneWithoutRemindersNestedInput
   }
 
@@ -20042,7 +24530,8 @@ export namespace Prisma {
     status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20055,7 +24544,8 @@ export namespace Prisma {
     status?: $Enums.ReminderStatus
     dueDate: Date | string
     description?: string | null
-    clientId: string
+    clientId?: string | null
+    prospectId?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20079,7 +24569,8 @@ export namespace Prisma {
     status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20277,6 +24768,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     client?: ClientCreateNestedOneWithoutActivityLogsInput
+    prospect?: ProspectCreateNestedOneWithoutActivityLogsInput
     user?: UserCreateNestedOneWithoutActivityLogsInput
   }
 
@@ -20286,6 +24778,7 @@ export namespace Prisma {
     type: $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: string | null
+    prospectId?: string | null
     userId?: string | null
     createdAt?: Date | string
   }
@@ -20297,6 +24790,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutActivityLogsNestedInput
+    prospect?: ProspectUpdateOneWithoutActivityLogsNestedInput
     user?: UserUpdateOneWithoutActivityLogsNestedInput
   }
 
@@ -20306,6 +24800,7 @@ export namespace Prisma {
     type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20316,6 +24811,7 @@ export namespace Prisma {
     type: $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: string | null
+    prospectId?: string | null
     userId?: string | null
     createdAt?: Date | string
   }
@@ -20334,6 +24830,7 @@ export namespace Prisma {
     type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20534,6 +25031,17 @@ export namespace Prisma {
     not?: NestedEnumDocumentTypeNullableFilter<$PrismaModel> | $Enums.DocumentType | null
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type EnumClientStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ClientStatus | EnumClientStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ClientStatus[] | ListEnumClientStatusFieldRefInput<$PrismaModel>
@@ -20566,6 +25074,12 @@ export namespace Prisma {
     none?: ClientServiceWhereInput
   }
 
+  export type ClientTagListRelationFilter = {
+    every?: ClientTagWhereInput
+    some?: ClientTagWhereInput
+    none?: ClientTagWhereInput
+  }
+
   export type PolicyOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -20578,6 +25092,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ClientTagOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ClientCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -20587,6 +25105,9 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     address?: SortOrder
+    birthDate?: SortOrder
+    city?: SortOrder
+    notes?: SortOrder
     status?: SortOrder
     source?: SortOrder
     createdAt?: SortOrder
@@ -20602,6 +25123,9 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     address?: SortOrder
+    birthDate?: SortOrder
+    city?: SortOrder
+    notes?: SortOrder
     status?: SortOrder
     source?: SortOrder
     createdAt?: SortOrder
@@ -20617,6 +25141,9 @@ export namespace Prisma {
     email?: SortOrder
     phone?: SortOrder
     address?: SortOrder
+    birthDate?: SortOrder
+    city?: SortOrder
+    notes?: SortOrder
     status?: SortOrder
     source?: SortOrder
     createdAt?: SortOrder
@@ -20643,6 +25170,20 @@ export namespace Prisma {
     _max?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type EnumClientStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ClientStatus | EnumClientStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ClientStatus[] | ListEnumClientStatusFieldRefInput<$PrismaModel>
@@ -20661,6 +25202,148 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumLeadSourceNullableFilter<$PrismaModel>
     _max?: NestedEnumLeadSourceNullableFilter<$PrismaModel>
+  }
+
+  export type EnumProspectStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProspectStatus | EnumProspectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProspectStatusFilter<$PrismaModel> | $Enums.ProspectStatus
+  }
+
+  export type ProspectServiceListRelationFilter = {
+    every?: ProspectServiceWhereInput
+    some?: ProspectServiceWhereInput
+    none?: ProspectServiceWhereInput
+  }
+
+  export type ProspectServiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProspectCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    documentType?: SortOrder
+    documentNumber?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProspectMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    documentType?: SortOrder
+    documentNumber?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProspectMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    type?: SortOrder
+    documentType?: SortOrder
+    documentNumber?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    address?: SortOrder
+    status?: SortOrder
+    source?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumProspectStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProspectStatus | EnumProspectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProspectStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProspectStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumProspectStatusFilter<$PrismaModel>
+    _max?: NestedEnumProspectStatusFilter<$PrismaModel>
+  }
+
+  export type ClientListRelationFilter = {
+    every?: ClientWhereInput
+    some?: ClientWhereInput
+    none?: ClientWhereInput
+  }
+
+  export type ClientOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ClientTagCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ClientTagMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ClientTagMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    color?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ProspectScalarRelationFilter = {
+    is?: ProspectWhereInput
+    isNot?: ProspectWhereInput
+  }
+
+  export type ServiceScalarRelationFilter = {
+    is?: ServiceWhereInput
+    isNot?: ServiceWhereInput
+  }
+
+  export type ProspectServiceProspectIdServiceIdCompoundUniqueInput = {
+    prospectId: string
+    serviceId: string
+  }
+
+  export type ProspectServiceCountOrderByAggregateInput = {
+    id?: SortOrder
+    prospectId?: SortOrder
+    serviceId?: SortOrder
+    assignedAt?: SortOrder
+  }
+
+  export type ProspectServiceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    prospectId?: SortOrder
+    serviceId?: SortOrder
+    assignedAt?: SortOrder
+  }
+
+  export type ProspectServiceMinOrderByAggregateInput = {
+    id?: SortOrder
+    prospectId?: SortOrder
+    serviceId?: SortOrder
+    assignedAt?: SortOrder
   }
 
   export type ServiceSubcategoryListRelationFilter = {
@@ -20843,11 +25526,6 @@ export namespace Prisma {
   export type ClientScalarRelationFilter = {
     is?: ClientWhereInput
     isNot?: ClientWhereInput
-  }
-
-  export type ServiceScalarRelationFilter = {
-    is?: ServiceWhereInput
-    isNot?: ServiceWhereInput
   }
 
   export type ClientServiceClientIdServiceIdCompoundUniqueInput = {
@@ -21186,6 +25864,16 @@ export namespace Prisma {
     not?: NestedEnumReminderStatusFilter<$PrismaModel> | $Enums.ReminderStatus
   }
 
+  export type ClientNullableScalarRelationFilter = {
+    is?: ClientWhereInput | null
+    isNot?: ClientWhereInput | null
+  }
+
+  export type ProspectNullableScalarRelationFilter = {
+    is?: ProspectWhereInput | null
+    isNot?: ProspectWhereInput | null
+  }
+
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
@@ -21199,6 +25887,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     description?: SortOrder
     clientId?: SortOrder
+    prospectId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21212,6 +25901,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     description?: SortOrder
     clientId?: SortOrder
+    prospectId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21225,6 +25915,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     description?: SortOrder
     clientId?: SortOrder
+    prospectId?: SortOrder
     createdById?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -21454,17 +26145,13 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type ClientNullableScalarRelationFilter = {
-    is?: ClientWhereInput | null
-    isNot?: ClientWhereInput | null
-  }
-
   export type ActivityLogCountOrderByAggregateInput = {
     id?: SortOrder
     action?: SortOrder
     type?: SortOrder
     metadata?: SortOrder
     clientId?: SortOrder
+    prospectId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
   }
@@ -21474,6 +26161,7 @@ export namespace Prisma {
     action?: SortOrder
     type?: SortOrder
     clientId?: SortOrder
+    prospectId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
   }
@@ -21483,6 +26171,7 @@ export namespace Prisma {
     action?: SortOrder
     type?: SortOrder
     clientId?: SortOrder
+    prospectId?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
   }
@@ -21662,6 +26351,12 @@ export namespace Prisma {
     connect?: ClientServiceWhereUniqueInput | ClientServiceWhereUniqueInput[]
   }
 
+  export type ClientTagCreateNestedManyWithoutClientsInput = {
+    create?: XOR<ClientTagCreateWithoutClientsInput, ClientTagUncheckedCreateWithoutClientsInput> | ClientTagCreateWithoutClientsInput[] | ClientTagUncheckedCreateWithoutClientsInput[]
+    connectOrCreate?: ClientTagCreateOrConnectWithoutClientsInput | ClientTagCreateOrConnectWithoutClientsInput[]
+    connect?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+  }
+
   export type PolicyUncheckedCreateNestedManyWithoutClientInput = {
     create?: XOR<PolicyCreateWithoutClientInput, PolicyUncheckedCreateWithoutClientInput> | PolicyCreateWithoutClientInput[] | PolicyUncheckedCreateWithoutClientInput[]
     connectOrCreate?: PolicyCreateOrConnectWithoutClientInput | PolicyCreateOrConnectWithoutClientInput[]
@@ -21697,12 +26392,22 @@ export namespace Prisma {
     connect?: ClientServiceWhereUniqueInput | ClientServiceWhereUniqueInput[]
   }
 
+  export type ClientTagUncheckedCreateNestedManyWithoutClientsInput = {
+    create?: XOR<ClientTagCreateWithoutClientsInput, ClientTagUncheckedCreateWithoutClientsInput> | ClientTagCreateWithoutClientsInput[] | ClientTagUncheckedCreateWithoutClientsInput[]
+    connectOrCreate?: ClientTagCreateOrConnectWithoutClientsInput | ClientTagCreateOrConnectWithoutClientsInput[]
+    connect?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+  }
+
   export type EnumClientTypeFieldUpdateOperationsInput = {
     set?: $Enums.ClientType
   }
 
   export type NullableEnumDocumentTypeFieldUpdateOperationsInput = {
     set?: $Enums.DocumentType | null
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type EnumClientStatusFieldUpdateOperationsInput = {
@@ -21783,6 +26488,19 @@ export namespace Prisma {
     deleteMany?: ClientServiceScalarWhereInput | ClientServiceScalarWhereInput[]
   }
 
+  export type ClientTagUpdateManyWithoutClientsNestedInput = {
+    create?: XOR<ClientTagCreateWithoutClientsInput, ClientTagUncheckedCreateWithoutClientsInput> | ClientTagCreateWithoutClientsInput[] | ClientTagUncheckedCreateWithoutClientsInput[]
+    connectOrCreate?: ClientTagCreateOrConnectWithoutClientsInput | ClientTagCreateOrConnectWithoutClientsInput[]
+    upsert?: ClientTagUpsertWithWhereUniqueWithoutClientsInput | ClientTagUpsertWithWhereUniqueWithoutClientsInput[]
+    set?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    disconnect?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    delete?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    connect?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    update?: ClientTagUpdateWithWhereUniqueWithoutClientsInput | ClientTagUpdateWithWhereUniqueWithoutClientsInput[]
+    updateMany?: ClientTagUpdateManyWithWhereWithoutClientsInput | ClientTagUpdateManyWithWhereWithoutClientsInput[]
+    deleteMany?: ClientTagScalarWhereInput | ClientTagScalarWhereInput[]
+  }
+
   export type PolicyUncheckedUpdateManyWithoutClientNestedInput = {
     create?: XOR<PolicyCreateWithoutClientInput, PolicyUncheckedCreateWithoutClientInput> | PolicyCreateWithoutClientInput[] | PolicyUncheckedCreateWithoutClientInput[]
     connectOrCreate?: PolicyCreateOrConnectWithoutClientInput | PolicyCreateOrConnectWithoutClientInput[]
@@ -21851,6 +26569,215 @@ export namespace Prisma {
     update?: ClientServiceUpdateWithWhereUniqueWithoutClientInput | ClientServiceUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: ClientServiceUpdateManyWithWhereWithoutClientInput | ClientServiceUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: ClientServiceScalarWhereInput | ClientServiceScalarWhereInput[]
+  }
+
+  export type ClientTagUncheckedUpdateManyWithoutClientsNestedInput = {
+    create?: XOR<ClientTagCreateWithoutClientsInput, ClientTagUncheckedCreateWithoutClientsInput> | ClientTagCreateWithoutClientsInput[] | ClientTagUncheckedCreateWithoutClientsInput[]
+    connectOrCreate?: ClientTagCreateOrConnectWithoutClientsInput | ClientTagCreateOrConnectWithoutClientsInput[]
+    upsert?: ClientTagUpsertWithWhereUniqueWithoutClientsInput | ClientTagUpsertWithWhereUniqueWithoutClientsInput[]
+    set?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    disconnect?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    delete?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    connect?: ClientTagWhereUniqueInput | ClientTagWhereUniqueInput[]
+    update?: ClientTagUpdateWithWhereUniqueWithoutClientsInput | ClientTagUpdateWithWhereUniqueWithoutClientsInput[]
+    updateMany?: ClientTagUpdateManyWithWhereWithoutClientsInput | ClientTagUpdateManyWithWhereWithoutClientsInput[]
+    deleteMany?: ClientTagScalarWhereInput | ClientTagScalarWhereInput[]
+  }
+
+  export type ReminderCreateNestedManyWithoutProspectInput = {
+    create?: XOR<ReminderCreateWithoutProspectInput, ReminderUncheckedCreateWithoutProspectInput> | ReminderCreateWithoutProspectInput[] | ReminderUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutProspectInput | ReminderCreateOrConnectWithoutProspectInput[]
+    createMany?: ReminderCreateManyProspectInputEnvelope
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+  }
+
+  export type ActivityLogCreateNestedManyWithoutProspectInput = {
+    create?: XOR<ActivityLogCreateWithoutProspectInput, ActivityLogUncheckedCreateWithoutProspectInput> | ActivityLogCreateWithoutProspectInput[] | ActivityLogUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ActivityLogCreateOrConnectWithoutProspectInput | ActivityLogCreateOrConnectWithoutProspectInput[]
+    createMany?: ActivityLogCreateManyProspectInputEnvelope
+    connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+  }
+
+  export type ProspectServiceCreateNestedManyWithoutProspectInput = {
+    create?: XOR<ProspectServiceCreateWithoutProspectInput, ProspectServiceUncheckedCreateWithoutProspectInput> | ProspectServiceCreateWithoutProspectInput[] | ProspectServiceUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutProspectInput | ProspectServiceCreateOrConnectWithoutProspectInput[]
+    createMany?: ProspectServiceCreateManyProspectInputEnvelope
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+  }
+
+  export type ReminderUncheckedCreateNestedManyWithoutProspectInput = {
+    create?: XOR<ReminderCreateWithoutProspectInput, ReminderUncheckedCreateWithoutProspectInput> | ReminderCreateWithoutProspectInput[] | ReminderUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutProspectInput | ReminderCreateOrConnectWithoutProspectInput[]
+    createMany?: ReminderCreateManyProspectInputEnvelope
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+  }
+
+  export type ActivityLogUncheckedCreateNestedManyWithoutProspectInput = {
+    create?: XOR<ActivityLogCreateWithoutProspectInput, ActivityLogUncheckedCreateWithoutProspectInput> | ActivityLogCreateWithoutProspectInput[] | ActivityLogUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ActivityLogCreateOrConnectWithoutProspectInput | ActivityLogCreateOrConnectWithoutProspectInput[]
+    createMany?: ActivityLogCreateManyProspectInputEnvelope
+    connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+  }
+
+  export type ProspectServiceUncheckedCreateNestedManyWithoutProspectInput = {
+    create?: XOR<ProspectServiceCreateWithoutProspectInput, ProspectServiceUncheckedCreateWithoutProspectInput> | ProspectServiceCreateWithoutProspectInput[] | ProspectServiceUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutProspectInput | ProspectServiceCreateOrConnectWithoutProspectInput[]
+    createMany?: ProspectServiceCreateManyProspectInputEnvelope
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+  }
+
+  export type EnumProspectStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ProspectStatus
+  }
+
+  export type ReminderUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<ReminderCreateWithoutProspectInput, ReminderUncheckedCreateWithoutProspectInput> | ReminderCreateWithoutProspectInput[] | ReminderUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutProspectInput | ReminderCreateOrConnectWithoutProspectInput[]
+    upsert?: ReminderUpsertWithWhereUniqueWithoutProspectInput | ReminderUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: ReminderCreateManyProspectInputEnvelope
+    set?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    disconnect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    delete?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    update?: ReminderUpdateWithWhereUniqueWithoutProspectInput | ReminderUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: ReminderUpdateManyWithWhereWithoutProspectInput | ReminderUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
+  }
+
+  export type ActivityLogUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<ActivityLogCreateWithoutProspectInput, ActivityLogUncheckedCreateWithoutProspectInput> | ActivityLogCreateWithoutProspectInput[] | ActivityLogUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ActivityLogCreateOrConnectWithoutProspectInput | ActivityLogCreateOrConnectWithoutProspectInput[]
+    upsert?: ActivityLogUpsertWithWhereUniqueWithoutProspectInput | ActivityLogUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: ActivityLogCreateManyProspectInputEnvelope
+    set?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    disconnect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    delete?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    update?: ActivityLogUpdateWithWhereUniqueWithoutProspectInput | ActivityLogUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: ActivityLogUpdateManyWithWhereWithoutProspectInput | ActivityLogUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
+  }
+
+  export type ProspectServiceUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<ProspectServiceCreateWithoutProspectInput, ProspectServiceUncheckedCreateWithoutProspectInput> | ProspectServiceCreateWithoutProspectInput[] | ProspectServiceUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutProspectInput | ProspectServiceCreateOrConnectWithoutProspectInput[]
+    upsert?: ProspectServiceUpsertWithWhereUniqueWithoutProspectInput | ProspectServiceUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: ProspectServiceCreateManyProspectInputEnvelope
+    set?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    disconnect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    delete?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    update?: ProspectServiceUpdateWithWhereUniqueWithoutProspectInput | ProspectServiceUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: ProspectServiceUpdateManyWithWhereWithoutProspectInput | ProspectServiceUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: ProspectServiceScalarWhereInput | ProspectServiceScalarWhereInput[]
+  }
+
+  export type ReminderUncheckedUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<ReminderCreateWithoutProspectInput, ReminderUncheckedCreateWithoutProspectInput> | ReminderCreateWithoutProspectInput[] | ReminderUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ReminderCreateOrConnectWithoutProspectInput | ReminderCreateOrConnectWithoutProspectInput[]
+    upsert?: ReminderUpsertWithWhereUniqueWithoutProspectInput | ReminderUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: ReminderCreateManyProspectInputEnvelope
+    set?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    disconnect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    delete?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    connect?: ReminderWhereUniqueInput | ReminderWhereUniqueInput[]
+    update?: ReminderUpdateWithWhereUniqueWithoutProspectInput | ReminderUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: ReminderUpdateManyWithWhereWithoutProspectInput | ReminderUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: ReminderScalarWhereInput | ReminderScalarWhereInput[]
+  }
+
+  export type ActivityLogUncheckedUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<ActivityLogCreateWithoutProspectInput, ActivityLogUncheckedCreateWithoutProspectInput> | ActivityLogCreateWithoutProspectInput[] | ActivityLogUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ActivityLogCreateOrConnectWithoutProspectInput | ActivityLogCreateOrConnectWithoutProspectInput[]
+    upsert?: ActivityLogUpsertWithWhereUniqueWithoutProspectInput | ActivityLogUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: ActivityLogCreateManyProspectInputEnvelope
+    set?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    disconnect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    delete?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+    update?: ActivityLogUpdateWithWhereUniqueWithoutProspectInput | ActivityLogUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: ActivityLogUpdateManyWithWhereWithoutProspectInput | ActivityLogUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
+  }
+
+  export type ProspectServiceUncheckedUpdateManyWithoutProspectNestedInput = {
+    create?: XOR<ProspectServiceCreateWithoutProspectInput, ProspectServiceUncheckedCreateWithoutProspectInput> | ProspectServiceCreateWithoutProspectInput[] | ProspectServiceUncheckedCreateWithoutProspectInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutProspectInput | ProspectServiceCreateOrConnectWithoutProspectInput[]
+    upsert?: ProspectServiceUpsertWithWhereUniqueWithoutProspectInput | ProspectServiceUpsertWithWhereUniqueWithoutProspectInput[]
+    createMany?: ProspectServiceCreateManyProspectInputEnvelope
+    set?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    disconnect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    delete?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    update?: ProspectServiceUpdateWithWhereUniqueWithoutProspectInput | ProspectServiceUpdateWithWhereUniqueWithoutProspectInput[]
+    updateMany?: ProspectServiceUpdateManyWithWhereWithoutProspectInput | ProspectServiceUpdateManyWithWhereWithoutProspectInput[]
+    deleteMany?: ProspectServiceScalarWhereInput | ProspectServiceScalarWhereInput[]
+  }
+
+  export type ClientCreateNestedManyWithoutTagsInput = {
+    create?: XOR<ClientCreateWithoutTagsInput, ClientUncheckedCreateWithoutTagsInput> | ClientCreateWithoutTagsInput[] | ClientUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutTagsInput | ClientCreateOrConnectWithoutTagsInput[]
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+  }
+
+  export type ClientUncheckedCreateNestedManyWithoutTagsInput = {
+    create?: XOR<ClientCreateWithoutTagsInput, ClientUncheckedCreateWithoutTagsInput> | ClientCreateWithoutTagsInput[] | ClientUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutTagsInput | ClientCreateOrConnectWithoutTagsInput[]
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+  }
+
+  export type ClientUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<ClientCreateWithoutTagsInput, ClientUncheckedCreateWithoutTagsInput> | ClientCreateWithoutTagsInput[] | ClientUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutTagsInput | ClientCreateOrConnectWithoutTagsInput[]
+    upsert?: ClientUpsertWithWhereUniqueWithoutTagsInput | ClientUpsertWithWhereUniqueWithoutTagsInput[]
+    set?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    disconnect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    delete?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    update?: ClientUpdateWithWhereUniqueWithoutTagsInput | ClientUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: ClientUpdateManyWithWhereWithoutTagsInput | ClientUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
+  }
+
+  export type ClientUncheckedUpdateManyWithoutTagsNestedInput = {
+    create?: XOR<ClientCreateWithoutTagsInput, ClientUncheckedCreateWithoutTagsInput> | ClientCreateWithoutTagsInput[] | ClientUncheckedCreateWithoutTagsInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutTagsInput | ClientCreateOrConnectWithoutTagsInput[]
+    upsert?: ClientUpsertWithWhereUniqueWithoutTagsInput | ClientUpsertWithWhereUniqueWithoutTagsInput[]
+    set?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    disconnect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    delete?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    update?: ClientUpdateWithWhereUniqueWithoutTagsInput | ClientUpdateWithWhereUniqueWithoutTagsInput[]
+    updateMany?: ClientUpdateManyWithWhereWithoutTagsInput | ClientUpdateManyWithWhereWithoutTagsInput[]
+    deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
+  }
+
+  export type ProspectCreateNestedOneWithoutServicesInput = {
+    create?: XOR<ProspectCreateWithoutServicesInput, ProspectUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: ProspectCreateOrConnectWithoutServicesInput
+    connect?: ProspectWhereUniqueInput
+  }
+
+  export type ServiceCreateNestedOneWithoutProspectsInput = {
+    create?: XOR<ServiceCreateWithoutProspectsInput, ServiceUncheckedCreateWithoutProspectsInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutProspectsInput
+    connect?: ServiceWhereUniqueInput
+  }
+
+  export type ProspectUpdateOneRequiredWithoutServicesNestedInput = {
+    create?: XOR<ProspectCreateWithoutServicesInput, ProspectUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: ProspectCreateOrConnectWithoutServicesInput
+    upsert?: ProspectUpsertWithoutServicesInput
+    connect?: ProspectWhereUniqueInput
+    update?: XOR<XOR<ProspectUpdateToOneWithWhereWithoutServicesInput, ProspectUpdateWithoutServicesInput>, ProspectUncheckedUpdateWithoutServicesInput>
+  }
+
+  export type ServiceUpdateOneRequiredWithoutProspectsNestedInput = {
+    create?: XOR<ServiceCreateWithoutProspectsInput, ServiceUncheckedCreateWithoutProspectsInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutProspectsInput
+    upsert?: ServiceUpsertWithoutProspectsInput
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutProspectsInput, ServiceUpdateWithoutProspectsInput>, ServiceUncheckedUpdateWithoutProspectsInput>
   }
 
   export type ServiceSubcategoryCreateNestedManyWithoutCategoryInput = {
@@ -21971,6 +26898,13 @@ export namespace Prisma {
     connect?: ClientServiceWhereUniqueInput | ClientServiceWhereUniqueInput[]
   }
 
+  export type ProspectServiceCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ProspectServiceCreateWithoutServiceInput, ProspectServiceUncheckedCreateWithoutServiceInput> | ProspectServiceCreateWithoutServiceInput[] | ProspectServiceUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutServiceInput | ProspectServiceCreateOrConnectWithoutServiceInput[]
+    createMany?: ProspectServiceCreateManyServiceInputEnvelope
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+  }
+
   export type PolicyUncheckedCreateNestedManyWithoutServiceInput = {
     create?: XOR<PolicyCreateWithoutServiceInput, PolicyUncheckedCreateWithoutServiceInput> | PolicyCreateWithoutServiceInput[] | PolicyUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: PolicyCreateOrConnectWithoutServiceInput | PolicyCreateOrConnectWithoutServiceInput[]
@@ -21983,6 +26917,13 @@ export namespace Prisma {
     connectOrCreate?: ClientServiceCreateOrConnectWithoutServiceInput | ClientServiceCreateOrConnectWithoutServiceInput[]
     createMany?: ClientServiceCreateManyServiceInputEnvelope
     connect?: ClientServiceWhereUniqueInput | ClientServiceWhereUniqueInput[]
+  }
+
+  export type ProspectServiceUncheckedCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ProspectServiceCreateWithoutServiceInput, ProspectServiceUncheckedCreateWithoutServiceInput> | ProspectServiceCreateWithoutServiceInput[] | ProspectServiceUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutServiceInput | ProspectServiceCreateOrConnectWithoutServiceInput[]
+    createMany?: ProspectServiceCreateManyServiceInputEnvelope
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
   }
 
   export type EnumServiceValidityTypeFieldUpdateOperationsInput = {
@@ -22035,6 +26976,20 @@ export namespace Prisma {
     deleteMany?: ClientServiceScalarWhereInput | ClientServiceScalarWhereInput[]
   }
 
+  export type ProspectServiceUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ProspectServiceCreateWithoutServiceInput, ProspectServiceUncheckedCreateWithoutServiceInput> | ProspectServiceCreateWithoutServiceInput[] | ProspectServiceUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutServiceInput | ProspectServiceCreateOrConnectWithoutServiceInput[]
+    upsert?: ProspectServiceUpsertWithWhereUniqueWithoutServiceInput | ProspectServiceUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ProspectServiceCreateManyServiceInputEnvelope
+    set?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    disconnect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    delete?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    update?: ProspectServiceUpdateWithWhereUniqueWithoutServiceInput | ProspectServiceUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ProspectServiceUpdateManyWithWhereWithoutServiceInput | ProspectServiceUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ProspectServiceScalarWhereInput | ProspectServiceScalarWhereInput[]
+  }
+
   export type PolicyUncheckedUpdateManyWithoutServiceNestedInput = {
     create?: XOR<PolicyCreateWithoutServiceInput, PolicyUncheckedCreateWithoutServiceInput> | PolicyCreateWithoutServiceInput[] | PolicyUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: PolicyCreateOrConnectWithoutServiceInput | PolicyCreateOrConnectWithoutServiceInput[]
@@ -22061,6 +27016,20 @@ export namespace Prisma {
     update?: ClientServiceUpdateWithWhereUniqueWithoutServiceInput | ClientServiceUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: ClientServiceUpdateManyWithWhereWithoutServiceInput | ClientServiceUpdateManyWithWhereWithoutServiceInput[]
     deleteMany?: ClientServiceScalarWhereInput | ClientServiceScalarWhereInput[]
+  }
+
+  export type ProspectServiceUncheckedUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ProspectServiceCreateWithoutServiceInput, ProspectServiceUncheckedCreateWithoutServiceInput> | ProspectServiceCreateWithoutServiceInput[] | ProspectServiceUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProspectServiceCreateOrConnectWithoutServiceInput | ProspectServiceCreateOrConnectWithoutServiceInput[]
+    upsert?: ProspectServiceUpsertWithWhereUniqueWithoutServiceInput | ProspectServiceUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ProspectServiceCreateManyServiceInputEnvelope
+    set?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    disconnect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    delete?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    connect?: ProspectServiceWhereUniqueInput | ProspectServiceWhereUniqueInput[]
+    update?: ProspectServiceUpdateWithWhereUniqueWithoutServiceInput | ProspectServiceUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ProspectServiceUpdateManyWithWhereWithoutServiceInput | ProspectServiceUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ProspectServiceScalarWhereInput | ProspectServiceScalarWhereInput[]
   }
 
   export type ClientCreateNestedOneWithoutServicesInput = {
@@ -22225,6 +27194,12 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput
   }
 
+  export type ProspectCreateNestedOneWithoutRemindersInput = {
+    create?: XOR<ProspectCreateWithoutRemindersInput, ProspectUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: ProspectCreateOrConnectWithoutRemindersInput
+    connect?: ProspectWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutRemindersInput = {
     create?: XOR<UserCreateWithoutRemindersInput, UserUncheckedCreateWithoutRemindersInput>
     connectOrCreate?: UserCreateOrConnectWithoutRemindersInput
@@ -22243,12 +27218,24 @@ export namespace Prisma {
     set?: $Enums.ReminderStatus
   }
 
-  export type ClientUpdateOneRequiredWithoutRemindersNestedInput = {
+  export type ClientUpdateOneWithoutRemindersNestedInput = {
     create?: XOR<ClientCreateWithoutRemindersInput, ClientUncheckedCreateWithoutRemindersInput>
     connectOrCreate?: ClientCreateOrConnectWithoutRemindersInput
     upsert?: ClientUpsertWithoutRemindersInput
+    disconnect?: ClientWhereInput | boolean
+    delete?: ClientWhereInput | boolean
     connect?: ClientWhereUniqueInput
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutRemindersInput, ClientUpdateWithoutRemindersInput>, ClientUncheckedUpdateWithoutRemindersInput>
+  }
+
+  export type ProspectUpdateOneWithoutRemindersNestedInput = {
+    create?: XOR<ProspectCreateWithoutRemindersInput, ProspectUncheckedCreateWithoutRemindersInput>
+    connectOrCreate?: ProspectCreateOrConnectWithoutRemindersInput
+    upsert?: ProspectUpsertWithoutRemindersInput
+    disconnect?: ProspectWhereInput | boolean
+    delete?: ProspectWhereInput | boolean
+    connect?: ProspectWhereUniqueInput
+    update?: XOR<XOR<ProspectUpdateToOneWithWhereWithoutRemindersInput, ProspectUpdateWithoutRemindersInput>, ProspectUncheckedUpdateWithoutRemindersInput>
   }
 
   export type UserUpdateOneWithoutRemindersNestedInput = {
@@ -22335,6 +27322,12 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput
   }
 
+  export type ProspectCreateNestedOneWithoutActivityLogsInput = {
+    create?: XOR<ProspectCreateWithoutActivityLogsInput, ProspectUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: ProspectCreateOrConnectWithoutActivityLogsInput
+    connect?: ProspectWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutActivityLogsInput = {
     create?: XOR<UserCreateWithoutActivityLogsInput, UserUncheckedCreateWithoutActivityLogsInput>
     connectOrCreate?: UserCreateOrConnectWithoutActivityLogsInput
@@ -22353,6 +27346,16 @@ export namespace Prisma {
     delete?: ClientWhereInput | boolean
     connect?: ClientWhereUniqueInput
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutActivityLogsInput, ClientUpdateWithoutActivityLogsInput>, ClientUncheckedUpdateWithoutActivityLogsInput>
+  }
+
+  export type ProspectUpdateOneWithoutActivityLogsNestedInput = {
+    create?: XOR<ProspectCreateWithoutActivityLogsInput, ProspectUncheckedCreateWithoutActivityLogsInput>
+    connectOrCreate?: ProspectCreateOrConnectWithoutActivityLogsInput
+    upsert?: ProspectUpsertWithoutActivityLogsInput
+    disconnect?: ProspectWhereInput | boolean
+    delete?: ProspectWhereInput | boolean
+    connect?: ProspectWhereUniqueInput
+    update?: XOR<XOR<ProspectUpdateToOneWithWhereWithoutActivityLogsInput, ProspectUpdateWithoutActivityLogsInput>, ProspectUncheckedUpdateWithoutActivityLogsInput>
   }
 
   export type UserUpdateOneWithoutActivityLogsNestedInput = {
@@ -22518,6 +27521,17 @@ export namespace Prisma {
     not?: NestedEnumDocumentTypeNullableFilter<$PrismaModel> | $Enums.DocumentType | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedEnumClientStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ClientStatus | EnumClientStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ClientStatus[] | ListEnumClientStatusFieldRefInput<$PrismaModel>
@@ -22552,6 +27566,20 @@ export namespace Prisma {
     _max?: NestedEnumDocumentTypeNullableFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumClientStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ClientStatus | EnumClientStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ClientStatus[] | ListEnumClientStatusFieldRefInput<$PrismaModel>
@@ -22570,6 +27598,23 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumLeadSourceNullableFilter<$PrismaModel>
     _max?: NestedEnumLeadSourceNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumProspectStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProspectStatus | EnumProspectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProspectStatusFilter<$PrismaModel> | $Enums.ProspectStatus
+  }
+
+  export type NestedEnumProspectStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ProspectStatus | EnumProspectStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ProspectStatus[] | ListEnumProspectStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumProspectStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProspectStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumProspectStatusFilter<$PrismaModel>
+    _max?: NestedEnumProspectStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumServiceValidityTypeFilter<$PrismaModel = never> = {
@@ -22872,7 +27917,8 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    client: ClientCreateNestedOneWithoutRemindersInput
+    client?: ClientCreateNestedOneWithoutRemindersInput
+    prospect?: ProspectCreateNestedOneWithoutRemindersInput
   }
 
   export type ReminderUncheckedCreateWithoutCreatedByInput = {
@@ -22882,7 +27928,8 @@ export namespace Prisma {
     status?: $Enums.ReminderStatus
     dueDate: Date | string
     description?: string | null
-    clientId: string
+    clientId?: string | null
+    prospectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22904,6 +27951,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     client?: ClientCreateNestedOneWithoutActivityLogsInput
+    prospect?: ProspectCreateNestedOneWithoutActivityLogsInput
   }
 
   export type ActivityLogUncheckedCreateWithoutUserInput = {
@@ -22912,6 +27960,7 @@ export namespace Prisma {
     type: $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: string | null
+    prospectId?: string | null
     createdAt?: Date | string
   }
 
@@ -22951,7 +28000,8 @@ export namespace Prisma {
     status?: EnumReminderStatusFilter<"Reminder"> | $Enums.ReminderStatus
     dueDate?: DateTimeFilter<"Reminder"> | Date | string
     description?: StringNullableFilter<"Reminder"> | string | null
-    clientId?: StringFilter<"Reminder"> | string
+    clientId?: StringNullableFilter<"Reminder"> | string | null
+    prospectId?: StringNullableFilter<"Reminder"> | string | null
     createdById?: StringNullableFilter<"Reminder"> | string | null
     createdAt?: DateTimeFilter<"Reminder"> | Date | string
     updatedAt?: DateTimeFilter<"Reminder"> | Date | string
@@ -22982,6 +28032,7 @@ export namespace Prisma {
     type?: EnumActivityTypeFilter<"ActivityLog"> | $Enums.ActivityType
     metadata?: JsonNullableFilter<"ActivityLog">
     clientId?: StringNullableFilter<"ActivityLog"> | string | null
+    prospectId?: StringNullableFilter<"ActivityLog"> | string | null
     userId?: StringNullableFilter<"ActivityLog"> | string | null
     createdAt?: DateTimeFilter<"ActivityLog"> | Date | string
   }
@@ -23079,6 +28130,7 @@ export namespace Prisma {
     description?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    prospect?: ProspectCreateNestedOneWithoutRemindersInput
     createdBy?: UserCreateNestedOneWithoutRemindersInput
   }
 
@@ -23089,6 +28141,7 @@ export namespace Prisma {
     status?: $Enums.ReminderStatus
     dueDate: Date | string
     description?: string | null
+    prospectId?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -23110,6 +28163,7 @@ export namespace Prisma {
     type: $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    prospect?: ProspectCreateNestedOneWithoutActivityLogsInput
     user?: UserCreateNestedOneWithoutActivityLogsInput
   }
 
@@ -23118,6 +28172,7 @@ export namespace Prisma {
     action: string
     type: $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    prospectId?: string | null
     userId?: string | null
     createdAt?: Date | string
   }
@@ -23152,6 +28207,27 @@ export namespace Prisma {
   export type ClientServiceCreateManyClientInputEnvelope = {
     data: ClientServiceCreateManyClientInput | ClientServiceCreateManyClientInput[]
     skipDuplicates?: boolean
+  }
+
+  export type ClientTagCreateWithoutClientsInput = {
+    id?: string
+    name: string
+    color?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClientTagUncheckedCreateWithoutClientsInput = {
+    id?: string
+    name: string
+    color?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClientTagCreateOrConnectWithoutClientsInput = {
+    where: ClientTagWhereUniqueInput
+    create: XOR<ClientTagCreateWithoutClientsInput, ClientTagUncheckedCreateWithoutClientsInput>
   }
 
   export type PolicyUpsertWithWhereUniqueWithoutClientInput = {
@@ -23283,6 +28359,427 @@ export namespace Prisma {
     assignedAt?: DateTimeFilter<"ClientService"> | Date | string
   }
 
+  export type ClientTagUpsertWithWhereUniqueWithoutClientsInput = {
+    where: ClientTagWhereUniqueInput
+    update: XOR<ClientTagUpdateWithoutClientsInput, ClientTagUncheckedUpdateWithoutClientsInput>
+    create: XOR<ClientTagCreateWithoutClientsInput, ClientTagUncheckedCreateWithoutClientsInput>
+  }
+
+  export type ClientTagUpdateWithWhereUniqueWithoutClientsInput = {
+    where: ClientTagWhereUniqueInput
+    data: XOR<ClientTagUpdateWithoutClientsInput, ClientTagUncheckedUpdateWithoutClientsInput>
+  }
+
+  export type ClientTagUpdateManyWithWhereWithoutClientsInput = {
+    where: ClientTagScalarWhereInput
+    data: XOR<ClientTagUpdateManyMutationInput, ClientTagUncheckedUpdateManyWithoutClientsInput>
+  }
+
+  export type ClientTagScalarWhereInput = {
+    AND?: ClientTagScalarWhereInput | ClientTagScalarWhereInput[]
+    OR?: ClientTagScalarWhereInput[]
+    NOT?: ClientTagScalarWhereInput | ClientTagScalarWhereInput[]
+    id?: StringFilter<"ClientTag"> | string
+    name?: StringFilter<"ClientTag"> | string
+    color?: StringNullableFilter<"ClientTag"> | string | null
+    createdAt?: DateTimeFilter<"ClientTag"> | Date | string
+    updatedAt?: DateTimeFilter<"ClientTag"> | Date | string
+  }
+
+  export type ReminderCreateWithoutProspectInput = {
+    id?: string
+    type: $Enums.ReminderType
+    priority?: $Enums.ReminderPriority
+    status?: $Enums.ReminderStatus
+    dueDate: Date | string
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client?: ClientCreateNestedOneWithoutRemindersInput
+    createdBy?: UserCreateNestedOneWithoutRemindersInput
+  }
+
+  export type ReminderUncheckedCreateWithoutProspectInput = {
+    id?: string
+    type: $Enums.ReminderType
+    priority?: $Enums.ReminderPriority
+    status?: $Enums.ReminderStatus
+    dueDate: Date | string
+    description?: string | null
+    clientId?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ReminderCreateOrConnectWithoutProspectInput = {
+    where: ReminderWhereUniqueInput
+    create: XOR<ReminderCreateWithoutProspectInput, ReminderUncheckedCreateWithoutProspectInput>
+  }
+
+  export type ReminderCreateManyProspectInputEnvelope = {
+    data: ReminderCreateManyProspectInput | ReminderCreateManyProspectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ActivityLogCreateWithoutProspectInput = {
+    id?: string
+    action: string
+    type: $Enums.ActivityType
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    client?: ClientCreateNestedOneWithoutActivityLogsInput
+    user?: UserCreateNestedOneWithoutActivityLogsInput
+  }
+
+  export type ActivityLogUncheckedCreateWithoutProspectInput = {
+    id?: string
+    action: string
+    type: $Enums.ActivityType
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    clientId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ActivityLogCreateOrConnectWithoutProspectInput = {
+    where: ActivityLogWhereUniqueInput
+    create: XOR<ActivityLogCreateWithoutProspectInput, ActivityLogUncheckedCreateWithoutProspectInput>
+  }
+
+  export type ActivityLogCreateManyProspectInputEnvelope = {
+    data: ActivityLogCreateManyProspectInput | ActivityLogCreateManyProspectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProspectServiceCreateWithoutProspectInput = {
+    id?: string
+    assignedAt?: Date | string
+    service: ServiceCreateNestedOneWithoutProspectsInput
+  }
+
+  export type ProspectServiceUncheckedCreateWithoutProspectInput = {
+    id?: string
+    serviceId: string
+    assignedAt?: Date | string
+  }
+
+  export type ProspectServiceCreateOrConnectWithoutProspectInput = {
+    where: ProspectServiceWhereUniqueInput
+    create: XOR<ProspectServiceCreateWithoutProspectInput, ProspectServiceUncheckedCreateWithoutProspectInput>
+  }
+
+  export type ProspectServiceCreateManyProspectInputEnvelope = {
+    data: ProspectServiceCreateManyProspectInput | ProspectServiceCreateManyProspectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ReminderUpsertWithWhereUniqueWithoutProspectInput = {
+    where: ReminderWhereUniqueInput
+    update: XOR<ReminderUpdateWithoutProspectInput, ReminderUncheckedUpdateWithoutProspectInput>
+    create: XOR<ReminderCreateWithoutProspectInput, ReminderUncheckedCreateWithoutProspectInput>
+  }
+
+  export type ReminderUpdateWithWhereUniqueWithoutProspectInput = {
+    where: ReminderWhereUniqueInput
+    data: XOR<ReminderUpdateWithoutProspectInput, ReminderUncheckedUpdateWithoutProspectInput>
+  }
+
+  export type ReminderUpdateManyWithWhereWithoutProspectInput = {
+    where: ReminderScalarWhereInput
+    data: XOR<ReminderUpdateManyMutationInput, ReminderUncheckedUpdateManyWithoutProspectInput>
+  }
+
+  export type ActivityLogUpsertWithWhereUniqueWithoutProspectInput = {
+    where: ActivityLogWhereUniqueInput
+    update: XOR<ActivityLogUpdateWithoutProspectInput, ActivityLogUncheckedUpdateWithoutProspectInput>
+    create: XOR<ActivityLogCreateWithoutProspectInput, ActivityLogUncheckedCreateWithoutProspectInput>
+  }
+
+  export type ActivityLogUpdateWithWhereUniqueWithoutProspectInput = {
+    where: ActivityLogWhereUniqueInput
+    data: XOR<ActivityLogUpdateWithoutProspectInput, ActivityLogUncheckedUpdateWithoutProspectInput>
+  }
+
+  export type ActivityLogUpdateManyWithWhereWithoutProspectInput = {
+    where: ActivityLogScalarWhereInput
+    data: XOR<ActivityLogUpdateManyMutationInput, ActivityLogUncheckedUpdateManyWithoutProspectInput>
+  }
+
+  export type ProspectServiceUpsertWithWhereUniqueWithoutProspectInput = {
+    where: ProspectServiceWhereUniqueInput
+    update: XOR<ProspectServiceUpdateWithoutProspectInput, ProspectServiceUncheckedUpdateWithoutProspectInput>
+    create: XOR<ProspectServiceCreateWithoutProspectInput, ProspectServiceUncheckedCreateWithoutProspectInput>
+  }
+
+  export type ProspectServiceUpdateWithWhereUniqueWithoutProspectInput = {
+    where: ProspectServiceWhereUniqueInput
+    data: XOR<ProspectServiceUpdateWithoutProspectInput, ProspectServiceUncheckedUpdateWithoutProspectInput>
+  }
+
+  export type ProspectServiceUpdateManyWithWhereWithoutProspectInput = {
+    where: ProspectServiceScalarWhereInput
+    data: XOR<ProspectServiceUpdateManyMutationInput, ProspectServiceUncheckedUpdateManyWithoutProspectInput>
+  }
+
+  export type ProspectServiceScalarWhereInput = {
+    AND?: ProspectServiceScalarWhereInput | ProspectServiceScalarWhereInput[]
+    OR?: ProspectServiceScalarWhereInput[]
+    NOT?: ProspectServiceScalarWhereInput | ProspectServiceScalarWhereInput[]
+    id?: StringFilter<"ProspectService"> | string
+    prospectId?: StringFilter<"ProspectService"> | string
+    serviceId?: StringFilter<"ProspectService"> | string
+    assignedAt?: DateTimeFilter<"ProspectService"> | Date | string
+  }
+
+  export type ClientCreateWithoutTagsInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
+    status?: $Enums.ClientStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    policies?: PolicyCreateNestedManyWithoutClientInput
+    invoices?: InvoiceCreateNestedManyWithoutClientInput
+    reminders?: ReminderCreateNestedManyWithoutClientInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutClientInput
+    services?: ClientServiceCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientUncheckedCreateWithoutTagsInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
+    status?: $Enums.ClientStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    policies?: PolicyUncheckedCreateNestedManyWithoutClientInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutClientInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutClientInput
+    services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientCreateOrConnectWithoutTagsInput = {
+    where: ClientWhereUniqueInput
+    create: XOR<ClientCreateWithoutTagsInput, ClientUncheckedCreateWithoutTagsInput>
+  }
+
+  export type ClientUpsertWithWhereUniqueWithoutTagsInput = {
+    where: ClientWhereUniqueInput
+    update: XOR<ClientUpdateWithoutTagsInput, ClientUncheckedUpdateWithoutTagsInput>
+    create: XOR<ClientCreateWithoutTagsInput, ClientUncheckedCreateWithoutTagsInput>
+  }
+
+  export type ClientUpdateWithWhereUniqueWithoutTagsInput = {
+    where: ClientWhereUniqueInput
+    data: XOR<ClientUpdateWithoutTagsInput, ClientUncheckedUpdateWithoutTagsInput>
+  }
+
+  export type ClientUpdateManyWithWhereWithoutTagsInput = {
+    where: ClientScalarWhereInput
+    data: XOR<ClientUpdateManyMutationInput, ClientUncheckedUpdateManyWithoutTagsInput>
+  }
+
+  export type ClientScalarWhereInput = {
+    AND?: ClientScalarWhereInput | ClientScalarWhereInput[]
+    OR?: ClientScalarWhereInput[]
+    NOT?: ClientScalarWhereInput | ClientScalarWhereInput[]
+    id?: StringFilter<"Client"> | string
+    name?: StringFilter<"Client"> | string
+    type?: EnumClientTypeFilter<"Client"> | $Enums.ClientType
+    documentType?: EnumDocumentTypeNullableFilter<"Client"> | $Enums.DocumentType | null
+    documentNumber?: StringNullableFilter<"Client"> | string | null
+    email?: StringNullableFilter<"Client"> | string | null
+    phone?: StringNullableFilter<"Client"> | string | null
+    address?: StringNullableFilter<"Client"> | string | null
+    birthDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    city?: StringNullableFilter<"Client"> | string | null
+    notes?: StringNullableFilter<"Client"> | string | null
+    status?: EnumClientStatusFilter<"Client"> | $Enums.ClientStatus
+    source?: EnumLeadSourceNullableFilter<"Client"> | $Enums.LeadSource | null
+    createdAt?: DateTimeFilter<"Client"> | Date | string
+    updatedAt?: DateTimeFilter<"Client"> | Date | string
+  }
+
+  export type ProspectCreateWithoutServicesInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderCreateNestedManyWithoutProspectInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectUncheckedCreateWithoutServicesInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderUncheckedCreateNestedManyWithoutProspectInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectCreateOrConnectWithoutServicesInput = {
+    where: ProspectWhereUniqueInput
+    create: XOR<ProspectCreateWithoutServicesInput, ProspectUncheckedCreateWithoutServicesInput>
+  }
+
+  export type ServiceCreateWithoutProspectsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    validityType?: $Enums.ServiceValidityType
+    price?: Decimal | DecimalJsLike | number | string | null
+    priceDescription?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subcategory?: ServiceSubcategoryCreateNestedOneWithoutServicesInput
+    policies?: PolicyCreateNestedManyWithoutServiceInput
+    clients?: ClientServiceCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutProspectsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    validityType?: $Enums.ServiceValidityType
+    price?: Decimal | DecimalJsLike | number | string | null
+    priceDescription?: string | null
+    isActive?: boolean
+    subcategoryId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    policies?: PolicyUncheckedCreateNestedManyWithoutServiceInput
+    clients?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutProspectsInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutProspectsInput, ServiceUncheckedCreateWithoutProspectsInput>
+  }
+
+  export type ProspectUpsertWithoutServicesInput = {
+    update: XOR<ProspectUpdateWithoutServicesInput, ProspectUncheckedUpdateWithoutServicesInput>
+    create: XOR<ProspectCreateWithoutServicesInput, ProspectUncheckedCreateWithoutServicesInput>
+    where?: ProspectWhereInput
+  }
+
+  export type ProspectUpdateToOneWithWhereWithoutServicesInput = {
+    where?: ProspectWhereInput
+    data: XOR<ProspectUpdateWithoutServicesInput, ProspectUncheckedUpdateWithoutServicesInput>
+  }
+
+  export type ProspectUpdateWithoutServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUpdateManyWithoutProspectNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutProspectNestedInput
+  }
+
+  export type ProspectUncheckedUpdateWithoutServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUncheckedUpdateManyWithoutProspectNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutProspectNestedInput
+  }
+
+  export type ServiceUpsertWithoutProspectsInput = {
+    update: XOR<ServiceUpdateWithoutProspectsInput, ServiceUncheckedUpdateWithoutProspectsInput>
+    create: XOR<ServiceCreateWithoutProspectsInput, ServiceUncheckedCreateWithoutProspectsInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutProspectsInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutProspectsInput, ServiceUncheckedUpdateWithoutProspectsInput>
+  }
+
+  export type ServiceUpdateWithoutProspectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    validityType?: EnumServiceValidityTypeFieldUpdateOperationsInput | $Enums.ServiceValidityType
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    priceDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subcategory?: ServiceSubcategoryUpdateOneWithoutServicesNestedInput
+    policies?: PolicyUpdateManyWithoutServiceNestedInput
+    clients?: ClientServiceUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutProspectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    validityType?: EnumServiceValidityTypeFieldUpdateOperationsInput | $Enums.ServiceValidityType
+    price?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    priceDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subcategoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    policies?: PolicyUncheckedUpdateManyWithoutServiceNestedInput
+    clients?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
   export type ServiceSubcategoryCreateWithoutCategoryInput = {
     id?: string
     name: string
@@ -23372,6 +28869,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     policies?: PolicyCreateNestedManyWithoutServiceInput
     clients?: ClientServiceCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutSubcategoryInput = {
@@ -23386,6 +28884,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     policies?: PolicyUncheckedCreateNestedManyWithoutServiceInput
     clients?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutSubcategoryInput = {
@@ -23540,6 +29039,28 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProspectServiceCreateWithoutServiceInput = {
+    id?: string
+    assignedAt?: Date | string
+    prospect: ProspectCreateNestedOneWithoutServicesInput
+  }
+
+  export type ProspectServiceUncheckedCreateWithoutServiceInput = {
+    id?: string
+    prospectId: string
+    assignedAt?: Date | string
+  }
+
+  export type ProspectServiceCreateOrConnectWithoutServiceInput = {
+    where: ProspectServiceWhereUniqueInput
+    create: XOR<ProspectServiceCreateWithoutServiceInput, ProspectServiceUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ProspectServiceCreateManyServiceInputEnvelope = {
+    data: ProspectServiceCreateManyServiceInput | ProspectServiceCreateManyServiceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ServiceSubcategoryUpsertWithoutServicesInput = {
     update: XOR<ServiceSubcategoryUpdateWithoutServicesInput, ServiceSubcategoryUncheckedUpdateWithoutServicesInput>
     create: XOR<ServiceSubcategoryCreateWithoutServicesInput, ServiceSubcategoryUncheckedCreateWithoutServicesInput>
@@ -23601,6 +29122,22 @@ export namespace Prisma {
     data: XOR<ClientServiceUpdateManyMutationInput, ClientServiceUncheckedUpdateManyWithoutServiceInput>
   }
 
+  export type ProspectServiceUpsertWithWhereUniqueWithoutServiceInput = {
+    where: ProspectServiceWhereUniqueInput
+    update: XOR<ProspectServiceUpdateWithoutServiceInput, ProspectServiceUncheckedUpdateWithoutServiceInput>
+    create: XOR<ProspectServiceCreateWithoutServiceInput, ProspectServiceUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ProspectServiceUpdateWithWhereUniqueWithoutServiceInput = {
+    where: ProspectServiceWhereUniqueInput
+    data: XOR<ProspectServiceUpdateWithoutServiceInput, ProspectServiceUncheckedUpdateWithoutServiceInput>
+  }
+
+  export type ProspectServiceUpdateManyWithWhereWithoutServiceInput = {
+    where: ProspectServiceScalarWhereInput
+    data: XOR<ProspectServiceUpdateManyMutationInput, ProspectServiceUncheckedUpdateManyWithoutServiceInput>
+  }
+
   export type ClientCreateWithoutServicesInput = {
     id?: string
     name: string
@@ -23610,6 +29147,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -23618,6 +29158,7 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutClientInput
     reminders?: ReminderCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogCreateNestedManyWithoutClientInput
+    tags?: ClientTagCreateNestedManyWithoutClientsInput
   }
 
   export type ClientUncheckedCreateWithoutServicesInput = {
@@ -23629,6 +29170,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -23637,6 +29181,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutClientInput
+    tags?: ClientTagUncheckedCreateNestedManyWithoutClientsInput
   }
 
   export type ClientCreateOrConnectWithoutServicesInput = {
@@ -23656,6 +29201,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subcategory?: ServiceSubcategoryCreateNestedOneWithoutServicesInput
     policies?: PolicyCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutClientsInput = {
@@ -23670,6 +29216,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     policies?: PolicyUncheckedCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutClientsInput = {
@@ -23697,6 +29244,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23705,6 +29255,7 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
     reminders?: ReminderUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUpdateManyWithoutClientsNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutServicesInput = {
@@ -23716,6 +29267,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23724,6 +29278,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUncheckedUpdateManyWithoutClientsNestedInput
   }
 
   export type ServiceUpsertWithoutClientsInput = {
@@ -23749,6 +29304,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subcategory?: ServiceSubcategoryUpdateOneWithoutServicesNestedInput
     policies?: PolicyUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutClientsInput = {
@@ -23763,6 +29319,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     policies?: PolicyUncheckedUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ClientCreateWithoutPoliciesInput = {
@@ -23774,6 +29331,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -23782,6 +29342,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogCreateNestedManyWithoutClientInput
     services?: ClientServiceCreateNestedManyWithoutClientInput
+    tags?: ClientTagCreateNestedManyWithoutClientsInput
   }
 
   export type ClientUncheckedCreateWithoutPoliciesInput = {
@@ -23793,6 +29354,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -23801,6 +29365,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutClientInput
     services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    tags?: ClientTagUncheckedCreateNestedManyWithoutClientsInput
   }
 
   export type ClientCreateOrConnectWithoutPoliciesInput = {
@@ -23820,6 +29385,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     subcategory?: ServiceSubcategoryCreateNestedOneWithoutServicesInput
     clients?: ClientServiceCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutPoliciesInput = {
@@ -23834,6 +29400,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clients?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    prospects?: ProspectServiceUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutPoliciesInput = {
@@ -23861,6 +29428,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23869,6 +29439,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutClientNestedInput
     services?: ClientServiceUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUpdateManyWithoutClientsNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutPoliciesInput = {
@@ -23880,6 +29451,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23888,6 +29462,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutClientNestedInput
     services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUncheckedUpdateManyWithoutClientsNestedInput
   }
 
   export type ServiceUpsertWithoutPoliciesInput = {
@@ -23913,6 +29488,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subcategory?: ServiceSubcategoryUpdateOneWithoutServicesNestedInput
     clients?: ClientServiceUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutPoliciesInput = {
@@ -23927,6 +29503,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clients?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ClientCreateWithoutInvoicesInput = {
@@ -23938,6 +29515,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -23946,6 +29526,7 @@ export namespace Prisma {
     reminders?: ReminderCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogCreateNestedManyWithoutClientInput
     services?: ClientServiceCreateNestedManyWithoutClientInput
+    tags?: ClientTagCreateNestedManyWithoutClientsInput
   }
 
   export type ClientUncheckedCreateWithoutInvoicesInput = {
@@ -23957,6 +29538,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -23965,6 +29549,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutClientInput
     services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    tags?: ClientTagUncheckedCreateNestedManyWithoutClientsInput
   }
 
   export type ClientCreateOrConnectWithoutInvoicesInput = {
@@ -24018,6 +29603,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24026,6 +29614,7 @@ export namespace Prisma {
     reminders?: ReminderUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutClientNestedInput
     services?: ClientServiceUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUpdateManyWithoutClientsNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutInvoicesInput = {
@@ -24037,6 +29626,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24045,6 +29637,7 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutClientNestedInput
     services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUncheckedUpdateManyWithoutClientsNestedInput
   }
 
   export type InvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -24172,6 +29765,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -24180,6 +29776,7 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogCreateNestedManyWithoutClientInput
     services?: ClientServiceCreateNestedManyWithoutClientInput
+    tags?: ClientTagCreateNestedManyWithoutClientsInput
   }
 
   export type ClientUncheckedCreateWithoutRemindersInput = {
@@ -24191,6 +29788,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -24199,11 +29799,51 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutClientInput
     services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    tags?: ClientTagUncheckedCreateNestedManyWithoutClientsInput
   }
 
   export type ClientCreateOrConnectWithoutRemindersInput = {
     where: ClientWhereUniqueInput
     create: XOR<ClientCreateWithoutRemindersInput, ClientUncheckedCreateWithoutRemindersInput>
+  }
+
+  export type ProspectCreateWithoutRemindersInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: ActivityLogCreateNestedManyWithoutProspectInput
+    services?: ProspectServiceCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectUncheckedCreateWithoutRemindersInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutProspectInput
+    services?: ProspectServiceUncheckedCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectCreateOrConnectWithoutRemindersInput = {
+    where: ProspectWhereUniqueInput
+    create: XOR<ProspectCreateWithoutRemindersInput, ProspectUncheckedCreateWithoutRemindersInput>
   }
 
   export type UserCreateWithoutRemindersInput = {
@@ -24257,6 +29897,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24265,6 +29908,7 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutClientNestedInput
     services?: ClientServiceUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUpdateManyWithoutClientsNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutRemindersInput = {
@@ -24276,6 +29920,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24284,6 +29931,52 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutClientNestedInput
     services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUncheckedUpdateManyWithoutClientsNestedInput
+  }
+
+  export type ProspectUpsertWithoutRemindersInput = {
+    update: XOR<ProspectUpdateWithoutRemindersInput, ProspectUncheckedUpdateWithoutRemindersInput>
+    create: XOR<ProspectCreateWithoutRemindersInput, ProspectUncheckedCreateWithoutRemindersInput>
+    where?: ProspectWhereInput
+  }
+
+  export type ProspectUpdateToOneWithWhereWithoutRemindersInput = {
+    where?: ProspectWhereInput
+    data: XOR<ProspectUpdateWithoutRemindersInput, ProspectUncheckedUpdateWithoutRemindersInput>
+  }
+
+  export type ProspectUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: ActivityLogUpdateManyWithoutProspectNestedInput
+    services?: ProspectServiceUpdateManyWithoutProspectNestedInput
+  }
+
+  export type ProspectUncheckedUpdateWithoutRemindersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutProspectNestedInput
+    services?: ProspectServiceUncheckedUpdateManyWithoutProspectNestedInput
   }
 
   export type UserUpsertWithoutRemindersInput = {
@@ -24471,6 +30164,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -24479,6 +30175,7 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutClientInput
     reminders?: ReminderCreateNestedManyWithoutClientInput
     services?: ClientServiceCreateNestedManyWithoutClientInput
+    tags?: ClientTagCreateNestedManyWithoutClientsInput
   }
 
   export type ClientUncheckedCreateWithoutActivityLogsInput = {
@@ -24490,6 +30187,9 @@ export namespace Prisma {
     email?: string | null
     phone?: string | null
     address?: string | null
+    birthDate?: Date | string | null
+    city?: string | null
+    notes?: string | null
     status?: $Enums.ClientStatus
     source?: $Enums.LeadSource | null
     createdAt?: Date | string
@@ -24498,11 +30198,51 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutClientInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutClientInput
     services?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    tags?: ClientTagUncheckedCreateNestedManyWithoutClientsInput
   }
 
   export type ClientCreateOrConnectWithoutActivityLogsInput = {
     where: ClientWhereUniqueInput
     create: XOR<ClientCreateWithoutActivityLogsInput, ClientUncheckedCreateWithoutActivityLogsInput>
+  }
+
+  export type ProspectCreateWithoutActivityLogsInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderCreateNestedManyWithoutProspectInput
+    services?: ProspectServiceCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectUncheckedCreateWithoutActivityLogsInput = {
+    id?: string
+    name: string
+    type?: $Enums.ClientType
+    documentType?: $Enums.DocumentType | null
+    documentNumber?: string | null
+    email?: string | null
+    phone?: string | null
+    address?: string | null
+    status?: $Enums.ProspectStatus
+    source?: $Enums.LeadSource | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderUncheckedCreateNestedManyWithoutProspectInput
+    services?: ProspectServiceUncheckedCreateNestedManyWithoutProspectInput
+  }
+
+  export type ProspectCreateOrConnectWithoutActivityLogsInput = {
+    where: ProspectWhereUniqueInput
+    create: XOR<ProspectCreateWithoutActivityLogsInput, ProspectUncheckedCreateWithoutActivityLogsInput>
   }
 
   export type UserCreateWithoutActivityLogsInput = {
@@ -24556,6 +30296,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24564,6 +30307,7 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutClientNestedInput
     reminders?: ReminderUpdateManyWithoutClientNestedInput
     services?: ClientServiceUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUpdateManyWithoutClientsNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutActivityLogsInput = {
@@ -24575,6 +30319,9 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24583,6 +30330,52 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutClientNestedInput
     services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    tags?: ClientTagUncheckedUpdateManyWithoutClientsNestedInput
+  }
+
+  export type ProspectUpsertWithoutActivityLogsInput = {
+    update: XOR<ProspectUpdateWithoutActivityLogsInput, ProspectUncheckedUpdateWithoutActivityLogsInput>
+    create: XOR<ProspectCreateWithoutActivityLogsInput, ProspectUncheckedCreateWithoutActivityLogsInput>
+    where?: ProspectWhereInput
+  }
+
+  export type ProspectUpdateToOneWithWhereWithoutActivityLogsInput = {
+    where?: ProspectWhereInput
+    data: XOR<ProspectUpdateWithoutActivityLogsInput, ProspectUncheckedUpdateWithoutActivityLogsInput>
+  }
+
+  export type ProspectUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUpdateManyWithoutProspectNestedInput
+    services?: ProspectServiceUpdateManyWithoutProspectNestedInput
+  }
+
+  export type ProspectUncheckedUpdateWithoutActivityLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUncheckedUpdateManyWithoutProspectNestedInput
+    services?: ProspectServiceUncheckedUpdateManyWithoutProspectNestedInput
   }
 
   export type UserUpsertWithoutActivityLogsInput = {
@@ -24629,7 +30422,8 @@ export namespace Prisma {
     status?: $Enums.ReminderStatus
     dueDate: Date | string
     description?: string | null
-    clientId: string
+    clientId?: string | null
+    prospectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -24640,6 +30434,7 @@ export namespace Prisma {
     type: $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: string | null
+    prospectId?: string | null
     createdAt?: Date | string
   }
 
@@ -24652,7 +30447,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    client?: ClientUpdateOneRequiredWithoutRemindersNestedInput
+    client?: ClientUpdateOneWithoutRemindersNestedInput
+    prospect?: ProspectUpdateOneWithoutRemindersNestedInput
   }
 
   export type ReminderUncheckedUpdateWithoutCreatedByInput = {
@@ -24662,7 +30458,8 @@ export namespace Prisma {
     status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24674,7 +30471,8 @@ export namespace Prisma {
     status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    clientId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24686,6 +30484,7 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutActivityLogsNestedInput
+    prospect?: ProspectUpdateOneWithoutActivityLogsNestedInput
   }
 
   export type ActivityLogUncheckedUpdateWithoutUserInput = {
@@ -24694,6 +30493,7 @@ export namespace Prisma {
     type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -24703,6 +30503,7 @@ export namespace Prisma {
     type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -24744,6 +30545,7 @@ export namespace Prisma {
     status?: $Enums.ReminderStatus
     dueDate: Date | string
     description?: string | null
+    prospectId?: string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24754,6 +30556,7 @@ export namespace Prisma {
     action: string
     type: $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    prospectId?: string | null
     userId?: string | null
     createdAt?: Date | string
   }
@@ -24868,6 +30671,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    prospect?: ProspectUpdateOneWithoutRemindersNestedInput
     createdBy?: UserUpdateOneWithoutRemindersNestedInput
   }
 
@@ -24878,6 +30682,7 @@ export namespace Prisma {
     status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24890,6 +30695,7 @@ export namespace Prisma {
     status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24901,6 +30707,7 @@ export namespace Prisma {
     type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    prospect?: ProspectUpdateOneWithoutActivityLogsNestedInput
     user?: UserUpdateOneWithoutActivityLogsNestedInput
   }
 
@@ -24909,6 +30716,7 @@ export namespace Prisma {
     action?: StringFieldUpdateOperationsInput | string
     type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24918,6 +30726,7 @@ export namespace Prisma {
     action?: StringFieldUpdateOperationsInput | string
     type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    prospectId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24938,6 +30747,210 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientTagUpdateWithoutClientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientTagUncheckedUpdateWithoutClientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientTagUncheckedUpdateManyWithoutClientsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderCreateManyProspectInput = {
+    id?: string
+    type: $Enums.ReminderType
+    priority?: $Enums.ReminderPriority
+    status?: $Enums.ReminderStatus
+    dueDate: Date | string
+    description?: string | null
+    clientId?: string | null
+    createdById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ActivityLogCreateManyProspectInput = {
+    id?: string
+    action: string
+    type: $Enums.ActivityType
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    clientId?: string | null
+    userId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ProspectServiceCreateManyProspectInput = {
+    id?: string
+    serviceId: string
+    assignedAt?: Date | string
+  }
+
+  export type ReminderUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
+    priority?: EnumReminderPriorityFieldUpdateOperationsInput | $Enums.ReminderPriority
+    status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutRemindersNestedInput
+    createdBy?: UserUpdateOneWithoutRemindersNestedInput
+  }
+
+  export type ReminderUncheckedUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
+    priority?: EnumReminderPriorityFieldUpdateOperationsInput | $Enums.ReminderPriority
+    status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ReminderUncheckedUpdateManyWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumReminderTypeFieldUpdateOperationsInput | $Enums.ReminderType
+    priority?: EnumReminderPriorityFieldUpdateOperationsInput | $Enums.ReminderPriority
+    status?: EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ActivityLogUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneWithoutActivityLogsNestedInput
+    user?: UserUpdateOneWithoutActivityLogsNestedInput
+  }
+
+  export type ActivityLogUncheckedUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ActivityLogUncheckedUpdateManyWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    type?: EnumActivityTypeFieldUpdateOperationsInput | $Enums.ActivityType
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectServiceUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    service?: ServiceUpdateOneRequiredWithoutProspectsNestedInput
+  }
+
+  export type ProspectServiceUncheckedUpdateWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectServiceUncheckedUpdateManyWithoutProspectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    policies?: PolicyUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUpdateManyWithoutClientNestedInput
+    reminders?: ReminderUpdateManyWithoutClientNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutClientNestedInput
+    services?: ClientServiceUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    policies?: PolicyUncheckedUpdateManyWithoutClientNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutClientNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutClientNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutClientNestedInput
+    services?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateManyWithoutTagsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    documentType?: NullableEnumDocumentTypeFieldUpdateOperationsInput | $Enums.DocumentType | null
+    documentNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    birthDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumClientStatusFieldUpdateOperationsInput | $Enums.ClientStatus
+    source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ServiceSubcategoryCreateManyCategoryInput = {
@@ -24998,6 +31011,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     policies?: PolicyUpdateManyWithoutServiceNestedInput
     clients?: ClientServiceUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutSubcategoryInput = {
@@ -25012,6 +31026,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     policies?: PolicyUncheckedUpdateManyWithoutServiceNestedInput
     clients?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    prospects?: ProspectServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateManyWithoutSubcategoryInput = {
@@ -25043,6 +31058,12 @@ export namespace Prisma {
   export type ClientServiceCreateManyServiceInput = {
     id?: string
     clientId: string
+    assignedAt?: Date | string
+  }
+
+  export type ProspectServiceCreateManyServiceInput = {
+    id?: string
+    prospectId: string
     assignedAt?: Date | string
   }
 
@@ -25103,6 +31124,24 @@ export namespace Prisma {
   export type ClientServiceUncheckedUpdateManyWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectServiceUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    prospect?: ProspectUpdateOneRequiredWithoutServicesNestedInput
+  }
+
+  export type ProspectServiceUncheckedUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prospectId?: StringFieldUpdateOperationsInput | string
+    assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProspectServiceUncheckedUpdateManyWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prospectId?: StringFieldUpdateOperationsInput | string
     assignedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

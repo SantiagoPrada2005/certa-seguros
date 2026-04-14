@@ -18,6 +18,7 @@ export async function getClients() {
             policies: true,
           },
         },
+        tags: true,
       },
     })
     return { success: true, data: clients }
@@ -32,6 +33,7 @@ export async function getClientDetails(clientId: string) {
     const client = await db.client.findUnique({
       where: { id: clientId },
       include: {
+        tags: true,
         services: {
           include: {
             service: {
@@ -60,9 +62,9 @@ export async function getClientDetails(clientId: string) {
         }
       },
     })
-    
+
     if (!client) return { success: false, error: "Cliente no encontrado" }
-    
+
     // Serialize Prisma Decimal to number for Next.js Client Components
     const serializedClient = {
       ...client,
@@ -87,7 +89,7 @@ export async function getClientDetails(clientId: string) {
         total: i.total.toNumber()
       }))
     }
-    
+
     return { success: true, data: serializedClient }
   } catch (error) {
     console.error("Error fetching client details:", error)
@@ -110,12 +112,12 @@ export async function getAvailableServices() {
         name: "asc"
       }
     })
-    
+
     const serializedServices = services.map(s => ({
       ...s,
       price: s.price ? s.price.toNumber() : null
     }))
-    
+
     return { success: true, data: serializedServices }
   } catch (error) {
     console.error("Error fetching services:", error)
@@ -131,14 +133,14 @@ const AssignServiceSchema = z.object({
 export async function assignServiceToClient(data: z.infer<typeof AssignServiceSchema>) {
   try {
     const validatedData = AssignServiceSchema.parse(data)
-    
+
     await db.clientService.create({
       data: {
         clientId: validatedData.clientId,
         serviceId: validatedData.serviceId,
       }
     })
-    
+
     revalidatePath("/admin/clientes")
     return { success: true }
   } catch (error) {
@@ -157,13 +159,13 @@ const RemoveServiceSchema = z.object({
 export async function removeServiceFromClient(data: z.infer<typeof RemoveServiceSchema>) {
   try {
     const validatedData = RemoveServiceSchema.parse(data)
-    
+
     await db.clientService.delete({
       where: {
         id: validatedData.clientServiceId,
       }
     })
-    
+
     revalidatePath("/admin/clientes")
     return { success: true }
   } catch (error) {
@@ -182,16 +184,21 @@ const CreateClientSchema = z.object({
   documentNumber: z.string().optional().nullable(),
   email: z.string().email("Correo inválido").optional().nullable().or(z.literal("")),
   phone: z.string().optional().nullable(),
-  status: z.nativeEnum(ClientStatus).optional().default("NUEVO"),
+  address: z.string().optional().nullable(),
+  birthDate: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  status: z.nativeEnum(ClientStatus).optional().default("ACTIVO"),
+  tagIds: z.array(z.string()).optional(),
 })
 
 export async function createClient(data: z.infer<typeof CreateClientSchema>) {
   try {
     const validatedData = CreateClientSchema.parse(data)
-    
+
     // Convert empty strings to null for optional unique fields if any
     const emailToSave = validatedData.email === "" ? null : validatedData.email;
-    
+
     const newClient = await db.client.create({
       data: {
         name: validatedData.name,
@@ -200,10 +207,17 @@ export async function createClient(data: z.infer<typeof CreateClientSchema>) {
         documentNumber: validatedData.documentNumber,
         email: emailToSave,
         phone: validatedData.phone,
+        address: validatedData.address,
+        birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : null,
+        city: validatedData.city,
+        notes: validatedData.notes,
         status: validatedData.status,
+        tags: validatedData.tagIds
+          ? { connect: validatedData.tagIds.map(id => ({ id })) }
+          : undefined,
       }
     })
-    
+
     revalidatePath("/admin/clientes")
     return { success: true, data: newClient }
   } catch (error) {
@@ -212,5 +226,30 @@ export async function createClient(data: z.infer<typeof CreateClientSchema>) {
     }
     console.error("Error creating client:", error)
     return { success: false, error: "No se pudo crear el cliente" }
+  }
+}
+
+export async function getAllTags() {
+  try {
+    const tags = await db.clientTag.findMany({
+      orderBy: { name: "asc" },
+    })
+    return { success: true, data: tags }
+  } catch (error) {
+    console.error("Error fetching tags:", error)
+    return { success: false, error: "No se pudieron cargar las etiquetas" }
+  }
+}
+
+export async function createTag(name: string) {
+  try {
+    const tag = await db.clientTag.create({
+      data: { name },
+    })
+    revalidatePath("/admin/clientes")
+    return { success: true, data: tag }
+  } catch (error) {
+    console.error("Error creating tag:", error)
+    return { success: false, error: "No se pudo crear la etiqueta" }
   }
 }

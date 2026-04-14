@@ -21,8 +21,9 @@ export async function GET(request: Request) {
     });
 
     // Get quick stats (totals)
-    const [totalClients, activePolicies, monthlyRevenue, pendingReminders] = await Promise.all([
+    const [totalClients, totalProspects, activePolicies, monthlyRevenue, pendingReminders, prospectsByStatus] = await Promise.all([
       prisma.client.count({ where: { status: "ACTIVO" } }),
+      prisma.prospect.count({ where: { status: { not: "DESCARTADO" } } }),
       prisma.policy.count({ where: { status: "ACTIVE" } }),
       prisma.invoice.aggregate({
         where: {
@@ -33,16 +34,33 @@ export async function GET(request: Request) {
         },
         _sum: { total: true }
       }),
-      prisma.reminder.count({ where: { status: "PENDIENTE" } })
+      prisma.reminder.count({ where: { status: "PENDIENTE" } }),
+      prisma.prospect.groupBy({
+        by: ["status"],
+        _count: { _all: true },
+      })
     ]);
+
+    // Calculate conversion rate
+    const convertedProspects = await prisma.prospect.count({ where: { status: "CONVERTIDO" } });
+    const conversionRate = totalProspects > 0 ? Math.round((convertedProspects / totalProspects) * 100) : 0;
+
+    // Build prospects breakdown map
+    const prospectsBreakdown: Record<string, number> = {};
+    prospectsByStatus.forEach(({ status, _count }) => {
+      prospectsBreakdown[status] = _count._all;
+    });
 
     return NextResponse.json({
       feed: activityFeed,
       stats: {
         totalClients,
+        totalProspects,
         activePolicies,
         monthlyRevenue: monthlyRevenue._sum.total || 0,
-        pendingReminders
+        pendingReminders,
+        conversionRate,
+        prospectsBreakdown,
       }
     });
   } catch (error) {

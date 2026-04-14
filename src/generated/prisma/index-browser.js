@@ -141,10 +141,43 @@ exports.Prisma.ClientScalarFieldEnum = {
   email: 'email',
   phone: 'phone',
   address: 'address',
+  birthDate: 'birthDate',
+  city: 'city',
+  notes: 'notes',
   status: 'status',
   source: 'source',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProspectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  documentType: 'documentType',
+  documentNumber: 'documentNumber',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  status: 'status',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClientTagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProspectServiceScalarFieldEnum = {
+  id: 'id',
+  prospectId: 'prospectId',
+  serviceId: 'serviceId',
+  assignedAt: 'assignedAt'
 };
 
 exports.Prisma.ServiceCategoryScalarFieldEnum = {
@@ -234,6 +267,7 @@ exports.Prisma.ReminderScalarFieldEnum = {
   dueDate: 'dueDate',
   description: 'description',
   clientId: 'clientId',
+  prospectId: 'prospectId',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -271,6 +305,7 @@ exports.Prisma.ActivityLogScalarFieldEnum = {
   type: 'type',
   metadata: 'metadata',
   clientId: 'clientId',
+  prospectId: 'prospectId',
   userId: 'userId',
   createdAt: 'createdAt'
 };
@@ -321,12 +356,9 @@ exports.DocumentType = exports.$Enums.DocumentType = {
 };
 
 exports.ClientStatus = exports.$Enums.ClientStatus = {
-  NUEVO: 'NUEVO',
-  CONTACTADO: 'CONTACTADO',
-  EN_PROCESO: 'EN_PROCESO',
   ACTIVO: 'ACTIVO',
   INACTIVO: 'INACTIVO',
-  DESCARTADO: 'DESCARTADO'
+  MOROSO: 'MOROSO'
 };
 
 exports.LeadSource = exports.$Enums.LeadSource = {
@@ -334,6 +366,14 @@ exports.LeadSource = exports.$Enums.LeadSource = {
   REFERIDOS: 'REFERIDOS',
   REDES_SOCIALES: 'REDES_SOCIALES',
   DIRECTOS: 'DIRECTOS'
+};
+
+exports.ProspectStatus = exports.$Enums.ProspectStatus = {
+  NUEVO: 'NUEVO',
+  CONTACTADO: 'CONTACTADO',
+  EN_PROCESO: 'EN_PROCESO',
+  DESCARTADO: 'DESCARTADO',
+  CONVERTIDO: 'CONVERTIDO'
 };
 
 exports.ServiceValidityType = exports.$Enums.ServiceValidityType = {
@@ -423,6 +463,9 @@ exports.ActivityType = exports.$Enums.ActivityType = {
 exports.Prisma.ModelName = {
   User: 'User',
   Client: 'Client',
+  Prospect: 'Prospect',
+  ClientTag: 'ClientTag',
+  ProspectService: 'ProspectService',
   ServiceCategory: 'ServiceCategory',
   ServiceSubcategory: 'ServiceSubcategory',
   Service: 'Service',

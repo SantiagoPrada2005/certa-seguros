@@ -7,15 +7,15 @@ import prisma from "@/lib/prisma";
 
 export default async function ProspectosPage() {
   // — KPI stats: fetched server-side
-  const [total, porContactar, enProceso, activos] = await Promise.all([
-    prisma.client.count(),
-    prisma.client.count({ where: { status: "NUEVO" } }),
-    prisma.client.count({ where: { status: "EN_PROCESO" } }),
-    prisma.client.count({ where: { status: "ACTIVO" } }),
+  const [total, porContactar, enProceso, descartados] = await Promise.all([
+    prisma.prospect.count(),
+    prisma.prospect.count({ where: { status: "NUEVO" } }),
+    prisma.prospect.count({ where: { status: "EN_PROCESO" } }),
+    prisma.prospect.count({ where: { status: "DESCARTADO" } }),
   ]);
 
   // — Initial data for the table (first page rendered without loading state)
-  const clientsRaw = await prisma.client.findMany({
+  const prospectsRaw = await prisma.prospect.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       services: {
@@ -24,13 +24,13 @@ export default async function ProspectosPage() {
     },
   });
 
-  const initialClients = clientsRaw.map(client => ({
-    ...client,
-    services: client.services.map(cs => ({
-      ...cs,
-      service: cs.service ? {
-        ...cs.service,
-        price: cs.service.price ? cs.service.price.toNumber() : null
+  const initialProspects = prospectsRaw.map(prospect => ({
+    ...prospect,
+    services: prospect.services.map(ps => ({
+      ...ps,
+      service: ps.service ? {
+        ...ps.service,
+        price: ps.service.price ? ps.service.price.toNumber() : null
       } : null
     }))
   }));
@@ -41,7 +41,7 @@ export default async function ProspectosPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Prospectos</h1>
           <p className="text-muted-foreground mt-2">
-            Gestión centralizada de clientes y prospectos capturados.
+            Gestión centralizada de prospectos potenciales.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -73,16 +73,16 @@ export default async function ProspectosPage() {
           footerTitle="Gestión activa"
         />
         <SectionCard
-          title="Clientes Activos"
-          value={activos.toLocaleString("es-CO")}
+          title="Descartados"
+          value={descartados.toLocaleString("es-CO")}
           trend="up"
-          trendValue="Estado: ACTIVO"
-          footerTitle="Convertidos"
+          trendValue="Estado: DESCARTADO"
+          footerTitle="No convertidos"
         />
       </div>
 
       {/* Table — Client Component with real data + filter/search */}
-      <ProspectosTable initialClients={initialClients as any} />
+      <ProspectosTable initialProspects={initialProspects as any} />
     </div>
   );
 }

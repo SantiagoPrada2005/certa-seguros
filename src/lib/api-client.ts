@@ -17,12 +17,17 @@ export interface ClientRecord {
   email: string | null;
   phone: string | null;
   address: string | null;
-  status: string;
+  birthDate: string | null;
+  city: string | null;
+  notes: string | null;
+  status: "ACTIVO" | "INACTIVO" | "MOROSO";
   source: string | null;
   createdAt: string;
+  updatedAt: string;
   services: {
     service: { name: string };
   }[];
+  tags: { id: string; name: string; color: string | null }[];
 }
 
 export async function fetchClients(params?: {
@@ -35,6 +40,39 @@ export async function fetchClients(params?: {
 
   const res = await fetch(url.toString(), { cache: "no-store" });
   if (!res.ok) throw new Error("Error fetching clients");
+  return res.json();
+}
+
+// ─── Prospects ───────────────────────────────────────────────────────────────
+
+export interface ProspectRecord {
+  id: string;
+  name: string;
+  type: "INDIVIDUAL" | "BUSINESS";
+  documentType: string | null;
+  documentNumber: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  status: "NUEVO" | "CONTACTADO" | "EN_PROCESO" | "DESCARTADO" | "CONVERTIDO";
+  source: string | null;
+  createdAt: string;
+  updatedAt: string;
+  services: {
+    service: { name: string };
+  }[];
+}
+
+export async function fetchProspects(params?: {
+  status?: string;
+  search?: string;
+}): Promise<ProspectRecord[]> {
+  const url = new URL(`${BASE_URL}/api/prospects`);
+  if (params?.status && params.status !== "all") url.searchParams.set("status", params.status);
+  if (params?.search) url.searchParams.set("search", params.search);
+
+  const res = await fetch(url.toString(), { cache: "no-store" });
+  if (!res.ok) throw new Error("Error fetching prospects");
   return res.json();
 }
 
@@ -130,8 +168,10 @@ export interface ReminderRecord {
   status: string;
   dueDate: string;
   description: string | null;
-  clientId: string;
-  client: { id: string; name: string };
+  clientId: string | null;
+  client: { id: string; name: string } | null;
+  prospectId: string | null;
+  prospect: { id: string; name: string } | null;
   createdAt: string;
 }
 
@@ -185,12 +225,16 @@ export interface DashboardStats {
     type: string;
     createdAt: string;
     client: { name: string; type: string } | null;
+    prospect: { name: string } | null;
   }[];
   stats: {
     totalClients: number;
+    totalProspects: number;
     activePolicies: number;
     monthlyRevenue: number;
     pendingReminders: number;
+    conversionRate: number;
+    prospectsBreakdown: Record<string, number>;
   };
 }
 

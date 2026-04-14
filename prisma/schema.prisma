@@ -29,12 +29,17 @@ enum ClientType {
 }
 
 enum ClientStatus {
+  ACTIVO // Cliente con póliza vigente
+  INACTIVO // Cliente inactivo
+  MOROSO // Cliente con facturas vencidas
+}
+
+enum ProspectStatus {
   NUEVO // Recién capturado
   CONTACTADO // Ya se hizo contacto inicial
   EN_PROCESO // En negociación / cotización
-  ACTIVO // Cliente con póliza vigente
-  INACTIVO // Cliente inactivo
   DESCARTADO // No interesado / inválido
+  CONVERTIDO // Se convirtió en cliente
 }
 
 enum LeadSource {
@@ -165,9 +170,8 @@ model User {
   @@map("users")
 }
 
-/// Clientes y prospectos unificados.
-/// El campo `status` diferencia si es prospecto (NUEVO, CONTACTADO, EN_PROCESO)
-/// o cliente activo (ACTIVO).
+/// Clientes activos del sistema.
+/// Solo clientes que han sido convertidos de prospectos y tienen pólizas o potencial de negocio.
 model Client {
   id             String        @id @default(cuid())
   name           String
@@ -177,7 +181,10 @@ model Client {
   email          String?
   phone          String?
   address        String?
-  status         ClientStatus  @default(NUEVO)
+  birthDate      DateTime?     // Fecha de nacimiento (para personas naturales)
+  city           String?       // Ciudad de residencia
+  notes          String?       // Notas libres sobre el cliente
+  status         ClientStatus  @default(ACTIVO)
   source         LeadSource?
 
   createdAt DateTime @default(now())
@@ -189,13 +196,76 @@ model Client {
   reminders    Reminder[]
   activityLogs ActivityLog[]
   services     ClientService[]
+  tags         ClientTag[]
 
   @@index([email])
   @@index([status])
   @@index([type])
   @@index([source])
   @@index([documentNumber])
+  @@index([city])
+  @@index([birthDate])
   @@map("clients")
+}
+
+/// Prospectos (leads) que aún no se han convertido en clientes.
+/// Se gestionan en el pipeline de ventas hasta su conversión o descarte.
+model Prospect {
+  id             String        @id @default(cuid())
+  name           String
+  type           ClientType    @default(INDIVIDUAL)
+  documentType   DocumentType?
+  documentNumber String?
+  email          String?
+  phone          String?
+  address        String?
+  status         ProspectStatus @default(NUEVO)
+  source         LeadSource?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  reminders    Reminder[]
+  activityLogs ActivityLog[]
+  services     ProspectService[]
+
+  @@index([email])
+  @@index([status])
+  @@index([type])
+  @@index([source])
+  @@index([documentNumber])
+  @@map("prospects")
+}
+
+/// Tags normalizados para clientes (etiquetas personalizables)
+model ClientTag {
+  id    String  @id @default(cuid())
+  name  String  @unique  // "VIP", "Frecuente", "Riesgo Alto", etc.
+  color String?  // Color hex para UI (#FF5733, etc.)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relación
+  clients Client[]
+
+  @@map("client_tags")
+}
+
+/// Tabla pivote: servicios de interés de cada prospecto
+model ProspectService {
+  id         String @id @default(cuid())
+  prospectId String
+  serviceId  String
+
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  service    Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  assignedAt DateTime @default(now())
+
+  @@unique([prospectId, serviceId])
+  @@map("prospect_services")
 }
 
 /// Categorías principales de servicios (Seguros, Asesorías, Servicios Adicionales)
@@ -251,6 +321,7 @@ model Service {
   // Relaciones
   policies Policy[]
   clients  ClientService[]
+  prospects ProspectService[]
 
   @@index([isActive])
   @@index([subcategoryId])
@@ -354,8 +425,11 @@ model Reminder {
   dueDate     DateTime
   description String?
 
-  clientId String
-  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId  String?
+  client    Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  prospectId String?
+  prospect   Prospect? @relation(fields: [prospectId], references: [id], onDelete: Cascade)
 
   createdById String?
   createdBy   User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
@@ -364,6 +438,7 @@ model Reminder {
   updatedAt DateTime @updatedAt
 
   @@index([clientId])
+  @@index([prospectId])
   @@index([status])
   @@index([priority])
   @@index([dueDate])
@@ -420,8 +495,11 @@ model ActivityLog {
   type     ActivityType
   metadata Json? // Datos adicionales según contexto
 
-  clientId String?
-  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientId   String?
+  client     Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  prospectId String?
+  prospect   Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
 
   userId String?
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -430,6 +508,7 @@ model ActivityLog {
 
   @@index([type])
   @@index([clientId])
+  @@index([prospectId])
   @@index([userId])
   @@index([createdAt])
   @@map("activity_logs")

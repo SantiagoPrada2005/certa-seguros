@@ -26,10 +26,12 @@ import {
   SearchIcon, FilterIcon, MoreHorizontalIcon,
   MessageSquareIcon, TrashIcon, UserCheckIcon,
   BuildingIcon, UserIcon, Loader2Icon, PencilIcon,
+  UserPlusIcon,
 } from "lucide-react";
-import { fetchClients, type ClientRecord } from "@/lib/api-client";
-import { updateClientStatus, deleteClient } from "@/app/admin/actions";
+import { fetchProspects, type ProspectRecord } from "@/lib/api-client";
+import { updateProspectStatus, deleteProspect, convertProspectToClient } from "@/app/admin/(dashboard)/prospectos/_actions/prospect-actions";
 import { EditarProspectoDialog } from "@/components/admin/prospectos/editar-prospecto-dialog";
+import { ConvertirClienteDialog } from "@/components/admin/prospectos/convertir-cliente-dialog";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
@@ -38,48 +40,47 @@ const statusConfig: Record<string, "default" | "secondary" | "destructive" | "ou
   NUEVO: "default",
   CONTACTADO: "outline",
   EN_PROCESO: "secondary",
-  ACTIVO: "default",
-  INACTIVO: "outline",
   DESCARTADO: "destructive",
+  CONVERTIDO: "default",
 };
 
 const statusLabel: Record<string, string> = {
   NUEVO: "Nuevo",
   CONTACTADO: "Contactado",
   EN_PROCESO: "En Proceso",
-  ACTIVO: "Activo",
-  INACTIVO: "Inactivo",
   DESCARTADO: "Descartado",
+  CONVERTIDO: "Convertido",
 };
 
 interface ProspectosTableProps {
-  initialClients: ClientRecord[];
+  initialProspects: ProspectRecord[];
 }
 
-export function ProspectosTable({ initialClients }: ProspectosTableProps) {
-  const [clients, setClients] = React.useState<ClientRecord[]>(initialClients);
+export function ProspectosTable({ initialProspects }: ProspectosTableProps) {
+  const [prospects, setProspects] = React.useState<ProspectRecord[]>(initialProspects);
   const [loading, setLoading] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [page, setPage] = React.useState(1);
   const [actionLoading, setActionLoading] = React.useState<string | null>(null);
-  const [editingClient, setEditingClient] = React.useState<ClientRecord | null>(null);
+  const [editingProspect, setEditingProspect] = React.useState<ProspectRecord | null>(null);
+  const [convertingProspect, setConvertingProspect] = React.useState<ProspectRecord | null>(null);
 
   // Sync state when Server Component re-renders (e.g. after revalidatePath)
   React.useEffect(() => {
-    setClients(initialClients);
-  }, [initialClients]);
+    setProspects(initialProspects);
+  }, [initialProspects]);
 
   // Client-side fetch when filters change
   React.useEffect(() => {
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const data = await fetchClients({
+        const data = await fetchProspects({
           status: statusFilter !== "all" ? statusFilter : undefined,
           search: search || undefined,
         });
-        setClients(data);
+        setProspects(data);
         setPage(1);
       } catch {
         toast.error("Error al cargar los prospectos");
@@ -91,15 +92,15 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
   }, [search, statusFilter]);
 
   // Pagination
-  const totalPages = Math.max(1, Math.ceil(clients.length / PAGE_SIZE));
-  const paginated = clients.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(prospects.length / PAGE_SIZE));
+  const paginated = prospects.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleStatusChange = async (id: string, newStatus: string) => {
-    console.log("update client status", id, newStatus);
+    console.log("update prospect status", id, newStatus);
     setActionLoading(id);
-    const result = await updateClientStatus(id, newStatus);
+    const result = await updateProspectStatus(id, newStatus as any);
     if (result.success) {
-      setClients((prev) => prev.map((c) => c.id === id ? { ...c, status: newStatus } : c));
+      setProspects((prev) => prev.map((p) => p.id === id ? { ...p, status: newStatus as ProspectRecord["status"] } : p));
       toast.success(`Estado actualizado a ${statusLabel[newStatus]}`);
     } else {
       toast.error(result.error);
@@ -108,13 +109,26 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    console.log("delete client", id);
+    console.log("delete prospect", id);
     if (!confirm(`¿Eliminar a "${name}"? Esta acción no se puede deshacer.`)) return;
     setActionLoading(id);
-    const result = await deleteClient(id);
+    const result = await deleteProspect(id);
     if (result.success) {
-      setClients((prev) => prev.filter((c) => c.id !== id));
+      setProspects((prev) => prev.filter((p) => p.id !== id));
       toast.success("Prospecto eliminado correctamente");
+    } else {
+      toast.error(result.error);
+    }
+    setActionLoading(null);
+  };
+
+  const handleConvert = async (data: { prospectId: string; birthDate?: string | null; city?: string | null; notes?: string | null }) => {
+    setActionLoading(data.prospectId);
+    const result = await convertProspectToClient(data);
+    if (result.success) {
+      setProspects((prev) => prev.map((p) => p.id === data.prospectId ? { ...p, status: "CONVERTIDO" as const } : p));
+      toast.success("Prospecto convertido a cliente exitosamente");
+      setConvertingProspect(null);
     } else {
       toast.error(result.error);
     }
@@ -126,9 +140,9 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
       <CardHeader className="border-b pb-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <CardTitle>Base de Datos Principal</CardTitle>
+            <CardTitle>Base de Datos de Prospectos</CardTitle>
             <CardDescription>
-              Lista de prospectos y clientes en la plataforma.
+              Lista de prospectos potenciales en la plataforma.
             </CardDescription>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -150,8 +164,8 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
                 <SelectItem value="NUEVO">Nuevo</SelectItem>
                 <SelectItem value="CONTACTADO">Contactado</SelectItem>
                 <SelectItem value="EN_PROCESO">En Proceso</SelectItem>
-                <SelectItem value="ACTIVO">Activo</SelectItem>
                 <SelectItem value="DESCARTADO">Descartado</SelectItem>
+                <SelectItem value="CONVERTIDO">Convertido</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -175,59 +189,59 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginated.map((client) => (
-                <TableRow key={client.id}>
+              {paginated.map((prospect) => (
+                <TableRow key={prospect.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="size-9 rounded-lg">
                         <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
-                          {client.type === "BUSINESS"
+                          {prospect.type === "BUSINESS"
                             ? <BuildingIcon className="size-4" />
                             : <UserIcon className="size-4" />}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col">
-                        <span className="font-medium text-sm">{client.name}</span>
+                        <span className="font-medium text-sm">{prospect.name}</span>
                         <span className="text-xs text-muted-foreground">
-                          {client.documentType
-                            ? `${client.documentType} ${client.documentNumber ?? ""}`
-                            : (client.type === "BUSINESS" ? "Empresa" : "Persona")}
+                          {prospect.documentType
+                            ? `${prospect.documentType} ${prospect.documentNumber ?? ""}`
+                            : (prospect.type === "BUSINESS" ? "Empresa" : "Persona")}
                         </span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="text-sm">{client.email ?? "—"}</span>
-                      <span className="text-xs text-muted-foreground">{client.phone ?? "—"}</span>
+                      <span className="text-sm">{prospect.email ?? "—"}</span>
+                      <span className="text-xs text-muted-foreground">{prospect.phone ?? "—"}</span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={statusConfig[client.status] ?? "outline"}>
-                      {statusLabel[client.status] ?? client.status}
+                    <Badge variant={statusConfig[prospect.status] ?? "outline"}>
+                      {statusLabel[prospect.status] ?? prospect.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
-                      {client.services.slice(0, 2).map((cs, i) => (
+                      {prospect.services.slice(0, 2).map((ps, i) => (
                         <Badge key={i} variant="secondary" className="text-[10px] px-1.5 leading-none">
-                          {cs.service.name}
+                          {ps.service.name}
                         </Badge>
                       ))}
-                      {client.services.length > 2 && (
+                      {prospect.services.length > 2 && (
                         <Badge variant="secondary" className="text-[10px] px-1.5 leading-none">
-                          +{client.services.length - 2}
+                          +{prospect.services.length - 2}
                         </Badge>
                       )}
-                      {client.services.length === 0 && (
+                      {prospect.services.length === 0 && (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" disabled={actionLoading === client.id} />}>
-                        {actionLoading === client.id
+                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" disabled={actionLoading === prospect.id} />}>
+                        {actionLoading === prospect.id
                           ? <Loader2Icon className="size-4 animate-spin" />
                           : <MoreHorizontalIcon className="size-4" />}
                         <span className="sr-only">Menú de acciones</span>
@@ -235,7 +249,7 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
                       <DropdownMenuContent align="end" className="w-[180px]">
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => setEditingClient(client)}>
+                          <DropdownMenuItem onClick={() => setEditingProspect(prospect)}>
                             <PencilIcon data-icon="inline-start" className="size-4" />
                             Editar Información
                           </DropdownMenuItem>
@@ -243,6 +257,13 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
                             <MessageSquareIcon data-icon="inline-start" className="size-4" />
                             WhatsApp
                           </DropdownMenuItem>
+
+                          {prospect.status !== "DESCARTADO" && prospect.status !== "CONVERTIDO" && (
+                            <DropdownMenuItem onClick={() => setConvertingProspect(prospect)}>
+                              <UserPlusIcon data-icon="inline-start" className="size-4" />
+                              Convertir a Cliente
+                            </DropdownMenuItem>
+                          )}
 
                           <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
@@ -254,8 +275,8 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
                                 {Object.entries(statusLabel).map(([val, label]) => (
                                   <DropdownMenuItem
                                     key={val}
-                                    onClick={() => handleStatusChange(client.id, val)}
-                                    disabled={client.status === val}
+                                    onClick={() => handleStatusChange(prospect.id, val)}
+                                    disabled={prospect.status === val}
                                   >
                                     {label}
                                   </DropdownMenuItem>
@@ -267,7 +288,7 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                            onClick={() => handleDelete(client.id, client.name)}
+                            onClick={() => handleDelete(prospect.id, prospect.name)}
                           >
                             <TrashIcon data-icon="inline-start" className="size-4 text-destructive" />
                             Eliminar
@@ -289,10 +310,10 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
           </Table>
         )}
 
-        {!loading && clients.length > PAGE_SIZE && (
+        {!loading && prospects.length > PAGE_SIZE && (
           <div className="mt-4 flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              Mostrando <strong>{(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, clients.length)}</strong> de <strong>{clients.length}</strong>
+              Mostrando <strong>{(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, prospects.length)}</strong> de <strong>{prospects.length}</strong>
             </p>
             <Pagination className="mx-0 w-auto">
               <PaginationContent>
@@ -326,12 +347,18 @@ export function ProspectosTable({ initialClients }: ProspectosTableProps) {
       </CardContent>
 
       <EditarProspectoDialog
-        client={editingClient}
-        onClose={() => setEditingClient(null)}
+        prospect={editingProspect}
+        onClose={() => setEditingProspect(null)}
         onSuccess={(updated) => {
-          setClients((prev) => prev.map((c) => (c.id === updated.id ? { ...c, ...updated } : c)));
-          setEditingClient(null);
+          setProspects((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)));
+          setEditingProspect(null);
         }}
+      />
+
+      <ConvertirClienteDialog
+        prospect={convertingProspect}
+        onClose={() => setConvertingProspect(null)}
+        onSuccess={handleConvert}
       />
     </Card>
   );

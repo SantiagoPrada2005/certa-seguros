@@ -12,43 +12,43 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Loader2Icon } from "lucide-react";
-import { updateClient } from "@/app/admin/actions";
-import { type ClientRecord } from "@/lib/api-client";
+import { updateProspect } from "@/app/admin/(dashboard)/prospectos/_actions/prospect-actions";
+import { type ProspectRecord } from "@/lib/api-client";
 import { toast } from "sonner";
 
 interface EditarProspectoDialogProps {
-  client: ClientRecord | null;
+  prospect: ProspectRecord | null;
   onClose: () => void;
-  onSuccess: (updatedClient: any) => void;
+  onSuccess: (updatedProspect: any) => void;
 }
 
-export function EditarProspectoDialog({ client, onClose, onSuccess }: EditarProspectoDialogProps) {
-  const open = !!client;
+export function EditarProspectoDialog({ prospect, onClose, onSuccess }: EditarProspectoDialogProps) {
+  const open = !!prospect;
   const [loading, setLoading] = React.useState(false);
   const [form, setForm] = React.useState({
     name: "",
     email: "",
     phone: "",
-    type: "INDIVIDUAL",
-    documentType: "",
+    type: "INDIVIDUAL" as "INDIVIDUAL" | "BUSINESS",
+    documentType: "" as string,
     documentNumber: "",
-    source: "DIRECTOS",
+    source: "DIRECTOS" as string,
   });
 
-  // Populate form when client changes
+  // Populate form when prospect changes
   React.useEffect(() => {
-    if (client) {
+    if (prospect) {
       setForm({
-        name: client.name ?? "",
-        email: client.email ?? "",
-        phone: client.phone ?? "",
-        type: client.type ?? "INDIVIDUAL",
-        documentType: client.documentType ?? "",
-        documentNumber: client.documentNumber ?? "",
-        source: client.source ?? "DIRECTOS",
+        name: prospect.name ?? "",
+        email: prospect.email ?? "",
+        phone: prospect.phone ?? "",
+        type: prospect.type ?? "INDIVIDUAL",
+        documentType: prospect.documentType ?? "",
+        documentNumber: prospect.documentNumber ?? "",
+        source: prospect.source ?? "DIRECTOS",
       });
     }
-  }, [client]);
+  }, [prospect]);
 
   const handleChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -56,20 +56,28 @@ export function EditarProspectoDialog({ client, onClose, onSuccess }: EditarPros
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!client) return;
-    
+    if (!prospect) return;
+
     if (!form.name.trim()) {
       toast.error("El nombre es requerido");
       return;
     }
     setLoading(true);
-    const result = await updateClient(client.id, form);
+    const result = await updateProspect(prospect.id, {
+      name: form.name,
+      email: form.email || null,
+      phone: form.phone || null,
+      type: form.type,
+      documentType: (form.documentType as "CC" | "NIT" | "CE" | "PASAPORTE" | "TI" | "RUT" | "") || null,
+      documentNumber: form.documentNumber || null,
+      source: (form.source as "WEB_PUBLICA" | "REFERIDOS" | "REDES_SOCIALES" | "DIRECTOS" | "") || null,
+    });
     setLoading(false);
-    
+
     if (result.success) {
       toast.success("Prospecto actualizado exitosamente");
-      // Create partial updated client to apply to UI state immediately
-      onSuccess({ ...client, ...form });
+      // Create partial updated prospect to apply to UI state immediately
+      onSuccess({ ...prospect, ...form });
     } else {
       toast.error(result.error);
     }
@@ -82,7 +90,7 @@ export function EditarProspectoDialog({ client, onClose, onSuccess }: EditarPros
           <DialogHeader>
             <DialogTitle>Editar Prospecto</DialogTitle>
             <DialogDescription>
-              Modifica la información básica del prospecto o cliente.
+              Modifica la información básica del prospecto.
             </DialogDescription>
           </DialogHeader>
           <FieldGroup className="py-4">
@@ -142,6 +150,7 @@ export function EditarProspectoDialog({ client, onClose, onSuccess }: EditarPros
                     <SelectItem value="CE">CE</SelectItem>
                     <SelectItem value="PASAPORTE">Pasaporte</SelectItem>
                     <SelectItem value="TI">TI</SelectItem>
+                    <SelectItem value="RUT">RUT</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>

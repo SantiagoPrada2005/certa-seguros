@@ -15,6 +15,7 @@ type ClientData = {
   email: string | null
   phone: string | null
   status: ClientStatus
+  tags: { id: string; name: string; color: string | null }[]
   _count: { services: number; policies: number }
 }
 

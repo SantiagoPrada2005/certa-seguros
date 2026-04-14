@@ -14,7 +14,10 @@ const clientCreateSchema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().optional(),
-  status: z.enum(["NUEVO", "CONTACTADO", "EN_PROCESO", "ACTIVO", "INACTIVO", "DESCARTADO"]).optional(),
+  birthDate: z.string().optional(),
+  city: z.string().optional(),
+  notes: z.string().optional(),
+  status: z.enum(["ACTIVO", "INACTIVO", "MOROSO"]).optional(),
   source: z.enum(["WEB_PUBLICA", "REFERIDOS", "REDES_SOCIALES", "DIRECTOS"]).optional(),
 });
 
@@ -53,8 +56,14 @@ const reminderCreateSchema = z.object({
   status: z.enum(["PENDIENTE", "EN_PROCESO", "COMPLETADO", "VENCIDO"]).optional(),
   dueDate: z.string().min(1, "Fecha requerida"),
   description: z.string().optional(),
-  clientId: z.string().min(1, "Cliente requerido"),
-});
+  clientId: z.string().optional(),
+  prospectId: z.string().optional(),
+}).refine((data) => {
+  if (!data.clientId && !data.prospectId) {
+    return false;
+  }
+  return true;
+}, { message: "Cliente o prospecto requerido" });
 
 const goalSchema = z.object({
   name: z.string().min(1, "Nombre requerido"),
@@ -107,25 +116,26 @@ export async function createClient(
       data: {
         ...validated,
         email: validated.email || null,
+        birthDate: validated.birthDate ? new Date(validated.birthDate) : null,
       },
     });
 
     await prisma.activityLog.create({
       data: {
-        action: `Nuevo prospecto registrado: ${client.name}`,
+        action: `Nuevo cliente registrado: ${client.name}`,
         type: "INFO",
         clientId: client.id,
       },
     });
 
-    revalidatePath("/admin/prospectos");
+    revalidatePath("/admin/clientes");
     return { success: true, data: { id: client.id } };
   } catch (err) {
     if (err instanceof z.ZodError) {
       return { success: false, error: err.issues[0].message };
     }
     console.error("createClient error:", err);
-    return { success: false, error: "No se pudo crear el prospecto" };
+    return { success: false, error: "No se pudo crear el cliente" };
   }
 }
 
@@ -347,8 +357,13 @@ export async function createReminder(
     const validated = reminderCreateSchema.parse(formData);
     const reminder = await prisma.reminder.create({
       data: {
-        ...validated,
+        type: validated.type,
+        priority: validated.priority,
+        status: validated.status,
         dueDate: new Date(validated.dueDate),
+        description: validated.description,
+        clientId: validated.clientId || null,
+        prospectId: validated.prospectId || null,
       },
     });
 
@@ -357,6 +372,7 @@ export async function createReminder(
         action: `Recordatorio programado: ${reminder.type.replace(/_/g, " ")}`,
         type: "INFO",
         clientId: reminder.clientId,
+        prospectId: reminder.prospectId,
       },
     });
 
@@ -564,8 +580,8 @@ export async function getDashboardChartData() {
     fill: typeColors[s.type] || "var(--color-muted)",
   }));
 
-  // 3. Lead Sources
-  const leadSourcesDist = await prisma.client.groupBy({
+  // 3. Lead Sources (only prospects, not clients)
+  const leadSourcesDist = await prisma.prospect.groupBy({
     by: ["source"],
     where: { source: { not: null } },
     _count: { _all: true },
@@ -590,10 +606,10 @@ export async function getDashboardChartData() {
     fill: sourceColors[s.source!] || "var(--color-muted)",
   }));
 
-  // 4. Conversion Rate
-  const totalClients = await prisma.client.count();
-  const activeClients = await prisma.client.count({ where: { status: "ACTIVO" } });
-  const conversionRate = totalClients > 0 ? Math.round((activeClients / totalClients) * 100) : 0;
+  // 4. Conversion Rate (prospects → clients)
+  const totalProspects = await prisma.prospect.count();
+  const convertedProspects = await prisma.prospect.count({ where: { status: "CONVERTIDO" } });
+  const conversionRate = totalProspects > 0 ? Math.round((convertedProspects / totalProspects) * 100) : 0;
   const conversionData = [{ name: "Conversión", valor: conversionRate, fill: "var(--color-primary)" }];
 
   // 5. Weekly Activity
@@ -652,6 +668,7 @@ export async function getServicesForInvoicing() {
 export async function getClientsForInvoicing() {
   try {
     const clients = await prisma.client.findMany({
+      where: { status: "ACTIVO" },
       orderBy: { name: "asc" },
       select: { id: true, name: true, documentType: true, documentNumber: true, email: true }
     });
@@ -659,5 +676,19 @@ export async function getClientsForInvoicing() {
   } catch (error) {
     console.error("getClientsForInvoicing error:", error);
     return { success: false, error: "Error obteniendo clientes" };
+  }
+}
+
+export async function getProspectsForInvoicing() {
+  try {
+    const prospects = await prisma.prospect.findMany({
+      where: { status: { not: "DESCARTADO" } },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, documentType: true, documentNumber: true, email: true }
+    });
+    return { success: true, data: prospects };
+  } catch (error) {
+    console.error("getProspectsForInvoicing error:", error);
+    return { success: false, error: "Error obteniendo prospectos" };
   }
 }

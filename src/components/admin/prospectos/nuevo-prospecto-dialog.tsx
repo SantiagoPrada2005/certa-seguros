@@ -12,7 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { PlusIcon, Loader2Icon } from "lucide-react";
-import { createClient } from "@/app/admin/actions";
+import { createProspect } from "@/app/admin/(dashboard)/prospectos/_actions/prospect-actions";
 import { toast } from "sonner";
 
 export function NuevoProspectoDialog() {
@@ -22,10 +22,10 @@ export function NuevoProspectoDialog() {
     name: "",
     email: "",
     phone: "",
-    type: "INDIVIDUAL",
-    documentType: "",
+    type: "INDIVIDUAL" as "INDIVIDUAL" | "BUSINESS",
+    documentType: "" as "CC" | "NIT" | "CE" | "PASAPORTE" | "TI" | "RUT" | "",
     documentNumber: "",
-    source: "DIRECTOS",
+    source: "DIRECTOS" as "WEB_PUBLICA" | "REFERIDOS" | "REDES_SOCIALES" | "DIRECTOS",
   });
 
   const handleChange = (key: string, value: string) => {
@@ -39,7 +39,16 @@ export function NuevoProspectoDialog() {
       return;
     }
     setLoading(true);
-    const result = await createClient(form);
+    const result = await createProspect({
+      name: form.name,
+      email: form.email || null,
+      phone: form.phone || null,
+      type: form.type,
+      documentType: form.documentType || null,
+      documentNumber: form.documentNumber || null,
+      source: form.source,
+      status: "NUEVO",
+    });
     setLoading(false);
     if (result.success) {
       toast.success("Prospecto creado exitosamente");
@@ -121,6 +130,7 @@ export function NuevoProspectoDialog() {
                     <SelectItem value="CE">CE</SelectItem>
                     <SelectItem value="PASAPORTE">Pasaporte</SelectItem>
                     <SelectItem value="TI">TI</SelectItem>
+                    <SelectItem value="RUT">RUT</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>

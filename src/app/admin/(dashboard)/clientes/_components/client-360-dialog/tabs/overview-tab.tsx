@@ -2,14 +2,32 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Mail, Phone, MapPin, CalendarClock, Hash } from "lucide-react"
+import { Mail, Phone, MapPin, CalendarClock, Hash, CalendarDays, FileText, Tag } from "lucide-react"
 
 export function OverviewTab({ client }: { client: any }) {
-  
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-CO', {
       dateStyle: 'medium',
     }).format(new Date(date))
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "ACTIVO": return "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800"
+      case "INACTIVO": return "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700"
+      case "MOROSO": return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
+      default: return ""
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "ACTIVO": return "Activo"
+      case "INACTIVO": return "Inactivo"
+      case "MOROSO": return "Moroso"
+      default: return status
+    }
   }
 
   return (
@@ -17,7 +35,7 @@ export function OverviewTab({ client }: { client: any }) {
       <Card>
         <CardHeader className="pb-3 bg-muted/30">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <UserIcon className="size-4 text-muted-foreground" />
+            <Mail className="size-4 text-muted-foreground" />
             Información de Contacto
           </CardTitle>
         </CardHeader>
@@ -25,6 +43,7 @@ export function OverviewTab({ client }: { client: any }) {
           <InfoItem icon={<Mail />} label="Email" value={client.email} />
           <InfoItem icon={<Phone />} label="Teléfono" value={client.phone} />
           <InfoItem icon={<MapPin />} label="Dirección" value={client.address} />
+          <InfoItem icon={<MapPin />} label="Ciudad" value={client.city} />
         </CardContent>
       </Card>
 
@@ -32,26 +51,76 @@ export function OverviewTab({ client }: { client: any }) {
         <CardHeader className="pb-3 bg-muted/30">
           <CardTitle className="text-sm font-medium flex items-center gap-2">
             <Hash className="size-4 text-muted-foreground" />
-            Detalles CRM
+            Detalles Personales
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4 space-y-3">
+          <InfoItem
+            icon={<CalendarDays />}
+            label="Fecha de Nacimiento"
+            value={client.birthDate ? formatDate(client.birthDate) : null}
+          />
           <div className="flex gap-2 items-center">
             <span className="text-sm text-muted-foreground w-28">Estado:</span>
-            <Badge variant="outline">{client.status}</Badge>
+            <Badge variant="outline" className={getStatusColor(client.status)}>
+              {getStatusLabel(client.status)}
+            </Badge>
           </div>
           <div className="flex gap-2 items-center">
             <span className="text-sm text-muted-foreground w-28">Origen:</span>
             <Badge variant="secondary" className="font-normal">{client.source || "No definido"}</Badge>
           </div>
-          <InfoItem 
-            icon={<CalendarClock />} 
-            label="Registrado" 
-            value={formatDate(client.createdAt)} 
+          <InfoItem
+            icon={<CalendarClock />}
+            label="Registrado"
+            value={formatDate(client.createdAt)}
           />
         </CardContent>
       </Card>
-      
+
+      {client.tags && client.tags.length > 0 && (
+        <Card className="col-span-full">
+          <CardHeader className="pb-3 border-b border-dashed">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Tag className="size-4 text-muted-foreground" />
+              Etiquetas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="flex flex-wrap gap-2">
+              {client.tags.map((tag: { id: string; name: string; color: string | null }) => (
+                <Badge
+                  key={tag.id}
+                  variant="outline"
+                  className="gap-1"
+                  style={tag.color ? {
+                    borderColor: tag.color,
+                    color: tag.color,
+                  } : undefined}
+                >
+                  <Tag className="size-3" />
+                  {tag.name}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {client.notes && (
+        <Card className="col-span-full">
+          <CardHeader className="pb-3 border-b border-dashed">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <FileText className="size-4 text-muted-foreground" />
+              Notas
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{client.notes}</p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="col-span-full">
         <CardHeader className="pb-3 border-b border-dashed">
           <CardTitle className="text-sm font-medium">Resumen Actividad</CardTitle>

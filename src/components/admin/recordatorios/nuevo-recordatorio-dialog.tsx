@@ -12,15 +12,17 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { PlusIcon, Loader2Icon } from "lucide-react";
+import { PlusIcon, Loader2Icon, UsersIcon, TargetIcon } from "lucide-react";
 import { createReminder } from "@/app/admin/actions";
-import { fetchClients, type ClientRecord } from "@/lib/api-client";
+import { fetchClients, type ClientRecord, fetchProspects, type ProspectRecord } from "@/lib/api-client";
 import { toast } from "sonner";
 
 export function NuevoRecordatorioDialog() {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [clients, setClients] = React.useState<ClientRecord[]>([]);
+  const [prospects, setProspects] = React.useState<ProspectRecord[]>([]);
+  const [selectedType, setSelectedType] = React.useState<'client' | 'prospect'>('client');
 
   const [form, setForm] = React.useState({
     type: "",
@@ -29,11 +31,13 @@ export function NuevoRecordatorioDialog() {
     dueDate: "",
     description: "",
     clientId: "",
+    prospectId: "",
   });
 
   React.useEffect(() => {
     if (open) {
       fetchClients().then(setClients).catch(console.error);
+      fetchProspects().then(setProspects).catch(console.error);
     }
   }, [open]);
 
@@ -42,17 +46,34 @@ export function NuevoRecordatorioDialog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.type || !form.dueDate || !form.clientId) {
+    if (!form.type || !form.dueDate) {
       toast.error("Completa los campos obligatorios");
       return;
     }
+    if (selectedType === 'client' && !form.clientId) {
+      toast.error("Selecciona un cliente");
+      return;
+    }
+    if (selectedType === 'prospect' && !form.prospectId) {
+      toast.error("Selecciona un prospecto");
+      return;
+    }
     setLoading(true);
-    const result = await createReminder(form);
+    const payload = {
+      type: form.type,
+      priority: form.priority,
+      status: form.status,
+      dueDate: form.dueDate,
+      description: form.description,
+      clientId: selectedType === 'client' ? form.clientId : "",
+      prospectId: selectedType === 'prospect' ? form.prospectId : "",
+    };
+    const result = await createReminder(payload as any);
     setLoading(false);
     if (result.success) {
       toast.success("Recordatorio creado exitosamente");
       setOpen(false);
-      setForm({ type: "", priority: "MEDIA", status: "PENDIENTE", dueDate: "", description: "", clientId: "" });
+      setForm({ type: "", priority: "MEDIA", status: "PENDIENTE", dueDate: "", description: "", clientId: "", prospectId: "" });
     } else {
       toast.error(result.error);
     }
@@ -69,23 +90,55 @@ export function NuevoRecordatorioDialog() {
           <DialogHeader>
             <DialogTitle>Crear Recordatorio</DialogTitle>
             <DialogDescription>
-              Programa una alerta de seguimiento o vencimiento para un cliente.
+              Programa una alerta de seguimiento o vencimiento para un cliente o prospecto.
             </DialogDescription>
           </DialogHeader>
           <FieldGroup className="py-4">
             <Field>
-              <FieldLabel htmlFor="r-client">Cliente *</FieldLabel>
-              <Select value={form.clientId} onValueChange={(v) => handleChange("clientId", v ?? "")}>
+              <FieldLabel>Tipo de Contacto *</FieldLabel>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={selectedType === 'client' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => { setSelectedType('client'); setForm(prev => ({ ...prev, clientId: "", prospectId: "" })); }}
+                  className="gap-2"
+                >
+                  <UsersIcon className="size-4" />
+                  Cliente
+                </Button>
+                <Button
+                  type="button"
+                  variant={selectedType === 'prospect' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => { setSelectedType('prospect'); setForm(prev => ({ ...prev, clientId: "", prospectId: "" })); }}
+                  className="gap-2"
+                >
+                  <TargetIcon className="size-4" />
+                  Prospecto
+                </Button>
+              </div>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="r-client">
+                {selectedType === 'client' ? 'Cliente *' : 'Prospecto *'}
+              </FieldLabel>
+              <Select
+                value={selectedType === 'client' ? form.clientId : form.prospectId}
+                onValueChange={(v) => handleChange(selectedType === 'client' ? 'clientId' : 'prospectId', v ?? "")}
+              >
                 <SelectTrigger id="r-client">
-                  <SelectValue placeholder="Seleccionar cliente...">
-                    {form.clientId && (() => {
-                      const client = clients.find(c => c.id === form.clientId);
-                      return client ? <span>{client.name}</span> : null;
+                  <SelectValue placeholder={selectedType === 'client' ? 'Seleccionar cliente...' : 'Seleccionar prospecto...'}>
+                    {(() => {
+                      const id = selectedType === 'client' ? form.clientId : form.prospectId;
+                      const list = selectedType === 'client' ? clients : prospects;
+                      const item = list.find(c => c.id === id);
+                      return item ? <span>{item.name}</span> : null;
                     })()}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.map((c) => (
+                  {(selectedType === 'client' ? clients : prospects).map((c) => (
                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                   ))}
                 </SelectContent>
