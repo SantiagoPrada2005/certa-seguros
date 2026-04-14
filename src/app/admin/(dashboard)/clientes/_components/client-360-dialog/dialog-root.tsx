@@ -15,47 +15,120 @@ import { ServicesTab } from "./tabs/services-tab"
 import { PoliciesTab } from "./tabs/policies-tab"
 import { InvoicesTab } from "./tabs/invoices-tab"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Building2, User2, Tag } from "lucide-react"
+import { Building2, User2, Tag, Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { EditClientDialog } from "../edit-client-dialog"
+import { ClientType, ClientStatus, DocumentType } from "@/generated/prisma/client"
+
+interface ClientDetails {
+  id: string
+  name: string
+  type: ClientType
+  documentType: DocumentType | null
+  documentNumber: string | null
+  email: string | null
+  phone: string | null
+  address: string | null
+  birthDate: Date | null
+  city: string | null
+  notes: string | null
+  status: ClientStatus
+  tags: Array<{ id: string; name: string; color: string | null }>
+  services: Array<{
+    id: string
+    assignedAt: Date
+    service: {
+      id: string
+      name: string
+      price: number | null
+      subcategory: { name: string; category: { name: string } }
+    }
+  }>
+  policies: Array<{
+    id: string
+    policyNumber: string
+    type: string
+    premiumAmount: number
+    commissionAmount: number
+    startDate: Date
+    endDate: Date
+    status: string
+  }>
+  invoices: Array<{
+    id: string
+    number: string
+    date: Date
+    dueDate: Date
+    subtotal: number
+    discountAmount: number
+    taxRate: number
+    taxAmount: number
+    total: number
+    status: string
+  }>
+}
+
+interface AvailableService {
+  id: string
+  name: string
+  price: number | null
+  description: string | null
+  subcategory: { name: string; category: { name: string } } | null
+}
 
 interface Client360DialogProps {
   clientId: string
   isOpen: boolean
   onOpenChange: (open: boolean) => void
-  availableServices: any[]
+  availableServices: AvailableService[]
 }
 
 export function Client360Dialog({ clientId, isOpen, onOpenChange, availableServices }: Client360DialogProps) {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<ClientDetails | null>(null)
   const [loading, setLoading] = useState(true)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+
     async function fetchData() {
-      if (!clientId) return
+      if (!isOpen || !clientId) {
+        return
+      }
       setLoading(true)
       const res = await getClientDetails(clientId)
-      if (res.success) {
-        setData(res.data)
+      if (!cancelled && res.success) {
+        setData(res.data as ClientDetails)
       }
-      setLoading(false)
+      if (!cancelled) {
+        setLoading(false)
+      }
     }
 
-    if (isOpen && clientId) {
-      fetchData()
-    } else {
-      setData(null)
+    fetchData()
+
+    return () => {
+      cancelled = true
     }
   }, [clientId, isOpen])
+
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      setData(null)
+    }
+    onOpenChange(open)
+  }
 
   const refreshData = async () => {
     const res = await getClientDetails(clientId)
     if (res.success) {
-      setData(res.data)
+      setData(res.data as ClientDetails)
     }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="w-full sm:max-w-2xl h-[85vh] p-0 flex flex-col overflow-hidden">
         <div className="px-6 py-6 border-b shrink-0 bg-muted/20">
           <DialogHeader className="text-left space-y-0">
@@ -67,7 +140,7 @@ export function Client360Dialog({ clientId, isOpen, onOpenChange, availableServi
                   <User2 className="size-5 text-muted-foreground" />
                 )}
               </div>
-              <div>
+              <div className="flex-1">
                 <DialogTitle className="text-2xl leading-none" render={<div />}>
                   {loading ? <Skeleton className="h-6 w-48" /> : data?.name}
                 </DialogTitle>
@@ -103,6 +176,16 @@ export function Client360Dialog({ clientId, isOpen, onOpenChange, availableServi
                   )}
                 </DialogDescription>
               </div>
+              {!loading && data && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEditDialogOpen(true)}
+                  aria-label="Editar cliente"
+                >
+                  <Pencil className="size-4" />
+                </Button>
+              )}
             </div>
           </DialogHeader>
         </div>
@@ -153,6 +236,27 @@ export function Client360Dialog({ clientId, isOpen, onOpenChange, availableServi
             </Tabs>
           )}
         </div>
+
+        {/* Edit Client Dialog */}
+        <EditClientDialog
+          client={data ? {
+            id: data.id,
+            name: data.name,
+            type: data.type,
+            documentType: data.documentType,
+            documentNumber: data.documentNumber,
+            email: data.email,
+            phone: data.phone,
+            address: data.address,
+            birthDate: data.birthDate,
+            city: data.city,
+            notes: data.notes,
+            status: data.status,
+            tags: data.tags || [],
+          } : null}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+        />
       </DialogContent>
     </Dialog>
   )

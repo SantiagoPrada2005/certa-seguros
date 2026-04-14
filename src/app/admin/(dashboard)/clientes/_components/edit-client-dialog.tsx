@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -9,25 +9,45 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { createClient, getAllTags, createTag } from "../actions"
+import { updateClient, getAllTags, createTag } from "../actions"
 import { toast } from "sonner"
-import { PlusIcon, X, Tag } from "lucide-react"
+import { X, Tag, Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { CalendarIcon } from "lucide-react"
-import { ClientType } from "@/generated/prisma/client"
+import { ClientStatus, ClientType, DocumentType } from "@/generated/prisma/client"
 
-export function CreateClientDialog() {
-  const [open, setOpen] = useState(false)
+interface ClientData {
+  id: string
+  name: string
+  type: ClientType
+  documentType: DocumentType | null
+  documentNumber: string | null
+  email: string | null
+  phone: string | null
+  address: string | null
+  birthDate: Date | null
+  city: string | null
+  notes: string | null
+  status: ClientStatus
+  tags: Array<{ id: string; name: string; color: string | null }>
+}
+
+interface EditClientDialogProps {
+  client: ClientData | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function EditClientDialog({ client, open, onOpenChange }: EditClientDialogProps) {
   const [isPending, setIsPending] = useState(false)
 
   // Form State
@@ -39,12 +59,36 @@ export function CreateClientDialog() {
   const [phone, setPhone] = useState("")
   const [birthDate, setBirthDate] = useState<Date | undefined>(undefined)
   const [city, setCity] = useState("")
+  const [address, setAddress] = useState("")
   const [notes, setNotes] = useState("")
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
   const [tagInput, setTagInput] = useState("")
 
   // Tags state
   const [tags, setTags] = useState<{ id: string; name: string; color: string | null }[]>([])
+
+  // Reset form when client changes
+  const resetForm = useCallback(() => {
+    if (client) {
+      setName(client.name)
+      setType(client.type)
+      setDocumentType(client.documentType || "CC")
+      setDocumentNumber(client.documentNumber || "")
+      setEmail(client.email || "")
+      setPhone(client.phone || "")
+      setBirthDate(client.birthDate || undefined)
+      setCity(client.city || "")
+      setAddress(client.address || "")
+      setNotes(client.notes || "")
+      setSelectedTagIds(client.tags.map(t => t.id))
+    }
+  }, [client])
+
+  useEffect(() => {
+    if (client) {
+      resetForm()
+    }
+  }, [client?.id])
 
   useEffect(() => {
     async function loadTags() {
@@ -84,67 +128,54 @@ export function CreateClientDialog() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!client) return
     setIsPending(true)
 
-    const result = await createClient({
+    const result = await updateClient({
+      clientId: client.id,
       name,
       type: type as ClientType,
       documentType,
-      documentNumber,
-      email: email || "",
-      phone: phone || "",
+      documentNumber: documentNumber || null,
+      email: email || null,
+      phone: phone || null,
+      address: address || null,
       birthDate: birthDate ? birthDate.toISOString() : null,
       city: city || null,
       notes: notes || null,
-      status: "ACTIVO",
       tagIds: selectedTagIds,
     })
 
     setIsPending(false)
 
     if (result.success) {
-      toast.success("Cliente creado exitosamente")
-      setOpen(false)
-      // reset form
-      setName("")
-      setType("INDIVIDUAL")
-      setDocumentType("CC")
-      setDocumentNumber("")
-      setEmail("")
-      setPhone("")
-      setBirthDate(undefined)
-      setCity("")
-      setNotes("")
-      setSelectedTagIds([])
-      setTagInput("")
+      toast.success("Cliente actualizado exitosamente")
+      onOpenChange(false)
     } else {
-      toast.error(result.error || "No se pudo crear el cliente")
+      toast.error(result.error || "No se pudo actualizar el cliente")
     }
   }
 
+  if (!client) return null
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button>
-            <PlusIcon data-icon="inline-start" />
-            Crear Cliente
-          </Button>
-        }
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Nuevo Cliente</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="size-4" />
+              Editar Cliente
+            </DialogTitle>
             <DialogDescription>
-              Crea un nuevo cliente. Los campos con asterisco son obligatorios.
+              Modifica la información del cliente. Los campos con asterisco son obligatorios.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="name">Nombre / Razón Social *</FieldLabel>
-                <Input id="name" value={name} onChange={e => setName(e.target.value)} required />
+                <FieldLabel htmlFor="edit-name">Nombre / Razón Social *</FieldLabel>
+                <Input id="edit-name" value={name} onChange={e => setName(e.target.value)} required />
               </Field>
 
               <div className="grid grid-cols-2 gap-4">
@@ -162,14 +193,9 @@ export function CreateClientDialog() {
                 </Field>
                 <Field>
                   <FieldLabel>Estado</FieldLabel>
-                  <Select value="ACTIVO" disabled>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ACTIVO">Activo</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="text-sm text-muted-foreground py-2 capitalize">
+                    {client.status === "ACTIVO" ? "Activo" : client.status === "INACTIVO" ? "Inactivo" : "Moroso"}
+                  </div>
                 </Field>
               </div>
 
@@ -185,23 +211,30 @@ export function CreateClientDialog() {
                       <SelectItem value="NIT">NIT</SelectItem>
                       <SelectItem value="CE">Cédula Extranjería</SelectItem>
                       <SelectItem value="PASAPORTE">Pasaporte</SelectItem>
+                      <SelectItem value="TI">Tarjeta de Identidad</SelectItem>
+                      <SelectItem value="RUT">RUT</SelectItem>
                     </SelectContent>
                   </Select>
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="docNumber">Número Documento</FieldLabel>
-                  <Input id="docNumber" value={documentNumber} onChange={e => setDocumentNumber(e.target.value)} />
+                  <FieldLabel htmlFor="edit-doc-number">Número Documento</FieldLabel>
+                  <Input id="edit-doc-number" value={documentNumber} onChange={e => setDocumentNumber(e.target.value)} />
                 </Field>
               </div>
 
               <Field>
-                <FieldLabel htmlFor="email">Correo Electrónico</FieldLabel>
-                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+                <FieldLabel htmlFor="edit-email">Correo Electrónico</FieldLabel>
+                <Input id="edit-email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="phone">Teléfono / Celular</FieldLabel>
-                <Input id="phone" value={phone} onChange={e => setPhone(e.target.value)} />
+                <FieldLabel htmlFor="edit-phone">Teléfono / Celular</FieldLabel>
+                <Input id="edit-phone" value={phone} onChange={e => setPhone(e.target.value)} />
+              </Field>
+
+              <Field>
+                <FieldLabel htmlFor="edit-address">Dirección</FieldLabel>
+                <Input id="edit-address" value={address} onChange={e => setAddress(e.target.value)} />
               </Field>
 
               <div className="grid grid-cols-2 gap-4">
@@ -225,20 +258,19 @@ export function CreateClientDialog() {
                   </Popover>
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="city">Ciudad</FieldLabel>
-                  <Input id="city" value={city} onChange={e => setCity(e.target.value)} />
+                  <FieldLabel htmlFor="edit-city">Ciudad</FieldLabel>
+                  <Input id="edit-city" value={city} onChange={e => setCity(e.target.value)} />
                 </Field>
               </div>
 
               <Field>
-                <FieldLabel htmlFor="notes">Notas</FieldLabel>
-                <Textarea id="notes" value={notes} onChange={e => setNotes(e.target.value)} rows={3} />
+                <FieldLabel htmlFor="edit-notes">Notas</FieldLabel>
+                <Textarea id="edit-notes" value={notes} onChange={e => setNotes(e.target.value)} rows={3} />
               </Field>
 
               <Field>
                 <FieldLabel>Etiquetas</FieldLabel>
                 <div className="space-y-2">
-                  {/* Selected tags */}
                   {selectedTagIds.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {selectedTagIds.map(tagId => {
@@ -270,7 +302,6 @@ export function CreateClientDialog() {
                     </div>
                   )}
 
-                  {/* Tag input + existing tags */}
                   <div className="flex flex-wrap gap-1.5 items-center">
                     <Input
                       value={tagInput}
@@ -281,7 +312,6 @@ export function CreateClientDialog() {
                     />
                   </div>
 
-                  {/* Existing tags to click */}
                   {tags.filter(t => !selectedTagIds.includes(t.id)).length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       {tags.filter(t => !selectedTagIds.includes(t.id)).map(tag => (
@@ -306,8 +336,8 @@ export function CreateClientDialog() {
             </FieldGroup>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button type="submit" disabled={isPending || !name}>Guardar Cliente</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="submit" disabled={isPending || !name}>Guardar Cambios</Button>
           </DialogFooter>
         </form>
       </DialogContent>

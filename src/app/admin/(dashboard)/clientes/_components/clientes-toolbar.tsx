@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search } from "lucide-react"
 import { CreateClientDialog } from "./create-client-dialog"
+import { ClientStatus } from "@/generated/prisma/client"
 
 interface ClientesToolbarProps {
   searchQuery: string
   setSearchQuery: (val: string) => void
-  selectedStatus: string
-  setSelectedStatus: (val: any) => void
+  selectedStatus: ClientStatus | "ALL"
+  setSelectedStatus: (val: ClientStatus | "ALL" | null) => void
 }
 
 export function ClientesToolbar({

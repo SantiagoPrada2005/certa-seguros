@@ -3,7 +3,7 @@
 import db from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
-import { ClientStatus, ClientType } from "@/generated/prisma/client"
+import { ClientStatus, ClientType, DocumentType } from "@/generated/prisma/client"
 
 export async function getClients() {
   try {
@@ -192,18 +192,62 @@ const CreateClientSchema = z.object({
   tagIds: z.array(z.string()).optional(),
 })
 
+const UpdateClientSchema = z.object({
+  clientId: z.string().min(1, "El ID del cliente es requerido"),
+  name: z.string().min(1, "El nombre es requerido").optional(),
+  type: z.nativeEnum(ClientType).optional(),
+  documentType: z.string().optional().nullable(),
+  documentNumber: z.string().optional().nullable(),
+  email: z.string().email("Correo inválido").optional().nullable().or(z.literal("")),
+  phone: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  birthDate: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  status: z.nativeEnum(ClientStatus).optional(),
+  tagIds: z.array(z.string()).optional(),
+})
+
 export async function createClient(data: z.infer<typeof CreateClientSchema>) {
   try {
     const validatedData = CreateClientSchema.parse(data)
 
-    // Convert empty strings to null for optional unique fields if any
+    // Convert empty strings to null for optional unique fields
     const emailToSave = validatedData.email === "" ? null : validatedData.email;
+
+    // Check for duplicate client by document number
+    if (validatedData.documentNumber) {
+      const existingByDoc = await db.client.findFirst({
+        where: { documentNumber: validatedData.documentNumber },
+        select: { id: true, name: true },
+      })
+      if (existingByDoc) {
+        return {
+          success: false,
+          error: `Ya existe un cliente con este documento: ${existingByDoc.name}`,
+        }
+      }
+    }
+
+    // Check for duplicate client by email
+    if (emailToSave) {
+      const existingByEmail = await db.client.findFirst({
+        where: { email: emailToSave },
+        select: { id: true, name: true },
+      })
+      if (existingByEmail) {
+        return {
+          success: false,
+          error: `Ya existe un cliente con este correo: ${existingByEmail.name}`,
+        }
+      }
+    }
 
     const newClient = await db.client.create({
       data: {
         name: validatedData.name,
         type: validatedData.type,
-        documentType: validatedData.documentType as any,
+        documentType: validatedData.documentType as DocumentType | null,
         documentNumber: validatedData.documentNumber,
         email: emailToSave,
         phone: validatedData.phone,
@@ -224,8 +268,93 @@ export async function createClient(data: z.infer<typeof CreateClientSchema>) {
     if (error instanceof z.ZodError) {
       return { success: false, error: "Datos inválidos", validationErrors: error.errors }
     }
+    // Handle Prisma unique constraint violations
+    if (error instanceof Error && "code" in error && (error as { code?: string }).code === "P2002") {
+      return { success: false, error: "Ya existe un cliente con estos datos" }
+    }
     console.error("Error creating client:", error)
     return { success: false, error: "No se pudo crear el cliente" }
+  }
+}
+
+export async function updateClient(data: z.infer<typeof UpdateClientSchema>) {
+  try {
+    const validatedData = UpdateClientSchema.parse(data)
+    const { clientId, ...updateData } = validatedData
+
+    // Convert empty strings to null for optional unique fields
+    const emailToSave = updateData.email === "" ? null : updateData.email;
+
+    // Check for duplicate client by document number (excluding current client)
+    if (updateData.documentNumber) {
+      const existingByDoc = await db.client.findFirst({
+        where: {
+          documentNumber: updateData.documentNumber,
+          id: { not: clientId },
+        },
+        select: { id: true, name: true },
+      })
+      if (existingByDoc) {
+        return {
+          success: false,
+          error: `Ya existe otro cliente con este documento: ${existingByDoc.name}`,
+        }
+      }
+    }
+
+    // Check for duplicate client by email (excluding current client)
+    if (emailToSave) {
+      const existingByEmail = await db.client.findFirst({
+        where: {
+          email: emailToSave,
+          id: { not: clientId },
+        },
+        select: { id: true, name: true },
+      })
+      if (existingByEmail) {
+        return {
+          success: false,
+          error: `Ya existe otro cliente con este correo: ${existingByEmail.name}`,
+        }
+      }
+    }
+
+    const updatedClient = await db.client.update({
+      where: { id: clientId },
+      data: {
+        name: updateData.name,
+        type: updateData.type,
+        documentType: updateData.documentType as DocumentType | null,
+        documentNumber: updateData.documentNumber,
+        email: emailToSave,
+        phone: updateData.phone,
+        address: updateData.address,
+        birthDate: updateData.birthDate ? new Date(updateData.birthDate) : null,
+        city: updateData.city,
+        notes: updateData.notes,
+        status: updateData.status,
+        tags: updateData.tagIds
+          ? { set: updateData.tagIds.map(id => ({ id })) }
+          : { set: [] },
+      },
+    })
+
+    revalidatePath("/admin/clientes")
+    return { success: true, data: updatedClient }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: "Datos inválidos", validationErrors: error.errors }
+    }
+    // Handle Prisma unique constraint violations
+    if (error instanceof Error && "code" in error && (error as { code?: string }).code === "P2002") {
+      return { success: false, error: "Ya existe otro cliente con estos datos" }
+    }
+    // Handle record not found
+    if (error instanceof Error && "code" in error && (error as { code?: string }).code === "P2025") {
+      return { success: false, error: "El cliente no fue encontrado" }
+    }
+    console.error("Error updating client:", error)
+    return { success: false, error: "No se pudo actualizar el cliente" }
   }
 }
 

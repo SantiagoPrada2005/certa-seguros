@@ -160,6 +160,187 @@ npx prisma db push
 
 ---
 
+## Using Specialized Agents
+
+This project has access to specialized AI agents that autonomously handle complex, multi-step tasks. These agents are designed to work proactively - they will be invoked automatically when tasks match their capabilities.
+
+### Available Agents
+
+| Agent | When It's Used | What It Does |
+|-------|----------------|--------------|
+| **code-reviewer** | After completing major features, numbered plan steps, or logical code chunks | Reviews implementations against plans and coding standards, identifies issues |
+| **shadcn-builder-expert** | When working with Shadcn Builder codebase, form components, drag-and-drop, Zustand store | Implements features, manages components, generates code, handles templates |
+| **ui-designer** | Creating design systems, component libraries, visual hierarchies, accessibility-compliant interfaces | Creates comprehensive design systems, component specs, responsive layouts, developer handoff docs |
+| **ux-architect** | Establishing technical foundations before implementation begins | Creates CSS design systems, layout frameworks, component architectures, responsive strategies |
+| **ux-researcher** | When design decisions need user evidence, before major launches, analyzing user behavior | User behavior analysis, usability testing, persona creation, journey mapping, data-driven recommendations |
+| **general-purpose** | Complex multi-step tasks not covered by specialized agents | Research, code searching, feature implementation |
+| **Explore** | Quick codebase exploration and file searching | Fast pattern matching, keyword searches, answering codebase questions |
+
+### Agent Usage Patterns
+
+**Proactive Invocation Examples:**
+
+1. **Feature Implementation Workflow:**
+   ```
+   User: "Implement a new client management table with filtering"
+   → I'll use shadcn-builder-expert to implement the UI
+   → After completion, I'll use code-reviewer to validate
+   ```
+
+2. **Design System Setup:**
+   ```
+   User: "Set up a consistent design system for our dashboard"
+   → I'll use ui-designer to create comprehensive specifications
+   → I'll use ux-architect to establish technical foundation
+   ```
+
+3. **Code Review After Major Changes:**
+   ```
+   User: "I've finished implementing the authentication system (Step 3)"
+   → I'll use code-reviewer to validate against the plan
+   ```
+
+4. **UX Validation Needed:**
+   ```
+   User: "Should we prioritize this feature? Users are complaining about navigation"
+   → I'll use ux-researcher to analyze and provide data-driven recommendations
+   ```
+
+### When to Expect Agent Usage
+
+I will automatically use agents when:
+- Starting complex feature implementations
+- Completing significant project milestones
+- Designing new UI components or systems
+- Establishing technical architecture
+- Making decisions that need user research validation
+- Exploring large codebases for patterns
+
+### Agent Thoroughness Levels
+
+For the **Explore** agent, you can specify thoroughness:
+- **quick**: Basic searches, finding specific files
+- **medium**: Moderate exploration of related files
+- **very thorough**: Comprehensive analysis across multiple locations
+
+### Best Practices
+
+1. **Let agents work autonomously**: Once invoked, agents handle tasks without manual intervention
+2. **Trust the review process**: code-reviewer validates work against plans and standards
+3. **Use for complex tasks**: Agents shine on multi-step tasks that require specialized knowledge
+4. **Provide context**: Clear requirements help agents deliver better results
+
+---
+
+## Using Skills
+
+Skills are specialized capabilities that provide domain-specific knowledge and workflows. They are invoked using the `skill` command and provide focused expertise for particular tasks.
+
+### Mandatory Skills Usage
+
+**This project requires the following skills to be used obligatorily:**
+
+#### 1. `using-superpowers` (MANDATORY - Use First)
+- **When**: **ALWAYS invoke at the start of ANY conversation** before any other action
+- **Purpose**: Establishes how to find and use skills, sets up the workflow foundation
+- **Command**: `skill: "using-superpowers"`
+- **Critical Rule**: Must be called BEFORE any response, including clarifying questions
+- **Why**: Configures the skill discovery and usage framework for the entire session
+
+#### 2. `shadcn` (MANDATORY for UI Work)
+- **When**: ANY task involving shadcn/ui components, UI creation, styling, or component registry
+- **Purpose**: Manages shadcn components, projects, presets, fixes, debugging, and composition
+- **Command**: `skill: "shadcn"`
+- **Triggers**: 
+  - Adding/modifying UI components
+  - Running `shadcn init` or `shadcn add`
+  - Working with `--preset` codes
+  - Any project with a `components.json` file (which this project has)
+- **Why**: This project uses shadcn/ui as its primary UI component system
+
+### Additional Available Skills
+
+| Skill | When to Use | Command |
+|-------|-------------|---------|
+| **tailwind-design-system** | Building component libraries, implementing design systems with Tailwind CSS v4 | `skill: "tailwind-design-system"` |
+| **ui-ux-pro-max** | UI/UX design intelligence, 50+ styles, 161 color palettes, accessibility, responsive design | `skill: "ui-ux-pro-max"` |
+| **next-best-practices** | Writing/reviewing React/Next.js code, performance optimization, data fetching patterns | `skill: "next-best-practices"` |
+| **vercel-react-best-practices** | React/Next.js performance optimization, bundle size, data fetching | `skill: "vercel-react-best-practices"` |
+| **nextjs-framer-motion-animations** | Adding Motion/Framer Motion animations in Next.js apps | `skill: "nextjs-framer-motion-animations"` |
+| **review** | Reviewing changed code for correctness, security, quality, performance | `skill: "review"` or `/review` |
+| **loop** | Creating recurring prompt loops on schedules | `/loop 5m check the build` |
+| **qc-helper** | Qwen Code usage questions, configuration, troubleshooting | `/qc-helper` |
+| **firebase-auth-basics** | Setting up Firebase Authentication | `skill: "firebase-auth-basics"` |
+| **openrouter-typescript-sdk** | Integrating with AI models through OpenRouter SDK | `skill: "openrouter-typescript-sdk"` |
+| **find-skills** | Discovering and installing new agent skills | `skill: "find-skills"` |
+
+### Skill Usage Workflow
+
+**Mandatory Sequence for Any Task:**
+
+1. **ALWAYS start with superpowers:**
+   ```
+   skill: "using-superpowers"
+   ```
+
+2. **Then use shadcn for any UI work:**
+   ```
+   skill: "shadcn"
+   ```
+
+3. **Then use other skills as needed:**
+   ```
+   skill: "tailwind-design-system"
+   skill: "ui-ux-pro-max"
+   ```
+
+### Examples
+
+**Example 1: Creating a New UI Component**
+```
+User: "Create a client data table with sorting"
+→ Step 1: skill: "using-superpowers" (MANDATORY FIRST)
+→ Step 2: skill: "shadcn" (MANDATORY for UI)
+→ Step 3: skill: "tailwind-design-system" (for styling patterns)
+→ Step 4: Implement the component
+→ Step 5: skill: "review" (validate the code)
+```
+
+**Example 2: Building a Landing Page Section**
+```
+User: "Add a testimonials section to the landing page"
+→ Step 1: skill: "using-superpowers" (MANDATORY FIRST)
+→ Step 2: skill: "shadcn" (MANDATORY for UI)
+→ Step 3: skill: "ui-ux-pro-max" (for design guidance)
+→ Step 4: Build the section
+```
+
+**Example 3: Performance Optimization**
+```
+User: "Optimize the dashboard loading speed"
+→ Step 1: skill: "using-superpowers" (MANDATORY FIRST)
+→ Step 2: skill: "next-best-practices" (for Next.js patterns)
+→ Step 3: skill: "vercel-react-best-practices" (for React optimization)
+→ Step 4: Apply optimizations
+```
+
+### Critical Rules
+
+1. **NEVER skip `using-superpowers`** - It must ALWAYS be the first skill invoked
+2. **ALWAYS use `shadcn` for UI tasks** - This project's UI system is shadcn/ui
+3. **Invoke skills IMMEDIATELY** - Don't announce or mention skills without calling them
+4. **Skills are blocking requirements** - Must be invoked before generating responses about tasks
+5. **Resolve absolute paths from skill's base directory** when executing scripts or loading referenced files
+
+### Skill Configuration
+
+Skills are configured in:
+- `skills-lock.json` - Project-level skill configuration
+- Bundled skills in the system - Always available
+- User-installed skills - Available via `find-skills`
+
+---
+
 ## Database Schema Summary
 
 The Prisma schema defines the following core entities:

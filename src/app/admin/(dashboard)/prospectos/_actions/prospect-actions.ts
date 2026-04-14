@@ -47,6 +47,67 @@ export async function createProspect(data: z.infer<typeof createProspectSchema>)
   try {
     const validated = createProspectSchema.parse(data)
 
+    // Check for duplicate prospect by document number
+    if (validated.documentNumber) {
+      const existingByDoc = await prisma.prospect.findFirst({
+        where: {
+          documentNumber: validated.documentNumber,
+          status: { not: "DESCARTADO" },
+        },
+        select: { id: true, name: true },
+      })
+      if (existingByDoc) {
+        return {
+          success: false,
+          error: `Ya existe un prospecto activo con este documento: ${existingByDoc.name}`,
+        }
+      }
+    }
+
+    // Check for duplicate prospect by email
+    if (validated.email) {
+      const existingByEmail = await prisma.prospect.findFirst({
+        where: {
+          email: validated.email,
+          status: { not: "DESCARTADO" },
+        },
+        select: { id: true, name: true },
+      })
+      if (existingByEmail) {
+        return {
+          success: false,
+          error: `Ya existe un prospecto activo con este correo: ${existingByEmail.name}`,
+        }
+      }
+    }
+
+    // Also check if a client already exists with the same document or email
+    if (validated.documentNumber) {
+      const existingClientByDoc = await prisma.client.findFirst({
+        where: { documentNumber: validated.documentNumber },
+        select: { id: true, name: true },
+      })
+      if (existingClientByDoc) {
+        return {
+          success: false,
+          error: `Ya existe un cliente con este documento: ${existingClientByDoc.name}. Considera agregarlo como cliente directamente.`,
+        }
+      }
+    }
+
+    if (validated.email) {
+      const existingClientByEmail = await prisma.client.findFirst({
+        where: { email: validated.email },
+        select: { id: true, name: true },
+      })
+      if (existingClientByEmail) {
+        return {
+          success: false,
+          error: `Ya existe un cliente con este correo: ${existingClientByEmail.name}. Considera agregarlo como cliente directamente.`,
+        }
+      }
+    }
+
     const prospect = await prisma.prospect.create({
       data: {
         name: validated.name,
@@ -232,6 +293,42 @@ export async function convertProspectToClient(data: z.infer<typeof convertProspe
 
     if (prospect.status === "CONVERTIDO") {
       return { success: false, error: "Este prospecto ya fue convertido a cliente" }
+    }
+
+    // Check if a client already exists with the same document or email
+    let existingClientId: string | null = null
+    let existingClientName: string | null = null
+
+    if (prospect.documentNumber) {
+      const clientByDoc = await prisma.client.findFirst({
+        where: { documentNumber: prospect.documentNumber },
+        select: { id: true, name: true },
+      })
+      if (clientByDoc) {
+        existingClientId = clientByDoc.id
+        existingClientName = clientByDoc.name
+      }
+    }
+
+    if (!existingClientId && prospect.email) {
+      const clientByEmail = await prisma.client.findFirst({
+        where: { email: prospect.email },
+        select: { id: true, name: true },
+      })
+      if (clientByEmail) {
+        existingClientId = clientByEmail.id
+        existingClientName = clientByEmail.name
+      }
+    }
+
+    // If a client already exists, return conflict info instead of creating a duplicate
+    if (existingClientId) {
+      return {
+        success: false,
+        error: `Ya existe un cliente con los mismos datos: ${existingClientName}. No se puede crear un cliente duplicado.`,
+        existingClientId,
+        existingClientName,
+      }
     }
 
     // Create the client in a transaction
