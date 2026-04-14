@@ -161,6 +161,7 @@ exports.Prisma.ProspectScalarFieldEnum = {
   address: 'address',
   status: 'status',
   source: 'source',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

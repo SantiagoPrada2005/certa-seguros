@@ -221,6 +221,7 @@ model Prospect {
   address        String?
   status         ProspectStatus @default(NUEVO)
   source         LeadSource?
+  deletedAt      DateTime? // Soft delete para preservar historial
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

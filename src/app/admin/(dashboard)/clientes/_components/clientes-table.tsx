@@ -94,7 +94,6 @@ export function ClientesTable({ clients, onSelectClient, onEditClient, onCreateP
               onClick={() => onSelectClient(client.id)}
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelectClient(client.id) } }}
               tabIndex={0}
-              role="button"
               aria-label={`Ver detalles de ${client.name}`}
             >
               <TableCell>
@@ -159,13 +158,16 @@ export function ClientesTable({ clients, onSelectClient, onEditClient, onCreateP
                 <div className="flex justify-end items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <DropdownMenu>
                     <DropdownMenuTrigger>
-                      <button
-                        className="p-1 rounded hover:bg-muted"
+                      <div
+                        className="p-1 rounded hover:bg-muted cursor-pointer"
                         aria-label={`Acciones rápidas para ${client.name}`}
                         onClick={(e) => e.stopPropagation()}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") e.preventDefault() }}
                       >
                         <MoreVertical className="size-4 text-muted-foreground" />
-                      </button>
+                      </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenuItem onClick={() => onSelectClient(client.id)}>

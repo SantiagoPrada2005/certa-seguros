@@ -20,7 +20,7 @@ export async function GET(request: Request) {
     const status = searchParams.get("status");
     const search = searchParams.get("search");
 
-    const where: any = {};
+    const where: any = { deletedAt: null };
     if (status && status !== "all") {
       where.status = status.toUpperCase();
     }

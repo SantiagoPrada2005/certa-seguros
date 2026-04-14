@@ -5372,6 +5372,7 @@ export namespace Prisma {
     address: string | null
     status: $Enums.ProspectStatus | null
     source: $Enums.LeadSource | null
+    deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5387,6 +5388,7 @@ export namespace Prisma {
     address: string | null
     status: $Enums.ProspectStatus | null
     source: $Enums.LeadSource | null
+    deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5402,6 +5404,7 @@ export namespace Prisma {
     address: number
     status: number
     source: number
+    deletedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5419,6 +5422,7 @@ export namespace Prisma {
     address?: true
     status?: true
     source?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5434,6 +5438,7 @@ export namespace Prisma {
     address?: true
     status?: true
     source?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5449,6 +5454,7 @@ export namespace Prisma {
     address?: true
     status?: true
     source?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5537,6 +5543,7 @@ export namespace Prisma {
     address: string | null
     status: $Enums.ProspectStatus
     source: $Enums.LeadSource | null
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: ProspectCountAggregateOutputType | null
@@ -5569,6 +5576,7 @@ export namespace Prisma {
     address?: boolean
     status?: boolean
     source?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     reminders?: boolean | Prospect$remindersArgs<ExtArgs>
@@ -5588,6 +5596,7 @@ export namespace Prisma {
     address?: boolean
     status?: boolean
     source?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["prospect"]>
@@ -5603,6 +5612,7 @@ export namespace Prisma {
     address?: boolean
     status?: boolean
     source?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["prospect"]>
@@ -5618,11 +5628,12 @@ export namespace Prisma {
     address?: boolean
     status?: boolean
     source?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProspectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "type" | "documentType" | "documentNumber" | "email" | "phone" | "address" | "status" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["prospect"]>
+  export type ProspectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "type" | "documentType" | "documentNumber" | "email" | "phone" | "address" | "status" | "source" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["prospect"]>
   export type ProspectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reminders?: boolean | Prospect$remindersArgs<ExtArgs>
     activityLogs?: boolean | Prospect$activityLogsArgs<ExtArgs>
@@ -5650,6 +5661,7 @@ export namespace Prisma {
       address: string | null
       status: $Enums.ProspectStatus
       source: $Enums.LeadSource | null
+      deletedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["prospect"]>
@@ -6088,6 +6100,7 @@ export namespace Prisma {
     readonly address: FieldRef<"Prospect", 'String'>
     readonly status: FieldRef<"Prospect", 'ProspectStatus'>
     readonly source: FieldRef<"Prospect", 'LeadSource'>
+    readonly deletedAt: FieldRef<"Prospect", 'DateTime'>
     readonly createdAt: FieldRef<"Prospect", 'DateTime'>
     readonly updatedAt: FieldRef<"Prospect", 'DateTime'>
   }
@@ -21612,6 +21625,7 @@ export namespace Prisma {
     address: 'address',
     status: 'status',
     source: 'source',
+    deletedAt: 'deletedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -22393,6 +22407,7 @@ export namespace Prisma {
     address?: StringNullableFilter<"Prospect"> | string | null
     status?: EnumProspectStatusFilter<"Prospect"> | $Enums.ProspectStatus
     source?: EnumLeadSourceNullableFilter<"Prospect"> | $Enums.LeadSource | null
+    deletedAt?: DateTimeNullableFilter<"Prospect"> | Date | string | null
     createdAt?: DateTimeFilter<"Prospect"> | Date | string
     updatedAt?: DateTimeFilter<"Prospect"> | Date | string
     reminders?: ReminderListRelationFilter
@@ -22411,6 +22426,7 @@ export namespace Prisma {
     address?: SortOrderInput | SortOrder
     status?: SortOrder
     source?: SortOrderInput | SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     reminders?: ReminderOrderByRelationAggregateInput
@@ -22432,6 +22448,7 @@ export namespace Prisma {
     address?: StringNullableFilter<"Prospect"> | string | null
     status?: EnumProspectStatusFilter<"Prospect"> | $Enums.ProspectStatus
     source?: EnumLeadSourceNullableFilter<"Prospect"> | $Enums.LeadSource | null
+    deletedAt?: DateTimeNullableFilter<"Prospect"> | Date | string | null
     createdAt?: DateTimeFilter<"Prospect"> | Date | string
     updatedAt?: DateTimeFilter<"Prospect"> | Date | string
     reminders?: ReminderListRelationFilter
@@ -22450,6 +22467,7 @@ export namespace Prisma {
     address?: SortOrderInput | SortOrder
     status?: SortOrder
     source?: SortOrderInput | SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProspectCountOrderByAggregateInput
@@ -22471,6 +22489,7 @@ export namespace Prisma {
     address?: StringNullableWithAggregatesFilter<"Prospect"> | string | null
     status?: EnumProspectStatusWithAggregatesFilter<"Prospect"> | $Enums.ProspectStatus
     source?: EnumLeadSourceNullableWithAggregatesFilter<"Prospect"> | $Enums.LeadSource | null
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"Prospect"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Prospect"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Prospect"> | Date | string
   }
@@ -23699,6 +23718,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderCreateNestedManyWithoutProspectInput
@@ -23717,6 +23737,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderUncheckedCreateNestedManyWithoutProspectInput
@@ -23735,6 +23756,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUpdateManyWithoutProspectNestedInput
@@ -23753,6 +23775,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUncheckedUpdateManyWithoutProspectNestedInput
@@ -23771,6 +23794,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23786,6 +23810,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23801,6 +23826,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25232,6 +25258,7 @@ export namespace Prisma {
     address?: SortOrder
     status?: SortOrder
     source?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -25247,6 +25274,7 @@ export namespace Prisma {
     address?: SortOrder
     status?: SortOrder
     source?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -25262,6 +25290,7 @@ export namespace Prisma {
     address?: SortOrder
     status?: SortOrder
     source?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -28631,6 +28660,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderCreateNestedManyWithoutProspectInput
@@ -28648,6 +28678,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderUncheckedCreateNestedManyWithoutProspectInput
@@ -28716,6 +28747,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUpdateManyWithoutProspectNestedInput
@@ -28733,6 +28765,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUncheckedUpdateManyWithoutProspectNestedInput
@@ -29818,6 +29851,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     activityLogs?: ActivityLogCreateNestedManyWithoutProspectInput
@@ -29835,6 +29869,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutProspectInput
@@ -29956,6 +29991,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activityLogs?: ActivityLogUpdateManyWithoutProspectNestedInput
@@ -29973,6 +30009,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutProspectNestedInput
@@ -30217,6 +30254,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderCreateNestedManyWithoutProspectInput
@@ -30234,6 +30272,7 @@ export namespace Prisma {
     address?: string | null
     status?: $Enums.ProspectStatus
     source?: $Enums.LeadSource | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderUncheckedCreateNestedManyWithoutProspectInput
@@ -30355,6 +30394,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUpdateManyWithoutProspectNestedInput
@@ -30372,6 +30412,7 @@ export namespace Prisma {
     address?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumProspectStatusFieldUpdateOperationsInput | $Enums.ProspectStatus
     source?: NullableEnumLeadSourceFieldUpdateOperationsInput | $Enums.LeadSource | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUncheckedUpdateManyWithoutProspectNestedInput

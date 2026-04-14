@@ -262,9 +262,11 @@ Skills are specialized capabilities that provide domain-specific knowledge and w
 
 | Skill | When to Use | Command |
 |-------|-------------|---------|
+| **next-best-practices** | Writing/reviewing React/Next.js code, performance optimization, data fetching patterns, RSC boundaries, metadata, error handling, route handlers, image/font optimization, bundling | `skill: "next-best-practices"` |
+| **next-cache-components** | Next.js 16 Cache Components - PPR, use cache directive, cacheLife, cacheTag, updateTag patterns | `skill: "next-cache-components"` |
+| **next-upgrade** | Upgrade Next.js to the latest version following official migration guides and codemods | `skill: "next-upgrade"` |
 | **tailwind-design-system** | Building component libraries, implementing design systems with Tailwind CSS v4 | `skill: "tailwind-design-system"` |
 | **ui-ux-pro-max** | UI/UX design intelligence, 50+ styles, 161 color palettes, accessibility, responsive design | `skill: "ui-ux-pro-max"` |
-| **next-best-practices** | Writing/reviewing React/Next.js code, performance optimization, data fetching patterns | `skill: "next-best-practices"` |
 | **vercel-react-best-practices** | React/Next.js performance optimization, bundle size, data fetching | `skill: "vercel-react-best-practices"` |
 | **nextjs-framer-motion-animations** | Adding Motion/Framer Motion animations in Next.js apps | `skill: "nextjs-framer-motion-animations"` |
 | **review** | Reviewing changed code for correctness, security, quality, performance | `skill: "review"` or `/review` |
@@ -338,6 +340,173 @@ Skills are configured in:
 - `skills-lock.json` - Project-level skill configuration
 - Bundled skills in the system - Always available
 - User-installed skills - Available via `find-skills`
+
+---
+
+## Next.js 16 Optimization Guide
+
+This project uses Next.js 16 (App Router) with specialized skills and agents for optimal performance, developer experience, and best practices compliance.
+
+### Installed Next.js Skills
+
+Three specialized Next.js skills from **vercel-labs/next-skills** are installed and ready for use:
+
+| Skill | Purpose | When to Use |
+|-------|---------|-------------|
+| **next-best-practices** | Next.js file conventions, RSC patterns, data fetching, metadata, error handling, route handlers, image/font optimization, bundling | Writing/reviewing Next.js code, optimizing performance |
+| **next-cache-components** | PPR (Partial Prerendering), `use cache` directive, cacheLife, cacheTag, updateTag patterns | Implementing caching strategies, optimizing data fetching |
+| **next-upgrade** | Next.js version upgrades, migration guides, codemods application | Upgrading Next.js, resolving deprecations |
+
+### Skill-Specific Agents
+
+Each Next.js skill has a dedicated agent for focused expertise:
+
+#### 1. `next-best-practices-agent`
+**Use when:**
+- Writing new Next.js components or pages
+- Reviewing existing code for Next.js performance issues
+- Implementing data fetching patterns (server components, server actions)
+- Setting up metadata API or SEO optimization
+- Creating error boundaries or loading states
+- Optimizing bundle size
+
+**Expertise covers:**
+- File conventions and App Router patterns
+- React Server Components (RSC) boundaries
+- Async/await patterns in components
+- Metadata API usage
+- Error handling strategies
+- Route handlers and API routes
+- Image and font optimization
+- Bundle optimization techniques
+
+**Invocation example:**
+```
+User: "Create a new client profile page with server-side data fetching"
+→ I'll use next-best-practices-agent to implement following Next.js 16 patterns
+```
+
+#### 2. `next-cache-components-agent`
+**Use when:**
+- Implementing caching strategies for data fetching
+- Setting up PPR (Partial Prerendering) for faster initial loads
+- Managing cache invalidation patterns
+- Optimizing revalidation strategies
+- Creating cacheable components
+- Implementing streaming with Suspense boundaries
+
+**Expertise covers:**
+- `use cache` directive implementation
+- `cacheLife` and `cacheTag` patterns
+- `updateTag` for cache invalidation
+- Cache component composition
+- PPR configuration and usage
+- Streaming optimization
+
+**Invocation example:**
+```
+User: "Optimize the dashboard data fetching with caching"
+→ I'll use next-cache-components-agent to implement optimal caching strategy
+```
+
+#### 3. `next-upgrade-agent`
+**Use when:**
+- Upgrading Next.js to a new version
+- Resolving deprecation warnings
+- Applying official Next.js codemods
+- Migrating from Pages Router to App Router
+- Updating React version alongside Next.js
+- Troubleshooting post-upgrade issues
+
+**Expertise covers:**
+- Migration path planning
+- Breaking changes identification
+- Configuration file updates
+- Dependency compatibility checks
+- Feature flag migrations
+- Post-upgrade testing strategies
+
+**Invocation example:**
+```
+User: "Upgrade to the latest Next.js version"
+→ I'll use next-upgrade-agent to create migration plan and execute safely
+```
+
+### Next.js Optimization Workflow
+
+**For New Feature Development:**
+```
+1. skill: "using-superpowers" (MANDATORY FIRST)
+2. skill: "shadcn" (if UI components involved)
+3. Use next-best-practices-agent for implementation
+4. Use next-cache-components-agent for data fetching optimization
+5. skill: "review" or code-reviewer agent for validation
+```
+
+**For Performance Optimization:**
+```
+1. skill: "using-superpowers" (MANDATORY FIRST)
+2. Use next-best-practices-agent to identify issues
+3. Use next-cache-components-agent to implement caching
+4. skill: "vercel-react-best-practices" for React-specific optimizations
+5. Test and measure improvements
+```
+
+**For Version Upgrades:**
+```
+1. skill: "using-superpowers" (MANDATORY FIRST)
+2. Use next-upgrade-agent to create migration plan
+3. Follow agent-guided upgrade steps
+4. Test thoroughly after each migration step
+5. Use code-reviewer agent to validate changes
+```
+
+### Next.js 16 Key Patterns for This Project
+
+Based on installed skills, these patterns should be enforced:
+
+#### Server Components (Default)
+- All pages and data-fetching components should be Server Components
+- Use `"use client"` directive ONLY when client-side interactivity is required
+- Keep client components as leaf nodes in the component tree
+
+#### Data Fetching
+- Fetch data directly in Server Components
+- Use Server Actions for mutations with `"use server"` directive
+- Implement Zod validation for all server action inputs
+- Use `revalidatePath` for cache invalidation after mutations
+
+#### Caching Strategy
+- Leverage Next.js 16 `use cache` directive for expensive computations
+- Use cache tags for granular invalidation control
+- Implement PPR for routes that benefit from partial prerendering
+- Set appropriate cache life based on data update frequency
+
+#### File Organization
+- Follow App Router conventions (page.tsx, layout.tsx, loading.tsx, error.tsx)
+- Use route groups for logical organization
+- Implement parallel routes where appropriate
+- Use intercepting routes for modals
+
+#### Performance
+- Implement streaming with Suspense boundaries
+- Optimize images with next/image
+- Use next/font for automatic font optimization
+- Minimize client JavaScript bundle size
+
+### Best Practices Checklist
+
+When working on Next.js features, ensure:
+- ✅ RSC boundaries are properly defined
+- ✅ Server Actions have Zod validation
+- ✅ Cache strategies are explicitly chosen
+- ✅ Error boundaries are implemented where needed
+- ✅ Loading states use Suspense
+- ✅ Images use next/image optimization
+- ✅ Fonts use next/font
+- ✅ Metadata is properly configured
+- ✅ Bundle size is monitored and optimized
+- ✅ pnpm is used for all package operations
 
 ---
 
