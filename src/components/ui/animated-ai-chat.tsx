@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useTransition } from "react";
 import { useState } from "react";
+import { useChat } from "@ai-sdk/react";
 import { cn } from "@lib/utils";
 import {
     ImageIcon,
@@ -137,8 +138,12 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 Textarea.displayName = "Textarea"
 
 export function AnimatedAIChat({ backHref }: { backHref?: string }) {
-    const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
-    const [value, setValue] = useState("");
+    const [provider, setProvider] = useState<'openrouter' | 'groq'>('openrouter');
+    const { messages, input: value, handleInputChange, handleSubmit, isLoading: isStreaming, setInput: setValue } = useChat({
+        // @ts-ignore
+        api: '/api/chat',
+        body: { provider }
+    } as any) as any;
     const [attachments, setAttachments] = useState<string[]>([]);
     const [isTyping, setIsTyping] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -151,7 +156,6 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
         maxHeight: 200,
     });
     const [inputFocused, setInputFocused] = useState(false);
-    const [isStreaming, setIsStreaming] = useState(false);
     const commandPaletteRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -271,52 +275,10 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
         }
     };
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = (e?: React.FormEvent) => {
         if (!value.trim()) return;
-
-        const userMsg = value.trim();
-        setValue("");
+        handleSubmit(e);
         adjustHeight(true);
-
-        const newMessages = [...messages, { role: 'user' as const, content: userMsg }];
-        setMessages([...newMessages, { role: 'assistant' as const, content: '' }]);
-        setIsStreaming(true);
-
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: newMessages }),
-            });
-
-            if (!response.ok) throw new Error('Failed to fetch');
-            if (!response.body) throw new Error('No response body');
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let assistantContent = "";
-
-            while (true) {
-                const { done, value: chunk } = await reader.read();
-                if (done) break;
-
-                const text = decoder.decode(chunk);
-                assistantContent += text;
-
-                setMessages((prev: { role: 'user' | 'assistant', content: string }[]) => {
-                    const last = prev[prev.length - 1];
-                    if (last && last.role === 'assistant') {
-                        return [...prev.slice(0, -1), { ...last, content: assistantContent }];
-                    }
-                    return prev;
-                });
-            }
-        } catch (error) {
-            console.error("Chat Error:", error);
-            setMessages((prev: { role: 'user' | 'assistant', content: string }[]) => [...prev, { role: 'assistant', content: "Lo siento, hubo un error al procesar tu solicitud." }]);
-        } finally {
-            setIsStreaming(false);
-        }
     };
 
     const handleAttachFile = () => {
@@ -394,7 +356,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                         </div>
                     ) : (
                         <div className="space-y-6 max-h-[60vh] overflow-y-auto px-4 pb-4 scroll-smooth custom-scrollbar">
-                            {messages.map((msg, i) => (
+                            {messages.map((msg: any, i: number) => (
                                 <motion.div
                                     key={i}
                                     initial={{ opacity: 0, y: 10, scale: 0.98 }}
