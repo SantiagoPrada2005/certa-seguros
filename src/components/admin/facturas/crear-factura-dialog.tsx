@@ -254,12 +254,10 @@ export function CrearFacturaDialog({
       {trigger ? (
         <DialogTrigger render={trigger} />
       ) : (
-        <DialogTrigger render={
-          <Button>
-            <PlusIcon data-icon="inline-start" />
-            Crear Factura
-          </Button>
-        } />
+        <Button render={<DialogTrigger />}>
+          <PlusIcon data-icon="inline-start" />
+          Crear Factura
+        </Button>
       )}
       <DialogContent
         className="max-w-[calc(100vw-1rem)] sm:max-w-4xl flex flex-col p-0 overflow-hidden top-[2vh] translate-y-0 h-[96vh] sm:h-[90vh] max-h-[900px] gap-0 border-none shadow-2xl rounded-2xl"
@@ -329,10 +327,21 @@ export function CrearFacturaDialog({
                   <Field>
                     <FieldLabel>Fecha de Vencimiento</FieldLabel>
                     <Popover>
-                      <PopoverTrigger render={<Button variant="outline" className={cn("w-full justify-start text-left font-normal h-11 bg-background shadow-xs", !fechaVence && "text-muted-foreground")} />}>
+                      <Button
+                        render={<PopoverTrigger />}
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-11 bg-background shadow-xs",
+                          !fechaVence && "text-muted-foreground"
+                        )}
+                      >
                         <CalendarIcon data-icon="inline-start" />
-                        {fechaVence ? format(fechaVence, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
-                      </PopoverTrigger>
+                        {fechaVence ? (
+                          format(fechaVence, "PPP", { locale: es })
+                        ) : (
+                          <span>Seleccionar fecha</span>
+                        )}
+                      </Button>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"

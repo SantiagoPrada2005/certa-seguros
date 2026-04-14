@@ -56,10 +56,10 @@ export function NuevaSubcategoriaDialog({ categories }: NuevaSubcategoriaDialogP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline" disabled={categories.length === 0} />}>
+      <Button render={<DialogTrigger />} variant="outline" disabled={categories.length === 0}>
         <FolderTreeIcon data-icon="inline-start" />
         Nueva Subcategoría
-      </DialogTrigger>
+      </Button>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>

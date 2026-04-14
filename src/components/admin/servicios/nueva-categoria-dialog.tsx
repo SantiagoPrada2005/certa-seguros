@@ -44,10 +44,10 @@ export function NuevaCategoriaDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline" />}>
+      <Button render={<DialogTrigger />} variant="outline">
         <FolderPlusIcon data-icon="inline-start" />
         Nueva Categoría
-      </DialogTrigger>
+      </Button>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>

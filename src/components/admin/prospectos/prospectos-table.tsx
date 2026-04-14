@@ -293,12 +293,17 @@ export function ProspectosTable({ initialProspects, externalStatusFilter, onStat
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" disabled={actionLoading === prospect.id} />}>
-                        {actionLoading === prospect.id
-                          ? <Loader2Icon className="size-4 animate-spin" />
-                          : <MoreHorizontalIcon className="size-4" />}
-                        <span className="sr-only">Menú de acciones</span>
-                      </DropdownMenuTrigger>
+                    <Button
+                      render={<DropdownMenuTrigger />}
+                      variant="ghost"
+                      size="icon"
+                      disabled={actionLoading === prospect.id}
+                    >
+                      {actionLoading === prospect.id
+                        ? <Loader2Icon className="size-4 animate-spin" />
+                        : <MoreHorizontalIcon className="size-4" />}
+                      <span className="sr-only">Menú de acciones</span>
+                    </Button>
                       <DropdownMenuContent align="end" className="w-[180px]">
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Acciones</DropdownMenuLabel>

@@ -61,10 +61,10 @@ export function NuevoProspectoDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button />}>
+      <Button render={<DialogTrigger />}>
         <PlusIcon data-icon="inline-start" />
         Nuevo Prospecto
-      </DialogTrigger>
+      </Button>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
