@@ -136,7 +136,7 @@ export function RecordatoriosTable({ initialReminders }: RecordatoriosTableProps
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm">{reminder.client.name}</TableCell>
+                    <TableCell className="text-sm">{reminder.client?.name ?? reminder.prospect?.name ?? "Sin asignar"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{formatDate(reminder.dueDate)}</TableCell>
                     <TableCell>
                       <Badge variant={priority.variant}>{priority.label}</Badge>

@@ -45,3 +45,5 @@ next-env.d.ts
 .claude
 skills
 .vscode
+backups/
+.qwen

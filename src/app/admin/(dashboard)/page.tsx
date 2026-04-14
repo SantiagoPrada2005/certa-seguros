@@ -43,7 +43,6 @@ import {
   TargetIcon,
   ArrowUpRightIcon,
   ArrowDownRightIcon,
-  PipelineIcon,
 } from "lucide-react"
 
 // ═══════════════════════════════════════════════════

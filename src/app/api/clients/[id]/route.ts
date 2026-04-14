@@ -10,7 +10,10 @@ const clientUpdateSchema = z.object({
   email: z.string().email("Invalid email").optional().or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().optional(),
-  status: z.enum(["NUEVO", "CONTACTADO", "EN_PROCESO", "ACTIVO", "INACTIVO", "DESCARTADO"]).optional(),
+  birthDate: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  status: z.enum(["ACTIVO", "INACTIVO", "MOROSO"]).optional(),
   source: z.enum(["WEB_PUBLICA", "REFERIDOS", "REDES_SOCIALES", "DIRECTOS"]).optional(),
 });
 
@@ -63,6 +66,7 @@ export async function PUT(
       data: {
         ...validatedData,
         email: validatedData.email || null,
+        birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : undefined,
       },
     });
 

@@ -10,7 +10,10 @@ const clientCreateSchema = z.object({
   email: z.string().email("Invalid email").optional().or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().optional(),
-  status: z.enum(["NUEVO", "CONTACTADO", "EN_PROCESO", "ACTIVO", "INACTIVO", "DESCARTADO"]).optional(),
+  birthDate: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  status: z.enum(["ACTIVO", "INACTIVO", "MOROSO"]).optional(),
   source: z.enum(["WEB_PUBLICA", "REFERIDOS", "REDES_SOCIALES", "DIRECTOS"]).optional(),
 });
 
@@ -64,13 +67,14 @@ export async function POST(request: Request) {
         ...validatedData,
         // Default values for optionals that might be empty strings
         email: validatedData.email || null,
+        birthDate: validatedData.birthDate ? new Date(validatedData.birthDate) : null,
       },
     });
 
     // Implement a basic activity log
     await prisma.activityLog.create({
       data: {
-        action: `Nuevo prospecto registrado: ${client.name}`,
+        action: `Nuevo cliente registrado: ${client.name}`,
         type: "INFO",
         clientId: client.id,
       }
