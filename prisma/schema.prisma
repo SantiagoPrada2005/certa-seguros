@@ -161,8 +161,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relaciones
-  reminders    Reminder[]
-  activityLogs ActivityLog[]
+  reminders            Reminder[]
+  activityLogs          ActivityLog[]
+  telegramConnection    TelegramConnection?
+  telegramVerifications TelegramVerificationCode[]
 
   @@index([firebaseUid])
   @@index([email])
@@ -487,6 +489,35 @@ model GoalMilestone {
 
   @@index([goalId])
   @@map("goal_milestones")
+}
+
+/// Conexiones de usuarios CRM con cuentas de Telegram
+/// Relación 1:1 — un usuario puede tener un solo Telegram vinculado
+model TelegramConnection {
+  id         String   @id @default(cuid())
+  telegramId String   @unique // ID numérico de Telegram
+  chatId     String          // Chat ID para enviar mensajes
+  username   String?         // @username de Telegram (opcional)
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  isActive   Boolean  @default(true)
+  linkedAt   DateTime @default(now())
+
+  @@map("telegram_connections")
+}
+
+/// Códigos de verificación para vincular cuenta de Telegram con CRM
+model TelegramVerificationCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime // 15 minutos de validez
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([code])
+  @@map("telegram_verification_codes")
 }
 
 /// Registro de actividad reciente del sistema (feed del dashboard)

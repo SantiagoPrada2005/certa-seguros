@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, Sparkles, FileTextIcon } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, Sparkles, FileTextIcon, SettingsIcon, SendIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
@@ -83,6 +83,18 @@ const data = {
           title: "Recordatorios",
           url: "/admin/recordatorios",
           badge: <Badge variant="destructive" className="h-4 px-1 text-[10px] min-w-4 flex items-center justify-center">1</Badge>,
+        },
+      ],
+    },
+    {
+      title: "Configuración",
+      url: "/admin/configuracion",
+      icon: <SettingsIcon />,
+      items: [
+        {
+          title: "Telegram Bot",
+          url: "/admin/configuracion/telegram",
+          icon: <SendIcon className="size-4" />,
         },
       ],
     },

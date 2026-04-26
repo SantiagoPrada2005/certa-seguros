@@ -300,6 +300,25 @@ exports.Prisma.GoalMilestoneScalarFieldEnum = {
   goalId: 'goalId'
 };
 
+exports.Prisma.TelegramConnectionScalarFieldEnum = {
+  id: 'id',
+  telegramId: 'telegramId',
+  chatId: 'chatId',
+  username: 'username',
+  userId: 'userId',
+  isActive: 'isActive',
+  linkedAt: 'linkedAt'
+};
+
+exports.Prisma.TelegramVerificationCodeScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  used: 'used',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ActivityLogScalarFieldEnum = {
   id: 'id',
   action: 'action',
@@ -477,6 +496,8 @@ exports.Prisma.ModelName = {
   Reminder: 'Reminder',
   Goal: 'Goal',
   GoalMilestone: 'GoalMilestone',
+  TelegramConnection: 'TelegramConnection',
+  TelegramVerificationCode: 'TelegramVerificationCode',
   ActivityLog: 'ActivityLog'
 };
 

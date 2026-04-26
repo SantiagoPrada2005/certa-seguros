@@ -92,6 +92,17 @@ export type Goal = $Result.DefaultSelection<Prisma.$GoalPayload>
  */
 export type GoalMilestone = $Result.DefaultSelection<Prisma.$GoalMilestonePayload>
 /**
+ * Model TelegramConnection
+ * Conexiones de usuarios CRM con cuentas de Telegram
+ * Relación 1:1 — un usuario puede tener un solo Telegram vinculado
+ */
+export type TelegramConnection = $Result.DefaultSelection<Prisma.$TelegramConnectionPayload>
+/**
+ * Model TelegramVerificationCode
+ * Códigos de verificación para vincular cuenta de Telegram con CRM
+ */
+export type TelegramVerificationCode = $Result.DefaultSelection<Prisma.$TelegramVerificationCodePayload>
+/**
  * Model ActivityLog
  * Registro de actividad reciente del sistema (feed del dashboard)
  */
@@ -618,6 +629,26 @@ export class PrismaClient<
   get goalMilestone(): Prisma.GoalMilestoneDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.telegramConnection`: Exposes CRUD operations for the **TelegramConnection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TelegramConnections
+    * const telegramConnections = await prisma.telegramConnection.findMany()
+    * ```
+    */
+  get telegramConnection(): Prisma.TelegramConnectionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.telegramVerificationCode`: Exposes CRUD operations for the **TelegramVerificationCode** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TelegramVerificationCodes
+    * const telegramVerificationCodes = await prisma.telegramVerificationCode.findMany()
+    * ```
+    */
+  get telegramVerificationCode(): Prisma.TelegramVerificationCodeDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.activityLog`: Exposes CRUD operations for the **ActivityLog** model.
     * Example usage:
     * ```ts
@@ -1075,6 +1106,8 @@ export namespace Prisma {
     Reminder: 'Reminder',
     Goal: 'Goal',
     GoalMilestone: 'GoalMilestone',
+    TelegramConnection: 'TelegramConnection',
+    TelegramVerificationCode: 'TelegramVerificationCode',
     ActivityLog: 'ActivityLog'
   };
 
@@ -1091,7 +1124,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "client" | "prospect" | "clientTag" | "prospectService" | "serviceCategory" | "serviceSubcategory" | "service" | "clientService" | "policy" | "invoice" | "invoiceItem" | "reminder" | "goal" | "goalMilestone" | "activityLog"
+      modelProps: "user" | "client" | "prospect" | "clientTag" | "prospectService" | "serviceCategory" | "serviceSubcategory" | "service" | "clientService" | "policy" | "invoice" | "invoiceItem" | "reminder" | "goal" | "goalMilestone" | "telegramConnection" | "telegramVerificationCode" | "activityLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2205,6 +2238,154 @@ export namespace Prisma {
           }
         }
       }
+      TelegramConnection: {
+        payload: Prisma.$TelegramConnectionPayload<ExtArgs>
+        fields: Prisma.TelegramConnectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TelegramConnectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TelegramConnectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>
+          }
+          findFirst: {
+            args: Prisma.TelegramConnectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TelegramConnectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>
+          }
+          findMany: {
+            args: Prisma.TelegramConnectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>[]
+          }
+          create: {
+            args: Prisma.TelegramConnectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>
+          }
+          createMany: {
+            args: Prisma.TelegramConnectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TelegramConnectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>[]
+          }
+          delete: {
+            args: Prisma.TelegramConnectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>
+          }
+          update: {
+            args: Prisma.TelegramConnectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.TelegramConnectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TelegramConnectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TelegramConnectionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>[]
+          }
+          upsert: {
+            args: Prisma.TelegramConnectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramConnectionPayload>
+          }
+          aggregate: {
+            args: Prisma.TelegramConnectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTelegramConnection>
+          }
+          groupBy: {
+            args: Prisma.TelegramConnectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TelegramConnectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TelegramConnectionCountArgs<ExtArgs>
+            result: $Utils.Optional<TelegramConnectionCountAggregateOutputType> | number
+          }
+        }
+      }
+      TelegramVerificationCode: {
+        payload: Prisma.$TelegramVerificationCodePayload<ExtArgs>
+        fields: Prisma.TelegramVerificationCodeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TelegramVerificationCodeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TelegramVerificationCodeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>
+          }
+          findFirst: {
+            args: Prisma.TelegramVerificationCodeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TelegramVerificationCodeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>
+          }
+          findMany: {
+            args: Prisma.TelegramVerificationCodeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>[]
+          }
+          create: {
+            args: Prisma.TelegramVerificationCodeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>
+          }
+          createMany: {
+            args: Prisma.TelegramVerificationCodeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TelegramVerificationCodeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>[]
+          }
+          delete: {
+            args: Prisma.TelegramVerificationCodeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>
+          }
+          update: {
+            args: Prisma.TelegramVerificationCodeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>
+          }
+          deleteMany: {
+            args: Prisma.TelegramVerificationCodeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TelegramVerificationCodeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TelegramVerificationCodeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>[]
+          }
+          upsert: {
+            args: Prisma.TelegramVerificationCodeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TelegramVerificationCodePayload>
+          }
+          aggregate: {
+            args: Prisma.TelegramVerificationCodeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTelegramVerificationCode>
+          }
+          groupBy: {
+            args: Prisma.TelegramVerificationCodeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TelegramVerificationCodeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TelegramVerificationCodeCountArgs<ExtArgs>
+            result: $Utils.Optional<TelegramVerificationCodeCountAggregateOutputType> | number
+          }
+        }
+      }
       ActivityLog: {
         payload: Prisma.$ActivityLogPayload<ExtArgs>
         fields: Prisma.ActivityLogFieldRefs
@@ -2402,6 +2583,8 @@ export namespace Prisma {
     reminder?: ReminderOmit
     goal?: GoalOmit
     goalMilestone?: GoalMilestoneOmit
+    telegramConnection?: TelegramConnectionOmit
+    telegramVerificationCode?: TelegramVerificationCodeOmit
     activityLog?: ActivityLogOmit
   }
 
@@ -2485,11 +2668,13 @@ export namespace Prisma {
   export type UserCountOutputType = {
     reminders: number
     activityLogs: number
+    telegramVerifications: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reminders?: boolean | UserCountOutputTypeCountRemindersArgs
     activityLogs?: boolean | UserCountOutputTypeCountActivityLogsArgs
+    telegramVerifications?: boolean | UserCountOutputTypeCountTelegramVerificationsArgs
   }
 
   // Custom InputTypes
@@ -2515,6 +2700,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountActivityLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ActivityLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTelegramVerificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TelegramVerificationCodeWhereInput
   }
 
 
@@ -3049,6 +3241,8 @@ export namespace Prisma {
     updatedAt?: boolean
     reminders?: boolean | User$remindersArgs<ExtArgs>
     activityLogs?: boolean | User$activityLogsArgs<ExtArgs>
+    telegramConnection?: boolean | User$telegramConnectionArgs<ExtArgs>
+    telegramVerifications?: boolean | User$telegramVerificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3092,6 +3286,8 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reminders?: boolean | User$remindersArgs<ExtArgs>
     activityLogs?: boolean | User$activityLogsArgs<ExtArgs>
+    telegramConnection?: boolean | User$telegramConnectionArgs<ExtArgs>
+    telegramVerifications?: boolean | User$telegramVerificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3102,6 +3298,8 @@ export namespace Prisma {
     objects: {
       reminders: Prisma.$ReminderPayload<ExtArgs>[]
       activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
+      telegramConnection: Prisma.$TelegramConnectionPayload<ExtArgs> | null
+      telegramVerifications: Prisma.$TelegramVerificationCodePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3509,6 +3707,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     reminders<T extends User$remindersArgs<ExtArgs> = {}>(args?: Subset<T, User$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activityLogs<T extends User$activityLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    telegramConnection<T extends User$telegramConnectionArgs<ExtArgs> = {}>(args?: Subset<T, User$telegramConnectionArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    telegramVerifications<T extends User$telegramVerificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$telegramVerificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3985,6 +4185,49 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ActivityLogScalarFieldEnum | ActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.telegramConnection
+   */
+  export type User$telegramConnectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    where?: TelegramConnectionWhereInput
+  }
+
+  /**
+   * User.telegramVerifications
+   */
+  export type User$telegramVerificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    where?: TelegramVerificationCodeWhereInput
+    orderBy?: TelegramVerificationCodeOrderByWithRelationInput | TelegramVerificationCodeOrderByWithRelationInput[]
+    cursor?: TelegramVerificationCodeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TelegramVerificationCodeScalarFieldEnum | TelegramVerificationCodeScalarFieldEnum[]
   }
 
   /**
@@ -20394,6 +20637,2171 @@ export namespace Prisma {
 
 
   /**
+   * Model TelegramConnection
+   */
+
+  export type AggregateTelegramConnection = {
+    _count: TelegramConnectionCountAggregateOutputType | null
+    _min: TelegramConnectionMinAggregateOutputType | null
+    _max: TelegramConnectionMaxAggregateOutputType | null
+  }
+
+  export type TelegramConnectionMinAggregateOutputType = {
+    id: string | null
+    telegramId: string | null
+    chatId: string | null
+    username: string | null
+    userId: string | null
+    isActive: boolean | null
+    linkedAt: Date | null
+  }
+
+  export type TelegramConnectionMaxAggregateOutputType = {
+    id: string | null
+    telegramId: string | null
+    chatId: string | null
+    username: string | null
+    userId: string | null
+    isActive: boolean | null
+    linkedAt: Date | null
+  }
+
+  export type TelegramConnectionCountAggregateOutputType = {
+    id: number
+    telegramId: number
+    chatId: number
+    username: number
+    userId: number
+    isActive: number
+    linkedAt: number
+    _all: number
+  }
+
+
+  export type TelegramConnectionMinAggregateInputType = {
+    id?: true
+    telegramId?: true
+    chatId?: true
+    username?: true
+    userId?: true
+    isActive?: true
+    linkedAt?: true
+  }
+
+  export type TelegramConnectionMaxAggregateInputType = {
+    id?: true
+    telegramId?: true
+    chatId?: true
+    username?: true
+    userId?: true
+    isActive?: true
+    linkedAt?: true
+  }
+
+  export type TelegramConnectionCountAggregateInputType = {
+    id?: true
+    telegramId?: true
+    chatId?: true
+    username?: true
+    userId?: true
+    isActive?: true
+    linkedAt?: true
+    _all?: true
+  }
+
+  export type TelegramConnectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TelegramConnection to aggregate.
+     */
+    where?: TelegramConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramConnections to fetch.
+     */
+    orderBy?: TelegramConnectionOrderByWithRelationInput | TelegramConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TelegramConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TelegramConnections
+    **/
+    _count?: true | TelegramConnectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TelegramConnectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TelegramConnectionMaxAggregateInputType
+  }
+
+  export type GetTelegramConnectionAggregateType<T extends TelegramConnectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateTelegramConnection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTelegramConnection[P]>
+      : GetScalarType<T[P], AggregateTelegramConnection[P]>
+  }
+
+
+
+
+  export type TelegramConnectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TelegramConnectionWhereInput
+    orderBy?: TelegramConnectionOrderByWithAggregationInput | TelegramConnectionOrderByWithAggregationInput[]
+    by: TelegramConnectionScalarFieldEnum[] | TelegramConnectionScalarFieldEnum
+    having?: TelegramConnectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TelegramConnectionCountAggregateInputType | true
+    _min?: TelegramConnectionMinAggregateInputType
+    _max?: TelegramConnectionMaxAggregateInputType
+  }
+
+  export type TelegramConnectionGroupByOutputType = {
+    id: string
+    telegramId: string
+    chatId: string
+    username: string | null
+    userId: string
+    isActive: boolean
+    linkedAt: Date
+    _count: TelegramConnectionCountAggregateOutputType | null
+    _min: TelegramConnectionMinAggregateOutputType | null
+    _max: TelegramConnectionMaxAggregateOutputType | null
+  }
+
+  type GetTelegramConnectionGroupByPayload<T extends TelegramConnectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TelegramConnectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TelegramConnectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TelegramConnectionGroupByOutputType[P]>
+            : GetScalarType<T[P], TelegramConnectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TelegramConnectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    telegramId?: boolean
+    chatId?: boolean
+    username?: boolean
+    userId?: boolean
+    isActive?: boolean
+    linkedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["telegramConnection"]>
+
+  export type TelegramConnectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    telegramId?: boolean
+    chatId?: boolean
+    username?: boolean
+    userId?: boolean
+    isActive?: boolean
+    linkedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["telegramConnection"]>
+
+  export type TelegramConnectionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    telegramId?: boolean
+    chatId?: boolean
+    username?: boolean
+    userId?: boolean
+    isActive?: boolean
+    linkedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["telegramConnection"]>
+
+  export type TelegramConnectionSelectScalar = {
+    id?: boolean
+    telegramId?: boolean
+    chatId?: boolean
+    username?: boolean
+    userId?: boolean
+    isActive?: boolean
+    linkedAt?: boolean
+  }
+
+  export type TelegramConnectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "telegramId" | "chatId" | "username" | "userId" | "isActive" | "linkedAt", ExtArgs["result"]["telegramConnection"]>
+  export type TelegramConnectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TelegramConnectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TelegramConnectionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $TelegramConnectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TelegramConnection"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      telegramId: string
+      chatId: string
+      username: string | null
+      userId: string
+      isActive: boolean
+      linkedAt: Date
+    }, ExtArgs["result"]["telegramConnection"]>
+    composites: {}
+  }
+
+  type TelegramConnectionGetPayload<S extends boolean | null | undefined | TelegramConnectionDefaultArgs> = $Result.GetResult<Prisma.$TelegramConnectionPayload, S>
+
+  type TelegramConnectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TelegramConnectionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TelegramConnectionCountAggregateInputType | true
+    }
+
+  export interface TelegramConnectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TelegramConnection'], meta: { name: 'TelegramConnection' } }
+    /**
+     * Find zero or one TelegramConnection that matches the filter.
+     * @param {TelegramConnectionFindUniqueArgs} args - Arguments to find a TelegramConnection
+     * @example
+     * // Get one TelegramConnection
+     * const telegramConnection = await prisma.telegramConnection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TelegramConnectionFindUniqueArgs>(args: SelectSubset<T, TelegramConnectionFindUniqueArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TelegramConnection that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TelegramConnectionFindUniqueOrThrowArgs} args - Arguments to find a TelegramConnection
+     * @example
+     * // Get one TelegramConnection
+     * const telegramConnection = await prisma.telegramConnection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TelegramConnectionFindUniqueOrThrowArgs>(args: SelectSubset<T, TelegramConnectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TelegramConnection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramConnectionFindFirstArgs} args - Arguments to find a TelegramConnection
+     * @example
+     * // Get one TelegramConnection
+     * const telegramConnection = await prisma.telegramConnection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TelegramConnectionFindFirstArgs>(args?: SelectSubset<T, TelegramConnectionFindFirstArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TelegramConnection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramConnectionFindFirstOrThrowArgs} args - Arguments to find a TelegramConnection
+     * @example
+     * // Get one TelegramConnection
+     * const telegramConnection = await prisma.telegramConnection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TelegramConnectionFindFirstOrThrowArgs>(args?: SelectSubset<T, TelegramConnectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TelegramConnections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramConnectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TelegramConnections
+     * const telegramConnections = await prisma.telegramConnection.findMany()
+     * 
+     * // Get first 10 TelegramConnections
+     * const telegramConnections = await prisma.telegramConnection.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const telegramConnectionWithIdOnly = await prisma.telegramConnection.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TelegramConnectionFindManyArgs>(args?: SelectSubset<T, TelegramConnectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TelegramConnection.
+     * @param {TelegramConnectionCreateArgs} args - Arguments to create a TelegramConnection.
+     * @example
+     * // Create one TelegramConnection
+     * const TelegramConnection = await prisma.telegramConnection.create({
+     *   data: {
+     *     // ... data to create a TelegramConnection
+     *   }
+     * })
+     * 
+     */
+    create<T extends TelegramConnectionCreateArgs>(args: SelectSubset<T, TelegramConnectionCreateArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TelegramConnections.
+     * @param {TelegramConnectionCreateManyArgs} args - Arguments to create many TelegramConnections.
+     * @example
+     * // Create many TelegramConnections
+     * const telegramConnection = await prisma.telegramConnection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TelegramConnectionCreateManyArgs>(args?: SelectSubset<T, TelegramConnectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TelegramConnections and returns the data saved in the database.
+     * @param {TelegramConnectionCreateManyAndReturnArgs} args - Arguments to create many TelegramConnections.
+     * @example
+     * // Create many TelegramConnections
+     * const telegramConnection = await prisma.telegramConnection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TelegramConnections and only return the `id`
+     * const telegramConnectionWithIdOnly = await prisma.telegramConnection.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TelegramConnectionCreateManyAndReturnArgs>(args?: SelectSubset<T, TelegramConnectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TelegramConnection.
+     * @param {TelegramConnectionDeleteArgs} args - Arguments to delete one TelegramConnection.
+     * @example
+     * // Delete one TelegramConnection
+     * const TelegramConnection = await prisma.telegramConnection.delete({
+     *   where: {
+     *     // ... filter to delete one TelegramConnection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TelegramConnectionDeleteArgs>(args: SelectSubset<T, TelegramConnectionDeleteArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TelegramConnection.
+     * @param {TelegramConnectionUpdateArgs} args - Arguments to update one TelegramConnection.
+     * @example
+     * // Update one TelegramConnection
+     * const telegramConnection = await prisma.telegramConnection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TelegramConnectionUpdateArgs>(args: SelectSubset<T, TelegramConnectionUpdateArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TelegramConnections.
+     * @param {TelegramConnectionDeleteManyArgs} args - Arguments to filter TelegramConnections to delete.
+     * @example
+     * // Delete a few TelegramConnections
+     * const { count } = await prisma.telegramConnection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TelegramConnectionDeleteManyArgs>(args?: SelectSubset<T, TelegramConnectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TelegramConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramConnectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TelegramConnections
+     * const telegramConnection = await prisma.telegramConnection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TelegramConnectionUpdateManyArgs>(args: SelectSubset<T, TelegramConnectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TelegramConnections and returns the data updated in the database.
+     * @param {TelegramConnectionUpdateManyAndReturnArgs} args - Arguments to update many TelegramConnections.
+     * @example
+     * // Update many TelegramConnections
+     * const telegramConnection = await prisma.telegramConnection.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TelegramConnections and only return the `id`
+     * const telegramConnectionWithIdOnly = await prisma.telegramConnection.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TelegramConnectionUpdateManyAndReturnArgs>(args: SelectSubset<T, TelegramConnectionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TelegramConnection.
+     * @param {TelegramConnectionUpsertArgs} args - Arguments to update or create a TelegramConnection.
+     * @example
+     * // Update or create a TelegramConnection
+     * const telegramConnection = await prisma.telegramConnection.upsert({
+     *   create: {
+     *     // ... data to create a TelegramConnection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TelegramConnection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TelegramConnectionUpsertArgs>(args: SelectSubset<T, TelegramConnectionUpsertArgs<ExtArgs>>): Prisma__TelegramConnectionClient<$Result.GetResult<Prisma.$TelegramConnectionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TelegramConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramConnectionCountArgs} args - Arguments to filter TelegramConnections to count.
+     * @example
+     * // Count the number of TelegramConnections
+     * const count = await prisma.telegramConnection.count({
+     *   where: {
+     *     // ... the filter for the TelegramConnections we want to count
+     *   }
+     * })
+    **/
+    count<T extends TelegramConnectionCountArgs>(
+      args?: Subset<T, TelegramConnectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TelegramConnectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TelegramConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramConnectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TelegramConnectionAggregateArgs>(args: Subset<T, TelegramConnectionAggregateArgs>): Prisma.PrismaPromise<GetTelegramConnectionAggregateType<T>>
+
+    /**
+     * Group by TelegramConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramConnectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TelegramConnectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TelegramConnectionGroupByArgs['orderBy'] }
+        : { orderBy?: TelegramConnectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TelegramConnectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTelegramConnectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TelegramConnection model
+   */
+  readonly fields: TelegramConnectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TelegramConnection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TelegramConnectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TelegramConnection model
+   */
+  interface TelegramConnectionFieldRefs {
+    readonly id: FieldRef<"TelegramConnection", 'String'>
+    readonly telegramId: FieldRef<"TelegramConnection", 'String'>
+    readonly chatId: FieldRef<"TelegramConnection", 'String'>
+    readonly username: FieldRef<"TelegramConnection", 'String'>
+    readonly userId: FieldRef<"TelegramConnection", 'String'>
+    readonly isActive: FieldRef<"TelegramConnection", 'Boolean'>
+    readonly linkedAt: FieldRef<"TelegramConnection", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TelegramConnection findUnique
+   */
+  export type TelegramConnectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramConnection to fetch.
+     */
+    where: TelegramConnectionWhereUniqueInput
+  }
+
+  /**
+   * TelegramConnection findUniqueOrThrow
+   */
+  export type TelegramConnectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramConnection to fetch.
+     */
+    where: TelegramConnectionWhereUniqueInput
+  }
+
+  /**
+   * TelegramConnection findFirst
+   */
+  export type TelegramConnectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramConnection to fetch.
+     */
+    where?: TelegramConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramConnections to fetch.
+     */
+    orderBy?: TelegramConnectionOrderByWithRelationInput | TelegramConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TelegramConnections.
+     */
+    cursor?: TelegramConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TelegramConnections.
+     */
+    distinct?: TelegramConnectionScalarFieldEnum | TelegramConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * TelegramConnection findFirstOrThrow
+   */
+  export type TelegramConnectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramConnection to fetch.
+     */
+    where?: TelegramConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramConnections to fetch.
+     */
+    orderBy?: TelegramConnectionOrderByWithRelationInput | TelegramConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TelegramConnections.
+     */
+    cursor?: TelegramConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TelegramConnections.
+     */
+    distinct?: TelegramConnectionScalarFieldEnum | TelegramConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * TelegramConnection findMany
+   */
+  export type TelegramConnectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramConnections to fetch.
+     */
+    where?: TelegramConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramConnections to fetch.
+     */
+    orderBy?: TelegramConnectionOrderByWithRelationInput | TelegramConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TelegramConnections.
+     */
+    cursor?: TelegramConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TelegramConnections.
+     */
+    distinct?: TelegramConnectionScalarFieldEnum | TelegramConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * TelegramConnection create
+   */
+  export type TelegramConnectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TelegramConnection.
+     */
+    data: XOR<TelegramConnectionCreateInput, TelegramConnectionUncheckedCreateInput>
+  }
+
+  /**
+   * TelegramConnection createMany
+   */
+  export type TelegramConnectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TelegramConnections.
+     */
+    data: TelegramConnectionCreateManyInput | TelegramConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TelegramConnection createManyAndReturn
+   */
+  export type TelegramConnectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * The data used to create many TelegramConnections.
+     */
+    data: TelegramConnectionCreateManyInput | TelegramConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TelegramConnection update
+   */
+  export type TelegramConnectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TelegramConnection.
+     */
+    data: XOR<TelegramConnectionUpdateInput, TelegramConnectionUncheckedUpdateInput>
+    /**
+     * Choose, which TelegramConnection to update.
+     */
+    where: TelegramConnectionWhereUniqueInput
+  }
+
+  /**
+   * TelegramConnection updateMany
+   */
+  export type TelegramConnectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TelegramConnections.
+     */
+    data: XOR<TelegramConnectionUpdateManyMutationInput, TelegramConnectionUncheckedUpdateManyInput>
+    /**
+     * Filter which TelegramConnections to update
+     */
+    where?: TelegramConnectionWhereInput
+    /**
+     * Limit how many TelegramConnections to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TelegramConnection updateManyAndReturn
+   */
+  export type TelegramConnectionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * The data used to update TelegramConnections.
+     */
+    data: XOR<TelegramConnectionUpdateManyMutationInput, TelegramConnectionUncheckedUpdateManyInput>
+    /**
+     * Filter which TelegramConnections to update
+     */
+    where?: TelegramConnectionWhereInput
+    /**
+     * Limit how many TelegramConnections to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TelegramConnection upsert
+   */
+  export type TelegramConnectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TelegramConnection to update in case it exists.
+     */
+    where: TelegramConnectionWhereUniqueInput
+    /**
+     * In case the TelegramConnection found by the `where` argument doesn't exist, create a new TelegramConnection with this data.
+     */
+    create: XOR<TelegramConnectionCreateInput, TelegramConnectionUncheckedCreateInput>
+    /**
+     * In case the TelegramConnection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TelegramConnectionUpdateInput, TelegramConnectionUncheckedUpdateInput>
+  }
+
+  /**
+   * TelegramConnection delete
+   */
+  export type TelegramConnectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+    /**
+     * Filter which TelegramConnection to delete.
+     */
+    where: TelegramConnectionWhereUniqueInput
+  }
+
+  /**
+   * TelegramConnection deleteMany
+   */
+  export type TelegramConnectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TelegramConnections to delete
+     */
+    where?: TelegramConnectionWhereInput
+    /**
+     * Limit how many TelegramConnections to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TelegramConnection without action
+   */
+  export type TelegramConnectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramConnection
+     */
+    select?: TelegramConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramConnection
+     */
+    omit?: TelegramConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramConnectionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TelegramVerificationCode
+   */
+
+  export type AggregateTelegramVerificationCode = {
+    _count: TelegramVerificationCodeCountAggregateOutputType | null
+    _min: TelegramVerificationCodeMinAggregateOutputType | null
+    _max: TelegramVerificationCodeMaxAggregateOutputType | null
+  }
+
+  export type TelegramVerificationCodeMinAggregateOutputType = {
+    id: string | null
+    code: string | null
+    userId: string | null
+    expiresAt: Date | null
+    used: boolean | null
+    createdAt: Date | null
+  }
+
+  export type TelegramVerificationCodeMaxAggregateOutputType = {
+    id: string | null
+    code: string | null
+    userId: string | null
+    expiresAt: Date | null
+    used: boolean | null
+    createdAt: Date | null
+  }
+
+  export type TelegramVerificationCodeCountAggregateOutputType = {
+    id: number
+    code: number
+    userId: number
+    expiresAt: number
+    used: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type TelegramVerificationCodeMinAggregateInputType = {
+    id?: true
+    code?: true
+    userId?: true
+    expiresAt?: true
+    used?: true
+    createdAt?: true
+  }
+
+  export type TelegramVerificationCodeMaxAggregateInputType = {
+    id?: true
+    code?: true
+    userId?: true
+    expiresAt?: true
+    used?: true
+    createdAt?: true
+  }
+
+  export type TelegramVerificationCodeCountAggregateInputType = {
+    id?: true
+    code?: true
+    userId?: true
+    expiresAt?: true
+    used?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type TelegramVerificationCodeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TelegramVerificationCode to aggregate.
+     */
+    where?: TelegramVerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramVerificationCodes to fetch.
+     */
+    orderBy?: TelegramVerificationCodeOrderByWithRelationInput | TelegramVerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TelegramVerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramVerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramVerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TelegramVerificationCodes
+    **/
+    _count?: true | TelegramVerificationCodeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TelegramVerificationCodeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TelegramVerificationCodeMaxAggregateInputType
+  }
+
+  export type GetTelegramVerificationCodeAggregateType<T extends TelegramVerificationCodeAggregateArgs> = {
+        [P in keyof T & keyof AggregateTelegramVerificationCode]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTelegramVerificationCode[P]>
+      : GetScalarType<T[P], AggregateTelegramVerificationCode[P]>
+  }
+
+
+
+
+  export type TelegramVerificationCodeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TelegramVerificationCodeWhereInput
+    orderBy?: TelegramVerificationCodeOrderByWithAggregationInput | TelegramVerificationCodeOrderByWithAggregationInput[]
+    by: TelegramVerificationCodeScalarFieldEnum[] | TelegramVerificationCodeScalarFieldEnum
+    having?: TelegramVerificationCodeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TelegramVerificationCodeCountAggregateInputType | true
+    _min?: TelegramVerificationCodeMinAggregateInputType
+    _max?: TelegramVerificationCodeMaxAggregateInputType
+  }
+
+  export type TelegramVerificationCodeGroupByOutputType = {
+    id: string
+    code: string
+    userId: string
+    expiresAt: Date
+    used: boolean
+    createdAt: Date
+    _count: TelegramVerificationCodeCountAggregateOutputType | null
+    _min: TelegramVerificationCodeMinAggregateOutputType | null
+    _max: TelegramVerificationCodeMaxAggregateOutputType | null
+  }
+
+  type GetTelegramVerificationCodeGroupByPayload<T extends TelegramVerificationCodeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TelegramVerificationCodeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TelegramVerificationCodeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TelegramVerificationCodeGroupByOutputType[P]>
+            : GetScalarType<T[P], TelegramVerificationCodeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TelegramVerificationCodeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    used?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["telegramVerificationCode"]>
+
+  export type TelegramVerificationCodeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    used?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["telegramVerificationCode"]>
+
+  export type TelegramVerificationCodeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    code?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    used?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["telegramVerificationCode"]>
+
+  export type TelegramVerificationCodeSelectScalar = {
+    id?: boolean
+    code?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    used?: boolean
+    createdAt?: boolean
+  }
+
+  export type TelegramVerificationCodeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "userId" | "expiresAt" | "used" | "createdAt", ExtArgs["result"]["telegramVerificationCode"]>
+  export type TelegramVerificationCodeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TelegramVerificationCodeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TelegramVerificationCodeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $TelegramVerificationCodePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TelegramVerificationCode"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      code: string
+      userId: string
+      expiresAt: Date
+      used: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["telegramVerificationCode"]>
+    composites: {}
+  }
+
+  type TelegramVerificationCodeGetPayload<S extends boolean | null | undefined | TelegramVerificationCodeDefaultArgs> = $Result.GetResult<Prisma.$TelegramVerificationCodePayload, S>
+
+  type TelegramVerificationCodeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TelegramVerificationCodeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TelegramVerificationCodeCountAggregateInputType | true
+    }
+
+  export interface TelegramVerificationCodeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TelegramVerificationCode'], meta: { name: 'TelegramVerificationCode' } }
+    /**
+     * Find zero or one TelegramVerificationCode that matches the filter.
+     * @param {TelegramVerificationCodeFindUniqueArgs} args - Arguments to find a TelegramVerificationCode
+     * @example
+     * // Get one TelegramVerificationCode
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TelegramVerificationCodeFindUniqueArgs>(args: SelectSubset<T, TelegramVerificationCodeFindUniqueArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TelegramVerificationCode that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TelegramVerificationCodeFindUniqueOrThrowArgs} args - Arguments to find a TelegramVerificationCode
+     * @example
+     * // Get one TelegramVerificationCode
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TelegramVerificationCodeFindUniqueOrThrowArgs>(args: SelectSubset<T, TelegramVerificationCodeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TelegramVerificationCode that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramVerificationCodeFindFirstArgs} args - Arguments to find a TelegramVerificationCode
+     * @example
+     * // Get one TelegramVerificationCode
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TelegramVerificationCodeFindFirstArgs>(args?: SelectSubset<T, TelegramVerificationCodeFindFirstArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TelegramVerificationCode that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramVerificationCodeFindFirstOrThrowArgs} args - Arguments to find a TelegramVerificationCode
+     * @example
+     * // Get one TelegramVerificationCode
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TelegramVerificationCodeFindFirstOrThrowArgs>(args?: SelectSubset<T, TelegramVerificationCodeFindFirstOrThrowArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TelegramVerificationCodes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramVerificationCodeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TelegramVerificationCodes
+     * const telegramVerificationCodes = await prisma.telegramVerificationCode.findMany()
+     * 
+     * // Get first 10 TelegramVerificationCodes
+     * const telegramVerificationCodes = await prisma.telegramVerificationCode.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const telegramVerificationCodeWithIdOnly = await prisma.telegramVerificationCode.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TelegramVerificationCodeFindManyArgs>(args?: SelectSubset<T, TelegramVerificationCodeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TelegramVerificationCode.
+     * @param {TelegramVerificationCodeCreateArgs} args - Arguments to create a TelegramVerificationCode.
+     * @example
+     * // Create one TelegramVerificationCode
+     * const TelegramVerificationCode = await prisma.telegramVerificationCode.create({
+     *   data: {
+     *     // ... data to create a TelegramVerificationCode
+     *   }
+     * })
+     * 
+     */
+    create<T extends TelegramVerificationCodeCreateArgs>(args: SelectSubset<T, TelegramVerificationCodeCreateArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TelegramVerificationCodes.
+     * @param {TelegramVerificationCodeCreateManyArgs} args - Arguments to create many TelegramVerificationCodes.
+     * @example
+     * // Create many TelegramVerificationCodes
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TelegramVerificationCodeCreateManyArgs>(args?: SelectSubset<T, TelegramVerificationCodeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TelegramVerificationCodes and returns the data saved in the database.
+     * @param {TelegramVerificationCodeCreateManyAndReturnArgs} args - Arguments to create many TelegramVerificationCodes.
+     * @example
+     * // Create many TelegramVerificationCodes
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TelegramVerificationCodes and only return the `id`
+     * const telegramVerificationCodeWithIdOnly = await prisma.telegramVerificationCode.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TelegramVerificationCodeCreateManyAndReturnArgs>(args?: SelectSubset<T, TelegramVerificationCodeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TelegramVerificationCode.
+     * @param {TelegramVerificationCodeDeleteArgs} args - Arguments to delete one TelegramVerificationCode.
+     * @example
+     * // Delete one TelegramVerificationCode
+     * const TelegramVerificationCode = await prisma.telegramVerificationCode.delete({
+     *   where: {
+     *     // ... filter to delete one TelegramVerificationCode
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TelegramVerificationCodeDeleteArgs>(args: SelectSubset<T, TelegramVerificationCodeDeleteArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TelegramVerificationCode.
+     * @param {TelegramVerificationCodeUpdateArgs} args - Arguments to update one TelegramVerificationCode.
+     * @example
+     * // Update one TelegramVerificationCode
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TelegramVerificationCodeUpdateArgs>(args: SelectSubset<T, TelegramVerificationCodeUpdateArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TelegramVerificationCodes.
+     * @param {TelegramVerificationCodeDeleteManyArgs} args - Arguments to filter TelegramVerificationCodes to delete.
+     * @example
+     * // Delete a few TelegramVerificationCodes
+     * const { count } = await prisma.telegramVerificationCode.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TelegramVerificationCodeDeleteManyArgs>(args?: SelectSubset<T, TelegramVerificationCodeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TelegramVerificationCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramVerificationCodeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TelegramVerificationCodes
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TelegramVerificationCodeUpdateManyArgs>(args: SelectSubset<T, TelegramVerificationCodeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TelegramVerificationCodes and returns the data updated in the database.
+     * @param {TelegramVerificationCodeUpdateManyAndReturnArgs} args - Arguments to update many TelegramVerificationCodes.
+     * @example
+     * // Update many TelegramVerificationCodes
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TelegramVerificationCodes and only return the `id`
+     * const telegramVerificationCodeWithIdOnly = await prisma.telegramVerificationCode.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TelegramVerificationCodeUpdateManyAndReturnArgs>(args: SelectSubset<T, TelegramVerificationCodeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TelegramVerificationCode.
+     * @param {TelegramVerificationCodeUpsertArgs} args - Arguments to update or create a TelegramVerificationCode.
+     * @example
+     * // Update or create a TelegramVerificationCode
+     * const telegramVerificationCode = await prisma.telegramVerificationCode.upsert({
+     *   create: {
+     *     // ... data to create a TelegramVerificationCode
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TelegramVerificationCode we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TelegramVerificationCodeUpsertArgs>(args: SelectSubset<T, TelegramVerificationCodeUpsertArgs<ExtArgs>>): Prisma__TelegramVerificationCodeClient<$Result.GetResult<Prisma.$TelegramVerificationCodePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TelegramVerificationCodes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramVerificationCodeCountArgs} args - Arguments to filter TelegramVerificationCodes to count.
+     * @example
+     * // Count the number of TelegramVerificationCodes
+     * const count = await prisma.telegramVerificationCode.count({
+     *   where: {
+     *     // ... the filter for the TelegramVerificationCodes we want to count
+     *   }
+     * })
+    **/
+    count<T extends TelegramVerificationCodeCountArgs>(
+      args?: Subset<T, TelegramVerificationCodeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TelegramVerificationCodeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TelegramVerificationCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramVerificationCodeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TelegramVerificationCodeAggregateArgs>(args: Subset<T, TelegramVerificationCodeAggregateArgs>): Prisma.PrismaPromise<GetTelegramVerificationCodeAggregateType<T>>
+
+    /**
+     * Group by TelegramVerificationCode.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TelegramVerificationCodeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TelegramVerificationCodeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TelegramVerificationCodeGroupByArgs['orderBy'] }
+        : { orderBy?: TelegramVerificationCodeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TelegramVerificationCodeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTelegramVerificationCodeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TelegramVerificationCode model
+   */
+  readonly fields: TelegramVerificationCodeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TelegramVerificationCode.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TelegramVerificationCodeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TelegramVerificationCode model
+   */
+  interface TelegramVerificationCodeFieldRefs {
+    readonly id: FieldRef<"TelegramVerificationCode", 'String'>
+    readonly code: FieldRef<"TelegramVerificationCode", 'String'>
+    readonly userId: FieldRef<"TelegramVerificationCode", 'String'>
+    readonly expiresAt: FieldRef<"TelegramVerificationCode", 'DateTime'>
+    readonly used: FieldRef<"TelegramVerificationCode", 'Boolean'>
+    readonly createdAt: FieldRef<"TelegramVerificationCode", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TelegramVerificationCode findUnique
+   */
+  export type TelegramVerificationCodeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramVerificationCode to fetch.
+     */
+    where: TelegramVerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * TelegramVerificationCode findUniqueOrThrow
+   */
+  export type TelegramVerificationCodeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramVerificationCode to fetch.
+     */
+    where: TelegramVerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * TelegramVerificationCode findFirst
+   */
+  export type TelegramVerificationCodeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramVerificationCode to fetch.
+     */
+    where?: TelegramVerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramVerificationCodes to fetch.
+     */
+    orderBy?: TelegramVerificationCodeOrderByWithRelationInput | TelegramVerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TelegramVerificationCodes.
+     */
+    cursor?: TelegramVerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramVerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramVerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TelegramVerificationCodes.
+     */
+    distinct?: TelegramVerificationCodeScalarFieldEnum | TelegramVerificationCodeScalarFieldEnum[]
+  }
+
+  /**
+   * TelegramVerificationCode findFirstOrThrow
+   */
+  export type TelegramVerificationCodeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramVerificationCode to fetch.
+     */
+    where?: TelegramVerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramVerificationCodes to fetch.
+     */
+    orderBy?: TelegramVerificationCodeOrderByWithRelationInput | TelegramVerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TelegramVerificationCodes.
+     */
+    cursor?: TelegramVerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramVerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramVerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TelegramVerificationCodes.
+     */
+    distinct?: TelegramVerificationCodeScalarFieldEnum | TelegramVerificationCodeScalarFieldEnum[]
+  }
+
+  /**
+   * TelegramVerificationCode findMany
+   */
+  export type TelegramVerificationCodeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter, which TelegramVerificationCodes to fetch.
+     */
+    where?: TelegramVerificationCodeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TelegramVerificationCodes to fetch.
+     */
+    orderBy?: TelegramVerificationCodeOrderByWithRelationInput | TelegramVerificationCodeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TelegramVerificationCodes.
+     */
+    cursor?: TelegramVerificationCodeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TelegramVerificationCodes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TelegramVerificationCodes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TelegramVerificationCodes.
+     */
+    distinct?: TelegramVerificationCodeScalarFieldEnum | TelegramVerificationCodeScalarFieldEnum[]
+  }
+
+  /**
+   * TelegramVerificationCode create
+   */
+  export type TelegramVerificationCodeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TelegramVerificationCode.
+     */
+    data: XOR<TelegramVerificationCodeCreateInput, TelegramVerificationCodeUncheckedCreateInput>
+  }
+
+  /**
+   * TelegramVerificationCode createMany
+   */
+  export type TelegramVerificationCodeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TelegramVerificationCodes.
+     */
+    data: TelegramVerificationCodeCreateManyInput | TelegramVerificationCodeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TelegramVerificationCode createManyAndReturn
+   */
+  export type TelegramVerificationCodeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * The data used to create many TelegramVerificationCodes.
+     */
+    data: TelegramVerificationCodeCreateManyInput | TelegramVerificationCodeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TelegramVerificationCode update
+   */
+  export type TelegramVerificationCodeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TelegramVerificationCode.
+     */
+    data: XOR<TelegramVerificationCodeUpdateInput, TelegramVerificationCodeUncheckedUpdateInput>
+    /**
+     * Choose, which TelegramVerificationCode to update.
+     */
+    where: TelegramVerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * TelegramVerificationCode updateMany
+   */
+  export type TelegramVerificationCodeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TelegramVerificationCodes.
+     */
+    data: XOR<TelegramVerificationCodeUpdateManyMutationInput, TelegramVerificationCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which TelegramVerificationCodes to update
+     */
+    where?: TelegramVerificationCodeWhereInput
+    /**
+     * Limit how many TelegramVerificationCodes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TelegramVerificationCode updateManyAndReturn
+   */
+  export type TelegramVerificationCodeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * The data used to update TelegramVerificationCodes.
+     */
+    data: XOR<TelegramVerificationCodeUpdateManyMutationInput, TelegramVerificationCodeUncheckedUpdateManyInput>
+    /**
+     * Filter which TelegramVerificationCodes to update
+     */
+    where?: TelegramVerificationCodeWhereInput
+    /**
+     * Limit how many TelegramVerificationCodes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TelegramVerificationCode upsert
+   */
+  export type TelegramVerificationCodeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TelegramVerificationCode to update in case it exists.
+     */
+    where: TelegramVerificationCodeWhereUniqueInput
+    /**
+     * In case the TelegramVerificationCode found by the `where` argument doesn't exist, create a new TelegramVerificationCode with this data.
+     */
+    create: XOR<TelegramVerificationCodeCreateInput, TelegramVerificationCodeUncheckedCreateInput>
+    /**
+     * In case the TelegramVerificationCode was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TelegramVerificationCodeUpdateInput, TelegramVerificationCodeUncheckedUpdateInput>
+  }
+
+  /**
+   * TelegramVerificationCode delete
+   */
+  export type TelegramVerificationCodeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+    /**
+     * Filter which TelegramVerificationCode to delete.
+     */
+    where: TelegramVerificationCodeWhereUniqueInput
+  }
+
+  /**
+   * TelegramVerificationCode deleteMany
+   */
+  export type TelegramVerificationCodeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TelegramVerificationCodes to delete
+     */
+    where?: TelegramVerificationCodeWhereInput
+    /**
+     * Limit how many TelegramVerificationCodes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TelegramVerificationCode without action
+   */
+  export type TelegramVerificationCodeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TelegramVerificationCode
+     */
+    select?: TelegramVerificationCodeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TelegramVerificationCode
+     */
+    omit?: TelegramVerificationCodeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TelegramVerificationCodeInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model ActivityLog
    */
 
@@ -21803,6 +24211,31 @@ export namespace Prisma {
   export type GoalMilestoneScalarFieldEnum = (typeof GoalMilestoneScalarFieldEnum)[keyof typeof GoalMilestoneScalarFieldEnum]
 
 
+  export const TelegramConnectionScalarFieldEnum: {
+    id: 'id',
+    telegramId: 'telegramId',
+    chatId: 'chatId',
+    username: 'username',
+    userId: 'userId',
+    isActive: 'isActive',
+    linkedAt: 'linkedAt'
+  };
+
+  export type TelegramConnectionScalarFieldEnum = (typeof TelegramConnectionScalarFieldEnum)[keyof typeof TelegramConnectionScalarFieldEnum]
+
+
+  export const TelegramVerificationCodeScalarFieldEnum: {
+    id: 'id',
+    code: 'code',
+    userId: 'userId',
+    expiresAt: 'expiresAt',
+    used: 'used',
+    createdAt: 'createdAt'
+  };
+
+  export type TelegramVerificationCodeScalarFieldEnum = (typeof TelegramVerificationCodeScalarFieldEnum)[keyof typeof TelegramVerificationCodeScalarFieldEnum]
+
+
   export const ActivityLogScalarFieldEnum: {
     id: 'id',
     action: 'action',
@@ -22210,6 +24643,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     reminders?: ReminderListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
+    telegramConnection?: XOR<TelegramConnectionNullableScalarRelationFilter, TelegramConnectionWhereInput> | null
+    telegramVerifications?: TelegramVerificationCodeListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -22224,6 +24659,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     reminders?: ReminderOrderByRelationAggregateInput
     activityLogs?: ActivityLogOrderByRelationAggregateInput
+    telegramConnection?: TelegramConnectionOrderByWithRelationInput
+    telegramVerifications?: TelegramVerificationCodeOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -22241,6 +24678,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     reminders?: ReminderListRelationFilter
     activityLogs?: ActivityLogListRelationFilter
+    telegramConnection?: XOR<TelegramConnectionNullableScalarRelationFilter, TelegramConnectionWhereInput> | null
+    telegramVerifications?: TelegramVerificationCodeListRelationFilter
   }, "id" | "firebaseUid" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -23389,6 +25828,131 @@ export namespace Prisma {
     goalId?: StringWithAggregatesFilter<"GoalMilestone"> | string
   }
 
+  export type TelegramConnectionWhereInput = {
+    AND?: TelegramConnectionWhereInput | TelegramConnectionWhereInput[]
+    OR?: TelegramConnectionWhereInput[]
+    NOT?: TelegramConnectionWhereInput | TelegramConnectionWhereInput[]
+    id?: StringFilter<"TelegramConnection"> | string
+    telegramId?: StringFilter<"TelegramConnection"> | string
+    chatId?: StringFilter<"TelegramConnection"> | string
+    username?: StringNullableFilter<"TelegramConnection"> | string | null
+    userId?: StringFilter<"TelegramConnection"> | string
+    isActive?: BoolFilter<"TelegramConnection"> | boolean
+    linkedAt?: DateTimeFilter<"TelegramConnection"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type TelegramConnectionOrderByWithRelationInput = {
+    id?: SortOrder
+    telegramId?: SortOrder
+    chatId?: SortOrder
+    username?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    isActive?: SortOrder
+    linkedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type TelegramConnectionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    telegramId?: string
+    userId?: string
+    AND?: TelegramConnectionWhereInput | TelegramConnectionWhereInput[]
+    OR?: TelegramConnectionWhereInput[]
+    NOT?: TelegramConnectionWhereInput | TelegramConnectionWhereInput[]
+    chatId?: StringFilter<"TelegramConnection"> | string
+    username?: StringNullableFilter<"TelegramConnection"> | string | null
+    isActive?: BoolFilter<"TelegramConnection"> | boolean
+    linkedAt?: DateTimeFilter<"TelegramConnection"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "telegramId" | "userId">
+
+  export type TelegramConnectionOrderByWithAggregationInput = {
+    id?: SortOrder
+    telegramId?: SortOrder
+    chatId?: SortOrder
+    username?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    isActive?: SortOrder
+    linkedAt?: SortOrder
+    _count?: TelegramConnectionCountOrderByAggregateInput
+    _max?: TelegramConnectionMaxOrderByAggregateInput
+    _min?: TelegramConnectionMinOrderByAggregateInput
+  }
+
+  export type TelegramConnectionScalarWhereWithAggregatesInput = {
+    AND?: TelegramConnectionScalarWhereWithAggregatesInput | TelegramConnectionScalarWhereWithAggregatesInput[]
+    OR?: TelegramConnectionScalarWhereWithAggregatesInput[]
+    NOT?: TelegramConnectionScalarWhereWithAggregatesInput | TelegramConnectionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TelegramConnection"> | string
+    telegramId?: StringWithAggregatesFilter<"TelegramConnection"> | string
+    chatId?: StringWithAggregatesFilter<"TelegramConnection"> | string
+    username?: StringNullableWithAggregatesFilter<"TelegramConnection"> | string | null
+    userId?: StringWithAggregatesFilter<"TelegramConnection"> | string
+    isActive?: BoolWithAggregatesFilter<"TelegramConnection"> | boolean
+    linkedAt?: DateTimeWithAggregatesFilter<"TelegramConnection"> | Date | string
+  }
+
+  export type TelegramVerificationCodeWhereInput = {
+    AND?: TelegramVerificationCodeWhereInput | TelegramVerificationCodeWhereInput[]
+    OR?: TelegramVerificationCodeWhereInput[]
+    NOT?: TelegramVerificationCodeWhereInput | TelegramVerificationCodeWhereInput[]
+    id?: StringFilter<"TelegramVerificationCode"> | string
+    code?: StringFilter<"TelegramVerificationCode"> | string
+    userId?: StringFilter<"TelegramVerificationCode"> | string
+    expiresAt?: DateTimeFilter<"TelegramVerificationCode"> | Date | string
+    used?: BoolFilter<"TelegramVerificationCode"> | boolean
+    createdAt?: DateTimeFilter<"TelegramVerificationCode"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type TelegramVerificationCodeOrderByWithRelationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type TelegramVerificationCodeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    code?: string
+    AND?: TelegramVerificationCodeWhereInput | TelegramVerificationCodeWhereInput[]
+    OR?: TelegramVerificationCodeWhereInput[]
+    NOT?: TelegramVerificationCodeWhereInput | TelegramVerificationCodeWhereInput[]
+    userId?: StringFilter<"TelegramVerificationCode"> | string
+    expiresAt?: DateTimeFilter<"TelegramVerificationCode"> | Date | string
+    used?: BoolFilter<"TelegramVerificationCode"> | boolean
+    createdAt?: DateTimeFilter<"TelegramVerificationCode"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "code">
+
+  export type TelegramVerificationCodeOrderByWithAggregationInput = {
+    id?: SortOrder
+    code?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+    _count?: TelegramVerificationCodeCountOrderByAggregateInput
+    _max?: TelegramVerificationCodeMaxOrderByAggregateInput
+    _min?: TelegramVerificationCodeMinOrderByAggregateInput
+  }
+
+  export type TelegramVerificationCodeScalarWhereWithAggregatesInput = {
+    AND?: TelegramVerificationCodeScalarWhereWithAggregatesInput | TelegramVerificationCodeScalarWhereWithAggregatesInput[]
+    OR?: TelegramVerificationCodeScalarWhereWithAggregatesInput[]
+    NOT?: TelegramVerificationCodeScalarWhereWithAggregatesInput | TelegramVerificationCodeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TelegramVerificationCode"> | string
+    code?: StringWithAggregatesFilter<"TelegramVerificationCode"> | string
+    userId?: StringWithAggregatesFilter<"TelegramVerificationCode"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"TelegramVerificationCode"> | Date | string
+    used?: BoolWithAggregatesFilter<"TelegramVerificationCode"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"TelegramVerificationCode"> | Date | string
+  }
+
   export type ActivityLogWhereInput = {
     AND?: ActivityLogWhereInput | ActivityLogWhereInput[]
     OR?: ActivityLogWhereInput[]
@@ -23477,6 +26041,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     reminders?: ReminderCreateNestedManyWithoutCreatedByInput
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    telegramConnection?: TelegramConnectionCreateNestedOneWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -23491,6 +26057,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     reminders?: ReminderUncheckedCreateNestedManyWithoutCreatedByInput
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    telegramConnection?: TelegramConnectionUncheckedCreateNestedOneWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -23505,6 +26073,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUpdateManyWithoutCreatedByNestedInput
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    telegramConnection?: TelegramConnectionUpdateOneWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -23519,6 +26089,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    telegramConnection?: TelegramConnectionUncheckedUpdateOneWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -24787,6 +27359,137 @@ export namespace Prisma {
     goalId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type TelegramConnectionCreateInput = {
+    id?: string
+    telegramId: string
+    chatId: string
+    username?: string | null
+    isActive?: boolean
+    linkedAt?: Date | string
+    user: UserCreateNestedOneWithoutTelegramConnectionInput
+  }
+
+  export type TelegramConnectionUncheckedCreateInput = {
+    id?: string
+    telegramId: string
+    chatId: string
+    username?: string | null
+    userId: string
+    isActive?: boolean
+    linkedAt?: Date | string
+  }
+
+  export type TelegramConnectionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    chatId?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTelegramConnectionNestedInput
+  }
+
+  export type TelegramConnectionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    chatId?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramConnectionCreateManyInput = {
+    id?: string
+    telegramId: string
+    chatId: string
+    username?: string | null
+    userId: string
+    isActive?: boolean
+    linkedAt?: Date | string
+  }
+
+  export type TelegramConnectionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    chatId?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramConnectionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    chatId?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramVerificationCodeCreateInput = {
+    id?: string
+    code: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutTelegramVerificationsInput
+  }
+
+  export type TelegramVerificationCodeUncheckedCreateInput = {
+    id?: string
+    code: string
+    userId: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type TelegramVerificationCodeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTelegramVerificationsNestedInput
+  }
+
+  export type TelegramVerificationCodeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramVerificationCodeCreateManyInput = {
+    id?: string
+    code: string
+    userId: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type TelegramVerificationCodeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramVerificationCodeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ActivityLogCreateInput = {
     id?: string
     action: string
@@ -24926,6 +27629,17 @@ export namespace Prisma {
     none?: ActivityLogWhereInput
   }
 
+  export type TelegramConnectionNullableScalarRelationFilter = {
+    is?: TelegramConnectionWhereInput | null
+    isNot?: TelegramConnectionWhereInput | null
+  }
+
+  export type TelegramVerificationCodeListRelationFilter = {
+    every?: TelegramVerificationCodeWhereInput
+    some?: TelegramVerificationCodeWhereInput
+    none?: TelegramVerificationCodeWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -24936,6 +27650,10 @@ export namespace Prisma {
   }
 
   export type ActivityLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TelegramVerificationCodeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26144,6 +28862,68 @@ export namespace Prisma {
     value?: SortOrder
   }
 
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type TelegramConnectionCountOrderByAggregateInput = {
+    id?: SortOrder
+    telegramId?: SortOrder
+    chatId?: SortOrder
+    username?: SortOrder
+    userId?: SortOrder
+    isActive?: SortOrder
+    linkedAt?: SortOrder
+  }
+
+  export type TelegramConnectionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    telegramId?: SortOrder
+    chatId?: SortOrder
+    username?: SortOrder
+    userId?: SortOrder
+    isActive?: SortOrder
+    linkedAt?: SortOrder
+  }
+
+  export type TelegramConnectionMinOrderByAggregateInput = {
+    id?: SortOrder
+    telegramId?: SortOrder
+    chatId?: SortOrder
+    username?: SortOrder
+    userId?: SortOrder
+    isActive?: SortOrder
+    linkedAt?: SortOrder
+  }
+
+  export type TelegramVerificationCodeCountOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TelegramVerificationCodeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type TelegramVerificationCodeMinOrderByAggregateInput = {
+    id?: SortOrder
+    code?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    used?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type EnumActivityTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.ActivityType | EnumActivityTypeFieldRefInput<$PrismaModel>
     in?: $Enums.ActivityType[] | ListEnumActivityTypeFieldRefInput<$PrismaModel>
@@ -26255,6 +29035,19 @@ export namespace Prisma {
     connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
   }
 
+  export type TelegramConnectionCreateNestedOneWithoutUserInput = {
+    create?: XOR<TelegramConnectionCreateWithoutUserInput, TelegramConnectionUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TelegramConnectionCreateOrConnectWithoutUserInput
+    connect?: TelegramConnectionWhereUniqueInput
+  }
+
+  export type TelegramVerificationCodeCreateNestedManyWithoutUserInput = {
+    create?: XOR<TelegramVerificationCodeCreateWithoutUserInput, TelegramVerificationCodeUncheckedCreateWithoutUserInput> | TelegramVerificationCodeCreateWithoutUserInput[] | TelegramVerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TelegramVerificationCodeCreateOrConnectWithoutUserInput | TelegramVerificationCodeCreateOrConnectWithoutUserInput[]
+    createMany?: TelegramVerificationCodeCreateManyUserInputEnvelope
+    connect?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+  }
+
   export type ReminderUncheckedCreateNestedManyWithoutCreatedByInput = {
     create?: XOR<ReminderCreateWithoutCreatedByInput, ReminderUncheckedCreateWithoutCreatedByInput> | ReminderCreateWithoutCreatedByInput[] | ReminderUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutCreatedByInput | ReminderCreateOrConnectWithoutCreatedByInput[]
@@ -26267,6 +29060,19 @@ export namespace Prisma {
     connectOrCreate?: ActivityLogCreateOrConnectWithoutUserInput | ActivityLogCreateOrConnectWithoutUserInput[]
     createMany?: ActivityLogCreateManyUserInputEnvelope
     connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+  }
+
+  export type TelegramConnectionUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<TelegramConnectionCreateWithoutUserInput, TelegramConnectionUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TelegramConnectionCreateOrConnectWithoutUserInput
+    connect?: TelegramConnectionWhereUniqueInput
+  }
+
+  export type TelegramVerificationCodeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TelegramVerificationCodeCreateWithoutUserInput, TelegramVerificationCodeUncheckedCreateWithoutUserInput> | TelegramVerificationCodeCreateWithoutUserInput[] | TelegramVerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TelegramVerificationCodeCreateOrConnectWithoutUserInput | TelegramVerificationCodeCreateOrConnectWithoutUserInput[]
+    createMany?: TelegramVerificationCodeCreateManyUserInputEnvelope
+    connect?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -26317,6 +29123,30 @@ export namespace Prisma {
     deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
   }
 
+  export type TelegramConnectionUpdateOneWithoutUserNestedInput = {
+    create?: XOR<TelegramConnectionCreateWithoutUserInput, TelegramConnectionUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TelegramConnectionCreateOrConnectWithoutUserInput
+    upsert?: TelegramConnectionUpsertWithoutUserInput
+    disconnect?: TelegramConnectionWhereInput | boolean
+    delete?: TelegramConnectionWhereInput | boolean
+    connect?: TelegramConnectionWhereUniqueInput
+    update?: XOR<XOR<TelegramConnectionUpdateToOneWithWhereWithoutUserInput, TelegramConnectionUpdateWithoutUserInput>, TelegramConnectionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TelegramVerificationCodeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TelegramVerificationCodeCreateWithoutUserInput, TelegramVerificationCodeUncheckedCreateWithoutUserInput> | TelegramVerificationCodeCreateWithoutUserInput[] | TelegramVerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TelegramVerificationCodeCreateOrConnectWithoutUserInput | TelegramVerificationCodeCreateOrConnectWithoutUserInput[]
+    upsert?: TelegramVerificationCodeUpsertWithWhereUniqueWithoutUserInput | TelegramVerificationCodeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TelegramVerificationCodeCreateManyUserInputEnvelope
+    set?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    disconnect?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    delete?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    connect?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    update?: TelegramVerificationCodeUpdateWithWhereUniqueWithoutUserInput | TelegramVerificationCodeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TelegramVerificationCodeUpdateManyWithWhereWithoutUserInput | TelegramVerificationCodeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TelegramVerificationCodeScalarWhereInput | TelegramVerificationCodeScalarWhereInput[]
+  }
+
   export type ReminderUncheckedUpdateManyWithoutCreatedByNestedInput = {
     create?: XOR<ReminderCreateWithoutCreatedByInput, ReminderUncheckedCreateWithoutCreatedByInput> | ReminderCreateWithoutCreatedByInput[] | ReminderUncheckedCreateWithoutCreatedByInput[]
     connectOrCreate?: ReminderCreateOrConnectWithoutCreatedByInput | ReminderCreateOrConnectWithoutCreatedByInput[]
@@ -26343,6 +29173,30 @@ export namespace Prisma {
     update?: ActivityLogUpdateWithWhereUniqueWithoutUserInput | ActivityLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ActivityLogUpdateManyWithWhereWithoutUserInput | ActivityLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
+  }
+
+  export type TelegramConnectionUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<TelegramConnectionCreateWithoutUserInput, TelegramConnectionUncheckedCreateWithoutUserInput>
+    connectOrCreate?: TelegramConnectionCreateOrConnectWithoutUserInput
+    upsert?: TelegramConnectionUpsertWithoutUserInput
+    disconnect?: TelegramConnectionWhereInput | boolean
+    delete?: TelegramConnectionWhereInput | boolean
+    connect?: TelegramConnectionWhereUniqueInput
+    update?: XOR<XOR<TelegramConnectionUpdateToOneWithWhereWithoutUserInput, TelegramConnectionUpdateWithoutUserInput>, TelegramConnectionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TelegramVerificationCodeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TelegramVerificationCodeCreateWithoutUserInput, TelegramVerificationCodeUncheckedCreateWithoutUserInput> | TelegramVerificationCodeCreateWithoutUserInput[] | TelegramVerificationCodeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TelegramVerificationCodeCreateOrConnectWithoutUserInput | TelegramVerificationCodeCreateOrConnectWithoutUserInput[]
+    upsert?: TelegramVerificationCodeUpsertWithWhereUniqueWithoutUserInput | TelegramVerificationCodeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TelegramVerificationCodeCreateManyUserInputEnvelope
+    set?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    disconnect?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    delete?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    connect?: TelegramVerificationCodeWhereUniqueInput | TelegramVerificationCodeWhereUniqueInput[]
+    update?: TelegramVerificationCodeUpdateWithWhereUniqueWithoutUserInput | TelegramVerificationCodeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TelegramVerificationCodeUpdateManyWithWhereWithoutUserInput | TelegramVerificationCodeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TelegramVerificationCodeScalarWhereInput | TelegramVerificationCodeScalarWhereInput[]
   }
 
   export type PolicyCreateNestedManyWithoutClientInput = {
@@ -27345,6 +30199,34 @@ export namespace Prisma {
     update?: XOR<XOR<GoalUpdateToOneWithWhereWithoutMilestonesInput, GoalUpdateWithoutMilestonesInput>, GoalUncheckedUpdateWithoutMilestonesInput>
   }
 
+  export type UserCreateNestedOneWithoutTelegramConnectionInput = {
+    create?: XOR<UserCreateWithoutTelegramConnectionInput, UserUncheckedCreateWithoutTelegramConnectionInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTelegramConnectionInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutTelegramConnectionNestedInput = {
+    create?: XOR<UserCreateWithoutTelegramConnectionInput, UserUncheckedCreateWithoutTelegramConnectionInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTelegramConnectionInput
+    upsert?: UserUpsertWithoutTelegramConnectionInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTelegramConnectionInput, UserUpdateWithoutTelegramConnectionInput>, UserUncheckedUpdateWithoutTelegramConnectionInput>
+  }
+
+  export type UserCreateNestedOneWithoutTelegramVerificationsInput = {
+    create?: XOR<UserCreateWithoutTelegramVerificationsInput, UserUncheckedCreateWithoutTelegramVerificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTelegramVerificationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutTelegramVerificationsNestedInput = {
+    create?: XOR<UserCreateWithoutTelegramVerificationsInput, UserUncheckedCreateWithoutTelegramVerificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTelegramVerificationsInput
+    upsert?: UserUpsertWithoutTelegramVerificationsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTelegramVerificationsInput, UserUpdateWithoutTelegramVerificationsInput>, UserUncheckedUpdateWithoutTelegramVerificationsInput>
+  }
+
   export type ClientCreateNestedOneWithoutActivityLogsInput = {
     create?: XOR<ClientCreateWithoutActivityLogsInput, ClientUncheckedCreateWithoutActivityLogsInput>
     connectOrCreate?: ClientCreateOrConnectWithoutActivityLogsInput
@@ -28003,6 +30885,55 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TelegramConnectionCreateWithoutUserInput = {
+    id?: string
+    telegramId: string
+    chatId: string
+    username?: string | null
+    isActive?: boolean
+    linkedAt?: Date | string
+  }
+
+  export type TelegramConnectionUncheckedCreateWithoutUserInput = {
+    id?: string
+    telegramId: string
+    chatId: string
+    username?: string | null
+    isActive?: boolean
+    linkedAt?: Date | string
+  }
+
+  export type TelegramConnectionCreateOrConnectWithoutUserInput = {
+    where: TelegramConnectionWhereUniqueInput
+    create: XOR<TelegramConnectionCreateWithoutUserInput, TelegramConnectionUncheckedCreateWithoutUserInput>
+  }
+
+  export type TelegramVerificationCodeCreateWithoutUserInput = {
+    id?: string
+    code: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type TelegramVerificationCodeUncheckedCreateWithoutUserInput = {
+    id?: string
+    code: string
+    expiresAt: Date | string
+    used?: boolean
+    createdAt?: Date | string
+  }
+
+  export type TelegramVerificationCodeCreateOrConnectWithoutUserInput = {
+    where: TelegramVerificationCodeWhereUniqueInput
+    create: XOR<TelegramVerificationCodeCreateWithoutUserInput, TelegramVerificationCodeUncheckedCreateWithoutUserInput>
+  }
+
+  export type TelegramVerificationCodeCreateManyUserInputEnvelope = {
+    data: TelegramVerificationCodeCreateManyUserInput | TelegramVerificationCodeCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ReminderUpsertWithWhereUniqueWithoutCreatedByInput = {
     where: ReminderWhereUniqueInput
     update: XOR<ReminderUpdateWithoutCreatedByInput, ReminderUncheckedUpdateWithoutCreatedByInput>
@@ -28064,6 +30995,63 @@ export namespace Prisma {
     prospectId?: StringNullableFilter<"ActivityLog"> | string | null
     userId?: StringNullableFilter<"ActivityLog"> | string | null
     createdAt?: DateTimeFilter<"ActivityLog"> | Date | string
+  }
+
+  export type TelegramConnectionUpsertWithoutUserInput = {
+    update: XOR<TelegramConnectionUpdateWithoutUserInput, TelegramConnectionUncheckedUpdateWithoutUserInput>
+    create: XOR<TelegramConnectionCreateWithoutUserInput, TelegramConnectionUncheckedCreateWithoutUserInput>
+    where?: TelegramConnectionWhereInput
+  }
+
+  export type TelegramConnectionUpdateToOneWithWhereWithoutUserInput = {
+    where?: TelegramConnectionWhereInput
+    data: XOR<TelegramConnectionUpdateWithoutUserInput, TelegramConnectionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TelegramConnectionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    chatId?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramConnectionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    chatId?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    linkedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramVerificationCodeUpsertWithWhereUniqueWithoutUserInput = {
+    where: TelegramVerificationCodeWhereUniqueInput
+    update: XOR<TelegramVerificationCodeUpdateWithoutUserInput, TelegramVerificationCodeUncheckedUpdateWithoutUserInput>
+    create: XOR<TelegramVerificationCodeCreateWithoutUserInput, TelegramVerificationCodeUncheckedCreateWithoutUserInput>
+  }
+
+  export type TelegramVerificationCodeUpdateWithWhereUniqueWithoutUserInput = {
+    where: TelegramVerificationCodeWhereUniqueInput
+    data: XOR<TelegramVerificationCodeUpdateWithoutUserInput, TelegramVerificationCodeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TelegramVerificationCodeUpdateManyWithWhereWithoutUserInput = {
+    where: TelegramVerificationCodeScalarWhereInput
+    data: XOR<TelegramVerificationCodeUpdateManyMutationInput, TelegramVerificationCodeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TelegramVerificationCodeScalarWhereInput = {
+    AND?: TelegramVerificationCodeScalarWhereInput | TelegramVerificationCodeScalarWhereInput[]
+    OR?: TelegramVerificationCodeScalarWhereInput[]
+    NOT?: TelegramVerificationCodeScalarWhereInput | TelegramVerificationCodeScalarWhereInput[]
+    id?: StringFilter<"TelegramVerificationCode"> | string
+    code?: StringFilter<"TelegramVerificationCode"> | string
+    userId?: StringFilter<"TelegramVerificationCode"> | string
+    expiresAt?: DateTimeFilter<"TelegramVerificationCode"> | Date | string
+    used?: BoolFilter<"TelegramVerificationCode"> | boolean
+    createdAt?: DateTimeFilter<"TelegramVerificationCode"> | Date | string
   }
 
   export type PolicyCreateWithoutClientInput = {
@@ -29892,6 +32880,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    telegramConnection?: TelegramConnectionCreateNestedOneWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRemindersInput = {
@@ -29905,6 +32895,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    telegramConnection?: TelegramConnectionUncheckedCreateNestedOneWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRemindersInput = {
@@ -30038,6 +33030,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    telegramConnection?: TelegramConnectionUpdateOneWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRemindersInput = {
@@ -30051,6 +33045,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    telegramConnection?: TelegramConnectionUncheckedUpdateOneWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type GoalMilestoneCreateWithoutGoalInput = {
@@ -30192,6 +33188,158 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutTelegramConnectionInput = {
+    id?: string
+    firebaseUid: string
+    email: string
+    name: string
+    role?: $Enums.UserRole
+    avatarUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderCreateNestedManyWithoutCreatedByInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTelegramConnectionInput = {
+    id?: string
+    firebaseUid: string
+    email: string
+    name: string
+    role?: $Enums.UserRole
+    avatarUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTelegramConnectionInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTelegramConnectionInput, UserUncheckedCreateWithoutTelegramConnectionInput>
+  }
+
+  export type UserUpsertWithoutTelegramConnectionInput = {
+    update: XOR<UserUpdateWithoutTelegramConnectionInput, UserUncheckedUpdateWithoutTelegramConnectionInput>
+    create: XOR<UserCreateWithoutTelegramConnectionInput, UserUncheckedCreateWithoutTelegramConnectionInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTelegramConnectionInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTelegramConnectionInput, UserUncheckedUpdateWithoutTelegramConnectionInput>
+  }
+
+  export type UserUpdateWithoutTelegramConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUpdateManyWithoutCreatedByNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTelegramConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutTelegramVerificationsInput = {
+    id?: string
+    firebaseUid: string
+    email: string
+    name: string
+    role?: $Enums.UserRole
+    avatarUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderCreateNestedManyWithoutCreatedByInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    telegramConnection?: TelegramConnectionCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutTelegramVerificationsInput = {
+    id?: string
+    firebaseUid: string
+    email: string
+    name: string
+    role?: $Enums.UserRole
+    avatarUrl?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    reminders?: ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    telegramConnection?: TelegramConnectionUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutTelegramVerificationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTelegramVerificationsInput, UserUncheckedCreateWithoutTelegramVerificationsInput>
+  }
+
+  export type UserUpsertWithoutTelegramVerificationsInput = {
+    update: XOR<UserUpdateWithoutTelegramVerificationsInput, UserUncheckedUpdateWithoutTelegramVerificationsInput>
+    create: XOR<UserCreateWithoutTelegramVerificationsInput, UserUncheckedCreateWithoutTelegramVerificationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTelegramVerificationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTelegramVerificationsInput, UserUncheckedUpdateWithoutTelegramVerificationsInput>
+  }
+
+  export type UserUpdateWithoutTelegramVerificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUpdateManyWithoutCreatedByNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    telegramConnection?: TelegramConnectionUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTelegramVerificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firebaseUid?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    reminders?: ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    telegramConnection?: TelegramConnectionUncheckedUpdateOneWithoutUserNestedInput
+  }
+
   export type ClientCreateWithoutActivityLogsInput = {
     id?: string
     name: string
@@ -30295,6 +33443,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderCreateNestedManyWithoutCreatedByInput
+    telegramConnection?: TelegramConnectionCreateNestedOneWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivityLogsInput = {
@@ -30308,6 +33458,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     reminders?: ReminderUncheckedCreateNestedManyWithoutCreatedByInput
+    telegramConnection?: TelegramConnectionUncheckedCreateNestedOneWithoutUserInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivityLogsInput = {
@@ -30441,6 +33593,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUpdateManyWithoutCreatedByNestedInput
+    telegramConnection?: TelegramConnectionUpdateOneWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivityLogsInput = {
@@ -30454,6 +33608,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reminders?: ReminderUncheckedUpdateManyWithoutCreatedByNestedInput
+    telegramConnection?: TelegramConnectionUncheckedUpdateOneWithoutUserNestedInput
+    telegramVerifications?: TelegramVerificationCodeUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ReminderCreateManyCreatedByInput = {
@@ -30476,6 +33632,14 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: string | null
     prospectId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type TelegramVerificationCodeCreateManyUserInput = {
+    id?: string
+    code: string
+    expiresAt: Date | string
+    used?: boolean
     createdAt?: Date | string
   }
 
@@ -30545,6 +33709,30 @@ export namespace Prisma {
     metadata?: NullableJsonNullValueInput | InputJsonValue
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
     prospectId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramVerificationCodeUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramVerificationCodeUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TelegramVerificationCodeUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    used?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
