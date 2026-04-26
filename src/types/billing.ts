@@ -17,22 +17,35 @@ export interface Client {
   phone?: string;
 }
 
+export interface PaymentInfo {
+  bank: string;
+  accountType: string;
+  accountNumber: string;
+  concept: string;
+}
+
 export interface Invoice {
   id: string;
   number: string;
   clientId: string;
-  clientName: string; // Denormalized for easy display
+  clientName: string;
   date: string;
   dueDate: string;
   items: InvoiceItem[];
   subtotal: number;
   discountAmount: number;
   discountDescription?: string;
-  taxRate: number; // e.g., 0.19 for 19% IVA
+  taxRate: number;
   taxAmount: number;
   total: number;
   status: InvoiceStatus;
   notes?: string;
+  companyName?: string;
+  companyNit?: string;
+  companyAddress?: string;
+  companyPhone?: string;
+  companyEmail?: string;
+  paymentInfo?: PaymentInfo;
 }
 
 export interface BillingStats {
