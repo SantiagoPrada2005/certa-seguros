@@ -467,6 +467,78 @@ export async function updateGoal(
   }
 }
 
+// ─── Automatic Goal Progress Recalculation ─────────────────────────────────
+
+export async function recalculateGoalProgress(goalId: string) {
+  const goal = await prisma.goal.findUnique({
+    where: { id: goalId },
+    include: { milestones: true },
+  });
+  if (!goal) throw new Error("Goal not found");
+  if (!goal.isActive) return null;
+
+  // 1. Live-calculate current value using existing function
+  const currentValue = await calculateGoalProgress({
+    category: goal.category,
+    unit: goal.unit,
+    startDate: goal.startDate,
+    endDate: goal.endDate,
+  });
+
+  // 2. Calculate previous period value for trend
+  const periodLength =
+    goal.endDate.getTime() - goal.startDate.getTime();
+  const prevStart = new Date(goal.startDate.getTime() - periodLength);
+  const prevEnd = new Date(goal.startDate.getTime() - 1);
+
+  const previousValue = await calculateGoalProgress({
+    category: goal.category,
+    unit: goal.unit,
+    startDate: prevStart,
+    endDate: prevEnd,
+  });
+
+  // 3. Compute percentage, status, trend
+  const target = Number(goal.targetValue);
+  const percentage = target === 0 ? 0 : (currentValue / target) * 100;
+
+  let status: string;
+  if (percentage >= 100) status = "COMPLETED";
+  else if (percentage >= 70) status = "ON_TRACK";
+  else if (percentage >= 40) status = "AT_RISK";
+  else status = "BEHIND";
+
+  const trend =
+    previousValue === 0
+      ? 0
+      : Math.round(
+          ((currentValue - previousValue) / previousValue) * 100
+        );
+
+  // Cap trend to Decimal(5,2) range
+  const clampedTrend = Math.max(-999.99, Math.min(999.99, trend));
+
+  // 4. Persist everything in a transaction
+  await prisma.$transaction([
+    prisma.goal.update({
+      where: { id: goalId },
+      data: {
+        currentValue,
+        status: status as any,
+        trend: clampedTrend,
+      },
+    }),
+    ...goal.milestones.map((m) =>
+      prisma.goalMilestone.update({
+        where: { id: m.id },
+        data: { reached: currentValue >= Number(m.value) },
+      })
+    ),
+  ]);
+
+  return { currentValue, status, trend: clampedTrend, percentage };
+}
+
 /**
  * Calculates the current value for a goal based on live database data.
  */
