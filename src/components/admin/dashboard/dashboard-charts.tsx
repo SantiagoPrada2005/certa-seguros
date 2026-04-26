@@ -10,6 +10,8 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { TrendingUpIcon, ShieldCheckIcon, ActivityIcon } from "lucide-react";
 import { formatCOP } from "@/lib/format";
 
@@ -74,10 +76,26 @@ export function DashboardCharts({
     percent: totalLeads > 0 ? Math.round((item.valor / totalLeads) * 100) : 0,
   }));
 
+  const chartCardVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+  };
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
   return (
-    <>
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-7">
-        <Card className="xl:col-span-4">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="flex flex-col gap-4"
+    >
+      <motion.div variants={chartCardVariants}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-7">
+          <Card className="transition-shadow hover:shadow-md xl:col-span-4">
           <CardHeader>
             <CardTitle>Evolución de Ingresos</CardTitle>
             <CardDescription>Primas y comisiones mensuales — Año {currentYear}</CardDescription>
@@ -142,9 +160,11 @@ export function DashboardCharts({
           </CardFooter>
         </Card>
       </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-        <Card className="xl:col-span-4">
+      <motion.div variants={chartCardVariants}>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-12">
+        <Card className="transition-shadow hover:shadow-md xl:col-span-4 md:col-span-1">
           <CardHeader>
             <CardTitle>Origen de Leads</CardTitle>
             <CardDescription>Canales de captación de prospectos</CardDescription>
@@ -204,7 +224,7 @@ export function DashboardCharts({
           </CardFooter>
         </Card>
 
-        <Card className="xl:col-span-3">
+        <Card className="transition-shadow hover:shadow-md xl:col-span-3 md:col-span-2 lg:col-span-1">
           <CardHeader>
             <CardTitle>Tasa de Conversión</CardTitle>
             <CardDescription>Prospectos → Clientes</CardDescription>
@@ -228,6 +248,7 @@ export function DashboardCharts({
           </CardContent>
         </Card>
       </div>
-    </>
+      </motion.div>
+    </motion.div>
   );
 }

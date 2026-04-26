@@ -1,17 +1,40 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth"
+import { useState, useEffect, useRef } from "react"
+import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 import { auth } from "@/lib/firebase/config"
 import { createSession } from "./actions"
 import { SignInPage } from "@/components/ui/sign-in"
 import { toast } from "sonner"
 
 export default function AdminLoginPage() {
-  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [isPending, setIsPending] = useState(false)
+  const redirectingRef = useRef(false)
+
+  // Auto-redirect if already authenticated (e.g. token expired and layout redirected here)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if (authUser && !redirectingRef.current) {
+        redirectingRef.current = true
+        try {
+          const token = await authUser.getIdToken(true) // force refresh
+          await createSession(token)
+          window.location.href = "/admin"
+        } catch (error) {
+          console.error("Auto-login failed:", error)
+          await auth.signOut() // Sync client state if server session is revoked
+          redirectingRef.current = false
+        }
+      }
+    })
+    return () => unsubscribe()
+  }, [])
+
+  const navigateToAdmin = () => {
+    // Use full page navigation so the middleware reads the freshly-set cookie
+    window.location.href = "/admin"
+  }
 
   const handleEmailSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -20,20 +43,20 @@ export default function AdminLoginPage() {
 
     const formData = new FormData(event.currentTarget)
     const email = formData.get("email") as string
-    const password = formData.get("masterKey") as string // MasterKey was the original name, but effectively it's the password now
+    const password = formData.get("masterKey") as string
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const token = await userCredential.user.getIdToken()
-      
+
       const sessionResult = await createSession(token)
-      
+
       if (sessionResult?.error) {
         throw new Error(sessionResult.error)
       }
 
       toast.success("Inicio de sesión exitoso")
-      router.push("/admin")
+      navigateToAdmin()
     } catch (err: any) {
       console.error("Login component error:", err)
       setError(err?.message || "Ocurrió un error al iniciar sesión.")
@@ -51,15 +74,15 @@ export default function AdminLoginPage() {
       const provider = new GoogleAuthProvider()
       const userCredential = await signInWithPopup(auth, provider)
       const token = await userCredential.user.getIdToken()
-      
+
       const sessionResult = await createSession(token)
-      
+
       if (sessionResult?.error) {
         throw new Error(sessionResult.error)
       }
 
       toast.success("Sesión con Google exitosa")
-      router.push("/admin")
+      navigateToAdmin()
     } catch (err: any) {
       console.error("Google sign-in error:", err)
       setError(err?.message || "Ocurrió un error con Google.")

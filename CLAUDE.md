@@ -50,9 +50,9 @@ API routes live under `/api/` — one folder per entity, each with `route.ts` ex
 ### Auth Flow
 
 1. Firebase Auth handles identity (client side via `src/lib/firebase/config.ts`).
-2. `AuthProvider` (root layout) listens to `onAuthStateChanged`, gets the ID token, and calls the `createSession` server action.
-3. `createSession` (`src/app/login/actions.ts`) verifies the token with Firebase Admin, upserts the user in the local `User` table (default role: `VIEWER`), and sets a `firebase_session` cookie.
-4. `proxy.ts` (middleware matcher: `/admin/:path*`, `/login`) reads the cookie — redirects unauthenticated users to `/login` and authenticated users away from `/login` to `/admin`. It also sets security headers.
+2. `AuthProvider` (root layout) listens to `onAuthStateChanged` and provides the current Firebase user via context.
+3. `createSession` (`src/app/login/actions.ts`) verifies the token with Firebase Admin, upserts the user in the local `User` table (default role: `VIEWER`), calls `adminAuth.createSessionCookie()` to create a 5-day session cookie, and sets `firebase_session`.
+4. `middleware.ts` reads the `firebase_session` cookie — redirects unauthenticated users from `/admin` to `/login` and authenticated users from `/login` to `/admin`. It also sets security headers. Uses `adminAuth.verifySessionCookie()` to validate the session (no expiry race).
 
 ### Data Access Patterns
 

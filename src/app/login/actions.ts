@@ -4,8 +4,6 @@ import { cookies } from "next/headers"
 import { adminAuth } from "@/lib/firebase/admin"
 import prisma from "@/lib/prisma"
 
-type ActionState = { error: string } | null;
-
 export async function createSession(idToken: string) {
   try {
     // Verify the ID token
@@ -38,12 +36,17 @@ export async function createSession(idToken: string) {
       },
     });
 
-    // Set a session cookie for Middleware
+    // Create a long-lived session cookie (valid for 5 days, unlike ID tokens that expire in 1 hour)
+    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
+      expiresIn: 5 * 24 * 60 * 60 * 1000, // 5 days
+    });
+
     const cookieStore = await cookies();
-    cookieStore.set("firebase_session", idToken, {
+    cookieStore.set("firebase_session", sessionCookie, {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 5, // 5 days
     });
 
