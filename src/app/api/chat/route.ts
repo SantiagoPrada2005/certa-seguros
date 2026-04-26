@@ -1,4 +1,5 @@
 import { streamText, convertToModelMessages, type UIMessage } from "ai";
+import { gateway } from "@ai-sdk/gateway";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { getClientsTool } from "@/lib/tools/get-clients";
 import { getClientDetailsTool } from "@/lib/tools/get-client-details";
@@ -11,30 +12,46 @@ function getModel() {
   const modelName = process.env.CHAT_MODEL || "google/gemini-2.5-flash";
 
   if (modelName.startsWith("openrouter/")) {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "OPENROUTER_API_KEY is not configured but CHAT_MODEL requests an OpenRouter model."
+      );
+    }
     const openrouter = createOpenAICompatible({
       name: "openrouter",
       baseURL: "https://openrouter.ai/api/v1",
-      apiKey: process.env.OPENROUTER_API_KEY || "",
+      apiKey,
     });
     return openrouter(modelName.replace("openrouter/", ""));
   }
 
-  return modelName;
+  return gateway(modelName);
 }
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  try {
+    const { messages }: { messages: UIMessage[] } = await req.json();
 
-  const result = streamText({
-    model: getModel(),
-    messages: await convertToModelMessages(messages),
-    tools: {
-      get_clients: getClientsTool,
-      get_client_details: getClientDetailsTool,
-      get_services: getServicesTool,
-      get_service_details: getServiceDetailsTool,
-    },
-  });
+    const result = streamText({
+      model: getModel(),
+      messages: await convertToModelMessages(messages),
+      tools: {
+        get_clients: getClientsTool,
+        get_client_details: getClientDetailsTool,
+        get_services: getServicesTool,
+        get_service_details: getServiceDetailsTool,
+      },
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error) {
+    console.error("Chat API error:", error);
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Internal server error",
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 }
