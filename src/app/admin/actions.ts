@@ -542,6 +542,26 @@ export async function recalculateGoalProgress(goalId: string) {
   return { currentValue, status, trend: clampedTrend, percentage };
 }
 
+export async function recalculateAllGoalsProgress() {
+  const goals = await prisma.goal.findMany({
+    where: { isActive: true },
+    select: { id: true },
+  });
+
+  const results = await Promise.allSettled(
+    goals.map((g) => recalculateGoalProgress(g.id))
+  );
+
+  const succeeded = results.filter(
+    (r) => r.status === "fulfilled"
+  ).length;
+  const failed = results.filter(
+    (r) => r.status === "rejected"
+  ).length;
+
+  return { total: goals.length, succeeded, failed };
+}
+
 /**
  * Calculates the current value for a goal based on live database data.
  */
