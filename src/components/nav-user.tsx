@@ -25,18 +25,17 @@ import { useAuth } from "@/providers/auth-provider"
 import { auth } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
 import { removeSession } from "@/app/login/actions"
-import { useRouter } from "next/navigation"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { user } = useAuth()
-  const router = useRouter()
 
   const handleLogout = async () => {
     try {
       await signOut(auth)
       await removeSession()
-      router.push("/login")
+      // Full navigation ensures cookie deletion is reflected before the page loads
+      window.location.href = "/login"
     } catch (error) {
       console.error("Error logging out:", error)
     }

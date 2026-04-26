@@ -15,9 +15,10 @@ export default async function AdminRootLayout({ children }: { children: React.Re
   if (!sessionCookie?.value) redirect("/login")
 
   try {
-    const decodedToken = await adminAuth.verifyIdToken(sessionCookie.value)
+    // Verify the session cookie (valid for 5 days, unlike ID tokens which expire in 1 hour)
+    const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie.value)
     const user = await prisma.user.findUnique({
-      where: { firebaseUid: decodedToken.uid },
+      where: { firebaseUid: decodedClaims.uid },
       select: { role: true, isActive: true },
     })
 
@@ -26,8 +27,7 @@ export default async function AdminRootLayout({ children }: { children: React.Re
     }
   } catch (e: any) {
     if (e?.digest?.startsWith?.("NEXT_REDIRECT")) throw e
-    cookieStore.delete("firebase_session")
-    redirect("/login")
+    redirect("/api/auth/logout")
   }
 
   const theme = cookieStore.get("certa-admin-theme")?.value as any || "neutral"

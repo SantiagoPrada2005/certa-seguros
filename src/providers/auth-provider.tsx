@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
-import { createSession } from "@/app/login/actions";
 
 interface AuthContextType {
   user: User | null;
@@ -17,18 +16,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
-      
-      if (authUser) {
-        try {
-          const token = await authUser.getIdToken();
-          await createSession(token);
-        } catch (error) {
-          console.error("Error syncing session:", error);
-        }
-      }
-      
       setLoading(false);
     });
 

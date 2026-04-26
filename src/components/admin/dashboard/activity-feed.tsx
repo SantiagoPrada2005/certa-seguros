@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActivityIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import { relativeTime } from "@/lib/format";
 
 type ActivityItem = {
@@ -40,16 +41,28 @@ export function ActivityFeed({ feed }: { feed: ActivityItem[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-4">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { opacity: 0 },
+            show: { opacity: 1, transition: { staggerChildren: 0.04 } },
+          }}
+          className="flex flex-col gap-4"
+        >
           {feed.length === 0 && (
             <p className="text-sm text-muted-foreground text-center py-4">
               No hay actividad registrada aún.
             </p>
           )}
           {feed.map((item) => (
-            <div
+            <motion.div
               key={item.id}
-              className="flex items-start gap-3 rounded-lg border border-border/50 p-3 transition-colors hover:bg-muted/50"
+              variants={{
+                hidden: { opacity: 0, x: -8 },
+                show: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+              }}
+              className="flex items-start gap-3 rounded-lg border border-border/50 p-3 transition-colors hover:bg-muted/50 hover:border-border"
             >
               <div className="mt-0.5">
                 <Badge
@@ -70,9 +83,9 @@ export function ActivityFeed({ feed }: { feed: ActivityItem[] }) {
               <span className="text-xs text-muted-foreground whitespace-nowrap">
                 {relativeTime(item.createdAt)}
               </span>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </CardContent>
       <CardFooter className="border-t pt-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
