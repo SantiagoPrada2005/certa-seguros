@@ -536,6 +536,8 @@ export async function recalculateGoalProgress(goalId: string) {
     ),
   ]);
 
+  revalidatePath("/admin/metas");
+
   return { currentValue, status, trend: clampedTrend, percentage };
 }
 
