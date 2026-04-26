@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
+import type { $Enums } from "@/generated/prisma";
 import { z } from "zod";
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
@@ -502,7 +503,7 @@ export async function recalculateGoalProgress(goalId: string) {
   const target = Number(goal.targetValue);
   const percentage = target === 0 ? 0 : (currentValue / target) * 100;
 
-  let status: string;
+  let status: $Enums.GoalStatus;
   if (percentage >= 100) status = "COMPLETED";
   else if (percentage >= 70) status = "ON_TRACK";
   else if (percentage >= 40) status = "AT_RISK";
@@ -524,7 +525,7 @@ export async function recalculateGoalProgress(goalId: string) {
       where: { id: goalId },
       data: {
         currentValue,
-        status: status as any,
+        status,
         trend: clampedTrend,
       },
     }),
