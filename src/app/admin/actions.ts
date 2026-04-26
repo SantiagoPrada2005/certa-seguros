@@ -424,6 +424,9 @@ export async function createGoal(
       },
     });
 
+    // Auto-calculate initial progress from existing data
+    await recalculateGoalProgress(goal.id);
+
     revalidatePath("/admin/metas");
     return { success: true, data: { id: goal.id } };
   } catch (err) {
