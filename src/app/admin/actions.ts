@@ -460,6 +460,9 @@ export async function updateGoal(
       },
     });
 
+    // Recalculate progress after updating goal metadata
+    await recalculateGoalProgress(id);
+
     revalidatePath("/admin/metas");
     return { success: true, data: undefined };
   } catch (err) {
