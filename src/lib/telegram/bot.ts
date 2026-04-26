@@ -128,23 +128,23 @@ function setupBot(bot: Bot<AuthedContext>) {
         "3. Genera un código de vinculación\n" +
         "4. Envíame ese código aquí\n\n" +
         "O simplemente escribe tu código de vinculación.",
-      { parse_mode: "Markdown", reply_markup: verificationStartKeyboard() }
+      { reply_markup: verificationStartKeyboard() }
     );
   });
 
   bot.command("ayuda", async (ctx) => {
     await ctx.reply(
-      "*Comandos disponibles:*\n\n" +
-        "/start — Verificar estado de la cuenta\n" +
-        "/ayuda — Mostrar esta ayuda\n" +
-        "/cancelar — Cancelar operación actual\n" +
-        "/menu — Mostrar menú principal\n\n" +
-        "También puedes escribir en lenguaje natural:\n" +
-        '• "¿Cómo va la empresa?"\n' +
-        '• "Lista los clientes activos"\n' +
-        '• "¿Qué pólizas están por vencer?"\n' +
-        '• "Crea un recordatorio para Juan Pérez"',
-      { parse_mode: "Markdown", reply_markup: mainMenuKeyboard() }
+      "Comandos disponibles:\n\n" +
+        "/start - Verificar estado de la cuenta\n" +
+        "/ayuda - Mostrar esta ayuda\n" +
+        "/cancelar - Cancelar operacion actual\n" +
+        "/menu - Mostrar menu principal\n\n" +
+        "Tambien puedes escribir en lenguaje natural:\n" +
+        '- "Como va la empresa?"\n' +
+        '- "Lista los clientes activos"\n' +
+        '- "Que polizas estan por vencer?"\n' +
+        '- "Crea un recordatorio para Juan Perez"',
+      { reply_markup: mainMenuKeyboard() }
     );
   });
 
@@ -245,15 +245,14 @@ function setupBot(bot: Bot<AuthedContext>) {
     await ctx.answerCallbackQuery();
     await ctx.editMessageReplyMarkup({ reply_markup: undefined });
     await ctx.reply(
-      "He entendido que quieres confirmar. Por favor, responde *sí*, *confirmo* o *adelante* para que ejecute la acción.",
-      { parse_mode: "Markdown" }
+      "He entendido que quieres confirmar. Por favor, responde si, confirmo o adelante para que ejecute la accion."
     );
   });
 
   bot.callbackQuery("cancel_action", async (ctx) => {
-    await ctx.answerCallbackQuery("✅ Operación cancelada.");
+    await ctx.answerCallbackQuery("Operacion cancelada.");
     await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-    await ctx.reply("✅ Operación cancelada. ¿Necesitas algo más?", {
+    await ctx.reply("Operacion cancelada. Necesitas algo mas?", {
       reply_markup: mainMenuKeyboard(),
     });
   });
@@ -261,19 +260,18 @@ function setupBot(bot: Bot<AuthedContext>) {
   bot.callbackQuery("menu_main", async (ctx) => {
     await ctx.answerCallbackQuery();
     await ctx.editMessageReplyMarkup({ reply_markup: undefined });
-    await ctx.reply("¿Qué deseas hacer?", { reply_markup: mainMenuKeyboard() });
+    await ctx.reply("Que deseas hacer?", { reply_markup: mainMenuKeyboard() });
   });
 
   bot.callbackQuery("help", async (ctx) => {
     await ctx.answerCallbackQuery();
     await ctx.editMessageReplyMarkup({ reply_markup: undefined });
     await ctx.reply(
-      "*Comandos disponibles:*\n\n" +
-        "/start — Verificar estado de la cuenta\n" +
-        "/ayuda — Mostrar ayuda\n" +
-        "/cancelar — Cancelar operación actual\n" +
-        "/menu — Mostrar menú principal",
-      { parse_mode: "Markdown" }
+      "Comandos disponibles:\n\n" +
+        "/start - Verificar estado de la cuenta\n" +
+        "/ayuda - Mostrar ayuda\n" +
+        "/cancelar - Cancelar operacion actual\n" +
+        "/menu - Mostrar menu principal"
     );
   });
 
@@ -372,13 +370,13 @@ async function handleVerificationCode(ctx: AuthedContext, code: string) {
   });
 
   await ctx.reply(
-    `✅ *¡Cuenta vinculada exitosamente!*\n\n` +
+    `✅ Cuenta vinculada exitosamente!\n\n` +
       `Bienvenido, ${record.user.name}. Ya puedes consultar el CRM desde Telegram.\n\n` +
-      `Prueba preguntándome algo como:\n` +
-      `• "¿Cómo va la empresa?"\n` +
-      `• "Lista los prospectos nuevos"\n` +
-      `• "¿Qué pólizas vencen este mes?"`,
-    { parse_mode: "Markdown", reply_markup: mainMenuKeyboard() }
+      `Prueba preguntandome algo como:\n` +
+      `- Como va la empresa?\n` +
+      `- Lista los prospectos nuevos\n` +
+      `- Que polizas vencen este mes?`,
+    { reply_markup: mainMenuKeyboard() }
   );
 }
 
@@ -420,7 +418,7 @@ export async function sendTelegramNotification(userId: string, text: string): Pr
     });
     if (!connection) return false;
 
-    await bot.api.sendMessage(Number(connection.chatId), text, { parse_mode: "Markdown" });
+    await bot.api.sendMessage(Number(connection.chatId), text);
     return true;
   } catch (error) {
     console.error("sendTelegramNotification error:", error);
@@ -436,7 +434,7 @@ export async function sendTelegramNotificationToChat(
   if (!bot) return false;
 
   try {
-    await bot.api.sendMessage(Number(chatId), text, { parse_mode: "Markdown" });
+    await bot.api.sendMessage(Number(chatId), text);
     return true;
   } catch (error) {
     console.error("sendTelegramNotificationToChat error:", error);
@@ -472,7 +470,6 @@ export async function sendDailyDigest(): Promise<number> {
 
       const header = `☀️ *Buenos días, ${conn.user.name}*\n\n`;
       await bot.api.sendMessage(Number(conn.chatId), header + result.text, {
-        parse_mode: "Markdown",
         reply_markup: mainMenuKeyboard(),
       });
       sent++;
