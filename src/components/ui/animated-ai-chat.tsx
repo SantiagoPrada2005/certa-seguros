@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useId } from "react";
 import { useState } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { cn } from "@lib/utils";
+import { MarkdownRenderer } from "@/components/ui/markdown";
+import { toolsMetadata } from "@/lib/tools/index";
 import {
     ImageIcon,
     LayoutDashboard,
@@ -17,6 +19,10 @@ import {
     Sparkles,
     Command,
     ArrowLeft,
+    FileText,
+    File,
+    Workflow,
+    Bot,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as React from "react"
@@ -119,16 +125,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                         transition={{ duration: 0.2 }}
                     />
                 )}
-
-                {props.onChange && (
-                    <div
-                        className="absolute bottom-2 right-2 opacity-0 w-2 h-2 bg-primary rounded-full"
-                        style={{
-                            animation: 'none',
-                        }}
-                        id="textarea-ripple"
-                    />
-                )}
             </div>
         )
     }
@@ -142,15 +138,26 @@ function getMessageText(msg: { parts: Array<{ type: string; text?: string }> }):
         .join("");
 }
 
+interface AttachmentFile {
+    id: string;
+    name: string;
+    size: number;
+    type: string;
+    url?: string;
+}
+
 export function AnimatedAIChat({ backHref }: { backHref?: string }) {
     const { messages, sendMessage, status } = useChat({
       transport: new DefaultChatTransport({ api: "/api/chat" }),
     });
+    
+    const toolCallId = useId();
     const isStreaming = status === "streaming";
     const [value, setValue] = useState("");
-    const [attachments, setAttachments] = useState<string[]>([]);
+    const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
     const [activeSuggestion, setActiveSuggestion] = useState<number>(-1);
     const [showCommandPalette, setShowCommandPalette] = useState(false);
+    const [showToolsPanel, setShowToolsPanel] = useState(false);
     const [recentCommand, setRecentCommand] = useState<string | null>(null);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
@@ -160,6 +167,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
     const [inputFocused, setInputFocused] = useState(false);
     const commandPaletteRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -195,6 +203,8 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
             prefix: "/improve"
         },
     ];
+
+    const toolList = Object.values(toolsMetadata);
 
     useEffect(() => {
         if (value.startsWith('/') && !value.includes(' ')) {
@@ -279,18 +289,44 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
 
     const handleSendMessage = () => {
         if (!value.trim()) return;
-        sendMessage({ text: value.trim() });
+        
+        const attachmentsData = attachments.length > 0 
+            ? JSON.stringify(attachments.map(a => ({ name: a.name, type: a.type, size: a.size })))
+            : undefined;
+            
+        const messageWithAttachments = attachmentsData 
+            ? `${value.trim()} [Adjuntos: ${attachmentsData}]`
+            : value.trim();
+            
+        sendMessage({ text: messageWithAttachments });
         setValue("");
         adjustHeight(true);
+        setAttachments([]);
     };
 
     const handleAttachFile = () => {
-        const mockFileName = `file-${Math.floor(Math.random() * 1000)}.pdf`;
-        setAttachments((prev: string[]) => [...prev, mockFileName]);
+        fileInputRef.current?.click();
     };
 
-    const removeAttachment = (index: number) => {
-        setAttachments((prev: string[]) => prev.filter((_, i) => i !== index));
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+
+        Array.from(files).forEach(file => {
+            const newFile: AttachmentFile = {
+                id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                name: file.name,
+                size: file.size,
+                type: file.type,
+            };
+            setAttachments(prev => [...prev, newFile]);
+        });
+
+        e.target.value = '';
+    };
+
+    const removeAttachment = (id: string) => {
+        setAttachments((prev) => prev.filter((file) => file.id !== id));
     };
 
     const selectCommandSuggestion = (index: number) => {
@@ -300,6 +336,23 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
 
         setRecentCommand(selectedCommand.label);
         setTimeout(() => setRecentCommand(null), 2000);
+    };
+
+    const insertTool = (toolName: string) => {
+        setValue(`/tool ${toolName} `);
+        setShowToolsPanel(false);
+    };
+
+    const formatFileSize = (bytes: number): string => {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    };
+
+    const getFileIcon = (type: string) => {
+        if (type.startsWith('image/')) return <ImageIcon className="w-4 h-4" />;
+        if (type === 'application/pdf') return <FileText className="w-4 h-4" />;
+        return <File className="w-4 h-4" />;
     };
 
     return (
@@ -323,6 +376,16 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/10 rounded-full mix-blend-normal filter blur-[128px] animate-pulse delay-700" />
                 <div className="absolute top-1/4 right-1/3 w-64 h-64 bg-accent/10 rounded-full mix-blend-normal filter blur-[96px] animate-pulse delay-1000" />
             </div>
+            
+            <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+                accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx"
+            />
+
             <div className="w-full max-w-2xl mx-auto relative">
                 <motion.div
                     className="relative z-10 space-y-12"
@@ -387,9 +450,19 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                         <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                             {msg.role === 'user' ? 'Tú' : 'Zap AI'}
                                         </div>
-                                        <div className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                                            {getMessageText(msg) || (msg.role === 'assistant' && i === messages.length - 1 && isStreaming ? <TypingDots /> : '')}
-                                        </div>
+                                        {msg.role === 'user' ? (
+                                            <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                                                {getMessageText(msg)}
+                                            </p>
+                                        ) : (
+                                            <MarkdownRenderer
+                                                content={getMessageText(msg) || (i === messages.length - 1 && isStreaming ? '' : '')}
+                                                className={cn(
+                                                    "text-sm",
+                                                    i === messages.length - 1 && isStreaming && "animate-pulse"
+                                                )}
+                                            />
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}
@@ -480,17 +553,23 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
                                 >
-                                    {attachments.map((file, index) => (
+                                    {attachments.map((file) => (
                                         <motion.div
-                                            key={index}
+                                            key={file.id}
                                             className="flex items-center gap-2 text-xs bg-accent/10 py-1.5 px-3 rounded-lg text-muted-foreground"
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.9 }}
                                         >
-                                            <span>{file}</span>
+                                            <div className="w-4 h-4 flex items-center justify-center">
+                                                {getFileIcon(file.type)}
+                                            </div>
+                                            <span className="max-w-[100px] truncate">{file.name}</span>
+                                            <span className="text-muted-foreground/50 text-[10px]">
+                                                {formatFileSize(file.size)}
+                                            </span>
                                             <button
-                                                onClick={() => removeAttachment(index)}
+                                                onClick={() => removeAttachment(file.id)}
                                                 className="text-muted-foreground/40 hover:text-foreground transition-colors"
                                             >
                                                 <XIcon className="w-3 h-3" />
@@ -529,6 +608,25 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                     )}
                                 >
                                     <Command className="w-4 h-4" />
+                                    <motion.span
+                                        className="absolute inset-0 bg-accent/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                        layoutId="button-highlight"
+                                    />
+                                </motion.button>
+                                <motion.button
+                                    type="button"
+                                    data-tools-button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setShowToolsPanel(prev => !prev);
+                                    }}
+                                    whileTap={{ scale: 0.94 }}
+                                    className={cn(
+                                        "p-2 text-muted-foreground/40 hover:text-foreground rounded-lg transition-colors relative group",
+                                        showToolsPanel && "bg-accent/10 text-foreground"
+                                    )}
+                                >
+                                    <Bot className="w-4 h-4" />
                                     <motion.span
                                         className="absolute inset-0 bg-accent/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                                         layoutId="button-highlight"
@@ -603,9 +701,53 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                 <span className="text-xs font-medium text-foreground/90 mb-0.5">zap</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <span>Respondiente</span>
+                                <span>Respondiendo</span>
                                 <TypingDots />
                             </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {showToolsPanel && (
+                    <motion.div
+                        className="fixed right-6 top-1/2 transform -translate-y-1/2 backdrop-blur-2xl bg-card/80 rounded-xl p-4 shadow-lg border border-border/50 z-50 w-64"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                    >
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Herramientas
+                            </span>
+                            <button
+                                onClick={() => setShowToolsPanel(false)}
+                                className="p-1 hover:bg-accent/50 rounded"
+                            >
+                                <XIcon className="w-3 h-3" />
+                            </button>
+                        </div>
+                        <div className="space-y-1">
+                            {toolList.map((tool) => (
+                                <button
+                                    key={tool.name}
+                                    onClick={() => insertTool(tool.name)}
+                                    className="w-full flex items-start gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors text-left"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                                        {tool.icon}
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-foreground">
+                                            {tool.name}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {tool.description}
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
                         </div>
                     </motion.div>
                 )}
@@ -655,61 +797,4 @@ function TypingDots() {
             ))}
         </div>
     );
-}
-
-interface ActionButtonProps {
-    icon: React.ReactNode;
-    label: string;
-}
-
-function ActionButton({ icon, label }: ActionButtonProps) {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <motion.button
-            type="button"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-accent/20 rounded-full border border-border text-muted-foreground hover:text-foreground transition-all relative overflow-hidden group"
-        >
-            <div className="relative z-10 flex items-center gap-2">
-                {icon}
-                <span className="text-xs relative z-10">{label}</span>
-            </div>
-
-            <AnimatePresence>
-                {isHovered && (
-                    <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                    />
-                )}
-            </AnimatePresence>
-
-            <motion.span
-                className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary"
-                initial={{ width: 0 }}
-                whileHover={{ width: "100%" }}
-                transition={{ duration: 0.3 }}
-            />
-        </motion.button>
-    );
-}
-
-const rippleKeyframes = `
-@keyframes ripple {
-  0% { transform: scale(0.5); opacity: 0.6; }
-  100% { transform: scale(2); opacity: 0; }
-}
-`;
-
-if (typeof document !== 'undefined') {
-    const style = document.createElement('style');
-    style.innerHTML = rippleKeyframes;
-    document.head.appendChild(style);
 }

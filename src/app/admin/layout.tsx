@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { AdminThemeProvider } from "@/components/admin-theme-provider"
+import { AdminProviders } from "@/components/admin/providers"
 import { Inter } from "next/font/google"
 import { adminAuth } from "@/lib/firebase/admin"
 import prisma from "@/lib/prisma"
@@ -34,13 +35,15 @@ export default async function AdminRootLayout({ children }: { children: React.Re
   const mode = cookieStore.get("certa-admin-mode")?.value as any || "light"
 
   return (
-    <div
-      className={`${inter.variable} antialiased min-h-screen`}
-      style={{ "--font-sans": "var(--font-inter)" } as React.CSSProperties}
-    >
-      <AdminThemeProvider initialTheme={theme} initialMode={mode} fontClass={inter.variable}>
-        {children}
-      </AdminThemeProvider>
-    </div>
+    <AdminProviders>
+      <div
+        className={`${inter.variable} antialiased min-h-screen`}
+        style={{ "--font-sans": "var(--font-inter)" } as React.CSSProperties}
+      >
+        <AdminThemeProvider initialTheme={theme} initialMode={mode} fontClass={inter.variable}>
+          {children}
+        </AdminThemeProvider>
+      </div>
+    </AdminProviders>
   )
 }
