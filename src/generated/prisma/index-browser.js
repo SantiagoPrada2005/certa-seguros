@@ -260,6 +260,14 @@ exports.Prisma.InvoiceItemScalarFieldEnum = {
   invoiceId: 'invoiceId'
 };
 
+exports.Prisma.InvoiceVerificationScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  invoiceId: 'invoiceId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.ReminderScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -493,6 +501,7 @@ exports.Prisma.ModelName = {
   Policy: 'Policy',
   Invoice: 'Invoice',
   InvoiceItem: 'InvoiceItem',
+  InvoiceVerification: 'InvoiceVerification',
   Reminder: 'Reminder',
   Goal: 'Goal',
   GoalMilestone: 'GoalMilestone',

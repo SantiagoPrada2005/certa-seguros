@@ -395,7 +395,8 @@ model Invoice {
   updatedAt DateTime @updatedAt
 
   // Relaciones
-  items InvoiceItem[]
+  items         InvoiceItem[]
+  verifications InvoiceVerification[]
 
   @@index([clientId])
   @@index([status])
@@ -416,7 +417,19 @@ model InvoiceItem {
   invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@index([invoiceId])
-  @@map("invoice_items")
+}
+
+/// Token de verificación pública para facturas (QR)
+model InvoiceVerification {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  invoiceId String
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@map("invoice_verifications")
 }
 
 /// Recordatorios y alertas preventivas (renovaciones, seguimientos, etc.)

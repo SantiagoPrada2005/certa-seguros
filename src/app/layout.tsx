@@ -17,6 +17,10 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Certa Seguros",
   description: "Certa Seguros",
+  icons: {
+    icon: "/images/logo/Certa-Seguros.ico",
+    apple: "/images/logo/Certa Seguros.png",
+  },
 };
 
 import { AuthProvider } from "@/providers/auth-provider";

@@ -46,6 +46,7 @@ export interface Invoice {
   companyPhone?: string;
   companyEmail?: string;
   paymentInfo?: PaymentInfo;
+  verificationToken?: string;
 }
 
 export interface BillingStats {

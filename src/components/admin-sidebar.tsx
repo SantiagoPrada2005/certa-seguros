@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, Sparkles, FileTextIcon, SettingsIcon, SendIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
@@ -131,8 +132,8 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/admin" />}>
-              <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <ShieldCheckIcon className="size-4" />
+              <div className="flex aspect-square size-10 items-center justify-center rounded-lg overflow-hidden p-1 bg-white">
+                <Image src="/images/logo/Certa Seguros.png" alt="Certa Seguros Logo" width={32} height={32} className="object-contain" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">Certa Seguros</span>

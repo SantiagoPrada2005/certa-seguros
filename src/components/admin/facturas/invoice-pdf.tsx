@@ -259,7 +259,10 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
     dateStyle: 'medium',
   }).format(new Date());
 
-  const qrVerifyUrl = `https://certaseguros.com.co/verify?f=${invoice.number}`;
+  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://certaseguros.com.co';
+const qrVerifyUrl = invoice.verificationToken
+  ? `${BASE_URL}/factura/${invoice.verificationToken}`
+  : undefined;
 
   return (
     <Document>
@@ -383,12 +386,14 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
         </View>
 
         {/* QR Code Verification */}
+        {qrVerifyUrl && (
         <View style={styles.qrSection}>
           <View style={styles.qrPlaceholder}>
             <Text style={{ fontSize: 8, color: colors.textMuted }}>QR</Text>
           </View>
           <Text style={styles.qrText}>{qrVerifyUrl}</Text>
         </View>
+        )}
 
         {/* Footer */}
         <View style={styles.footer}>

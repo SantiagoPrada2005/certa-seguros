@@ -77,6 +77,11 @@ export type Invoice = $Result.DefaultSelection<Prisma.$InvoicePayload>
  */
 export type InvoiceItem = $Result.DefaultSelection<Prisma.$InvoiceItemPayload>
 /**
+ * Model InvoiceVerification
+ * Token de verificación pública para facturas (QR)
+ */
+export type InvoiceVerification = $Result.DefaultSelection<Prisma.$InvoiceVerificationPayload>
+/**
  * Model Reminder
  * Recordatorios y alertas preventivas (renovaciones, seguimientos, etc.)
  */
@@ -599,6 +604,16 @@ export class PrismaClient<
   get invoiceItem(): Prisma.InvoiceItemDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.invoiceVerification`: Exposes CRUD operations for the **InvoiceVerification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InvoiceVerifications
+    * const invoiceVerifications = await prisma.invoiceVerification.findMany()
+    * ```
+    */
+  get invoiceVerification(): Prisma.InvoiceVerificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.reminder`: Exposes CRUD operations for the **Reminder** model.
     * Example usage:
     * ```ts
@@ -1103,6 +1118,7 @@ export namespace Prisma {
     Policy: 'Policy',
     Invoice: 'Invoice',
     InvoiceItem: 'InvoiceItem',
+    InvoiceVerification: 'InvoiceVerification',
     Reminder: 'Reminder',
     Goal: 'Goal',
     GoalMilestone: 'GoalMilestone',
@@ -1124,7 +1140,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "client" | "prospect" | "clientTag" | "prospectService" | "serviceCategory" | "serviceSubcategory" | "service" | "clientService" | "policy" | "invoice" | "invoiceItem" | "reminder" | "goal" | "goalMilestone" | "telegramConnection" | "telegramVerificationCode" | "activityLog"
+      modelProps: "user" | "client" | "prospect" | "clientTag" | "prospectService" | "serviceCategory" | "serviceSubcategory" | "service" | "clientService" | "policy" | "invoice" | "invoiceItem" | "invoiceVerification" | "reminder" | "goal" | "goalMilestone" | "telegramConnection" | "telegramVerificationCode" | "activityLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2016,6 +2032,80 @@ export namespace Prisma {
           }
         }
       }
+      InvoiceVerification: {
+        payload: Prisma.$InvoiceVerificationPayload<ExtArgs>
+        fields: Prisma.InvoiceVerificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InvoiceVerificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InvoiceVerificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>
+          }
+          findFirst: {
+            args: Prisma.InvoiceVerificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InvoiceVerificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>
+          }
+          findMany: {
+            args: Prisma.InvoiceVerificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>[]
+          }
+          create: {
+            args: Prisma.InvoiceVerificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>
+          }
+          createMany: {
+            args: Prisma.InvoiceVerificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InvoiceVerificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>[]
+          }
+          delete: {
+            args: Prisma.InvoiceVerificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>
+          }
+          update: {
+            args: Prisma.InvoiceVerificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.InvoiceVerificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InvoiceVerificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.InvoiceVerificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.InvoiceVerificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvoiceVerificationPayload>
+          }
+          aggregate: {
+            args: Prisma.InvoiceVerificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInvoiceVerification>
+          }
+          groupBy: {
+            args: Prisma.InvoiceVerificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InvoiceVerificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InvoiceVerificationCountArgs<ExtArgs>
+            result: $Utils.Optional<InvoiceVerificationCountAggregateOutputType> | number
+          }
+        }
+      }
       Reminder: {
         payload: Prisma.$ReminderPayload<ExtArgs>
         fields: Prisma.ReminderFieldRefs
@@ -2580,6 +2670,7 @@ export namespace Prisma {
     policy?: PolicyOmit
     invoice?: InvoiceOmit
     invoiceItem?: InvoiceItemOmit
+    invoiceVerification?: InvoiceVerificationOmit
     reminder?: ReminderOmit
     goal?: GoalOmit
     goalMilestone?: GoalMilestoneOmit
@@ -2983,10 +3074,12 @@ export namespace Prisma {
 
   export type InvoiceCountOutputType = {
     items: number
+    verifications: number
   }
 
   export type InvoiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     items?: boolean | InvoiceCountOutputTypeCountItemsArgs
+    verifications?: boolean | InvoiceCountOutputTypeCountVerificationsArgs
   }
 
   // Custom InputTypes
@@ -3005,6 +3098,13 @@ export namespace Prisma {
    */
   export type InvoiceCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: InvoiceItemWhereInput
+  }
+
+  /**
+   * InvoiceCountOutputType without action
+   */
+  export type InvoiceCountOutputTypeCountVerificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvoiceVerificationWhereInput
   }
 
 
@@ -14983,6 +15083,7 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     items?: boolean | Invoice$itemsArgs<ExtArgs>
+    verifications?: boolean | Invoice$verificationsArgs<ExtArgs>
     _count?: boolean | InvoiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["invoice"]>
 
@@ -15046,6 +15147,7 @@ export namespace Prisma {
   export type InvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     items?: boolean | Invoice$itemsArgs<ExtArgs>
+    verifications?: boolean | Invoice$verificationsArgs<ExtArgs>
     _count?: boolean | InvoiceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type InvoiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15060,6 +15162,7 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
       items: Prisma.$InvoiceItemPayload<ExtArgs>[]
+      verifications: Prisma.$InvoiceVerificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15473,6 +15576,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     items<T extends Invoice$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Invoice$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    verifications<T extends Invoice$verificationsArgs<ExtArgs> = {}>(args?: Subset<T, Invoice$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15939,6 +16043,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InvoiceItemScalarFieldEnum | InvoiceItemScalarFieldEnum[]
+  }
+
+  /**
+   * Invoice.verifications
+   */
+  export type Invoice$verificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    where?: InvoiceVerificationWhereInput
+    orderBy?: InvoiceVerificationOrderByWithRelationInput | InvoiceVerificationOrderByWithRelationInput[]
+    cursor?: InvoiceVerificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvoiceVerificationScalarFieldEnum | InvoiceVerificationScalarFieldEnum[]
   }
 
   /**
@@ -17075,6 +17203,1069 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: InvoiceItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model InvoiceVerification
+   */
+
+  export type AggregateInvoiceVerification = {
+    _count: InvoiceVerificationCountAggregateOutputType | null
+    _min: InvoiceVerificationMinAggregateOutputType | null
+    _max: InvoiceVerificationMaxAggregateOutputType | null
+  }
+
+  export type InvoiceVerificationMinAggregateOutputType = {
+    id: string | null
+    token: string | null
+    invoiceId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type InvoiceVerificationMaxAggregateOutputType = {
+    id: string | null
+    token: string | null
+    invoiceId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type InvoiceVerificationCountAggregateOutputType = {
+    id: number
+    token: number
+    invoiceId: number
+    expiresAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type InvoiceVerificationMinAggregateInputType = {
+    id?: true
+    token?: true
+    invoiceId?: true
+    expiresAt?: true
+    createdAt?: true
+  }
+
+  export type InvoiceVerificationMaxAggregateInputType = {
+    id?: true
+    token?: true
+    invoiceId?: true
+    expiresAt?: true
+    createdAt?: true
+  }
+
+  export type InvoiceVerificationCountAggregateInputType = {
+    id?: true
+    token?: true
+    invoiceId?: true
+    expiresAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type InvoiceVerificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvoiceVerification to aggregate.
+     */
+    where?: InvoiceVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvoiceVerifications to fetch.
+     */
+    orderBy?: InvoiceVerificationOrderByWithRelationInput | InvoiceVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InvoiceVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvoiceVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvoiceVerifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InvoiceVerifications
+    **/
+    _count?: true | InvoiceVerificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvoiceVerificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvoiceVerificationMaxAggregateInputType
+  }
+
+  export type GetInvoiceVerificationAggregateType<T extends InvoiceVerificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvoiceVerification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvoiceVerification[P]>
+      : GetScalarType<T[P], AggregateInvoiceVerification[P]>
+  }
+
+
+
+
+  export type InvoiceVerificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvoiceVerificationWhereInput
+    orderBy?: InvoiceVerificationOrderByWithAggregationInput | InvoiceVerificationOrderByWithAggregationInput[]
+    by: InvoiceVerificationScalarFieldEnum[] | InvoiceVerificationScalarFieldEnum
+    having?: InvoiceVerificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvoiceVerificationCountAggregateInputType | true
+    _min?: InvoiceVerificationMinAggregateInputType
+    _max?: InvoiceVerificationMaxAggregateInputType
+  }
+
+  export type InvoiceVerificationGroupByOutputType = {
+    id: string
+    token: string
+    invoiceId: string
+    expiresAt: Date
+    createdAt: Date
+    _count: InvoiceVerificationCountAggregateOutputType | null
+    _min: InvoiceVerificationMinAggregateOutputType | null
+    _max: InvoiceVerificationMaxAggregateOutputType | null
+  }
+
+  type GetInvoiceVerificationGroupByPayload<T extends InvoiceVerificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InvoiceVerificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InvoiceVerificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvoiceVerificationGroupByOutputType[P]>
+            : GetScalarType<T[P], InvoiceVerificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InvoiceVerificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    token?: boolean
+    invoiceId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    invoice?: boolean | InvoiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["invoiceVerification"]>
+
+  export type InvoiceVerificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    token?: boolean
+    invoiceId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    invoice?: boolean | InvoiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["invoiceVerification"]>
+
+  export type InvoiceVerificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    token?: boolean
+    invoiceId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    invoice?: boolean | InvoiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["invoiceVerification"]>
+
+  export type InvoiceVerificationSelectScalar = {
+    id?: boolean
+    token?: boolean
+    invoiceId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type InvoiceVerificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "token" | "invoiceId" | "expiresAt" | "createdAt", ExtArgs["result"]["invoiceVerification"]>
+  export type InvoiceVerificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    invoice?: boolean | InvoiceDefaultArgs<ExtArgs>
+  }
+  export type InvoiceVerificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    invoice?: boolean | InvoiceDefaultArgs<ExtArgs>
+  }
+  export type InvoiceVerificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    invoice?: boolean | InvoiceDefaultArgs<ExtArgs>
+  }
+
+  export type $InvoiceVerificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InvoiceVerification"
+    objects: {
+      invoice: Prisma.$InvoicePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      token: string
+      invoiceId: string
+      expiresAt: Date
+      createdAt: Date
+    }, ExtArgs["result"]["invoiceVerification"]>
+    composites: {}
+  }
+
+  type InvoiceVerificationGetPayload<S extends boolean | null | undefined | InvoiceVerificationDefaultArgs> = $Result.GetResult<Prisma.$InvoiceVerificationPayload, S>
+
+  type InvoiceVerificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<InvoiceVerificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: InvoiceVerificationCountAggregateInputType | true
+    }
+
+  export interface InvoiceVerificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InvoiceVerification'], meta: { name: 'InvoiceVerification' } }
+    /**
+     * Find zero or one InvoiceVerification that matches the filter.
+     * @param {InvoiceVerificationFindUniqueArgs} args - Arguments to find a InvoiceVerification
+     * @example
+     * // Get one InvoiceVerification
+     * const invoiceVerification = await prisma.invoiceVerification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InvoiceVerificationFindUniqueArgs>(args: SelectSubset<T, InvoiceVerificationFindUniqueArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one InvoiceVerification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {InvoiceVerificationFindUniqueOrThrowArgs} args - Arguments to find a InvoiceVerification
+     * @example
+     * // Get one InvoiceVerification
+     * const invoiceVerification = await prisma.invoiceVerification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InvoiceVerificationFindUniqueOrThrowArgs>(args: SelectSubset<T, InvoiceVerificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first InvoiceVerification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceVerificationFindFirstArgs} args - Arguments to find a InvoiceVerification
+     * @example
+     * // Get one InvoiceVerification
+     * const invoiceVerification = await prisma.invoiceVerification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InvoiceVerificationFindFirstArgs>(args?: SelectSubset<T, InvoiceVerificationFindFirstArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first InvoiceVerification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceVerificationFindFirstOrThrowArgs} args - Arguments to find a InvoiceVerification
+     * @example
+     * // Get one InvoiceVerification
+     * const invoiceVerification = await prisma.invoiceVerification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InvoiceVerificationFindFirstOrThrowArgs>(args?: SelectSubset<T, InvoiceVerificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more InvoiceVerifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceVerificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InvoiceVerifications
+     * const invoiceVerifications = await prisma.invoiceVerification.findMany()
+     * 
+     * // Get first 10 InvoiceVerifications
+     * const invoiceVerifications = await prisma.invoiceVerification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const invoiceVerificationWithIdOnly = await prisma.invoiceVerification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InvoiceVerificationFindManyArgs>(args?: SelectSubset<T, InvoiceVerificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a InvoiceVerification.
+     * @param {InvoiceVerificationCreateArgs} args - Arguments to create a InvoiceVerification.
+     * @example
+     * // Create one InvoiceVerification
+     * const InvoiceVerification = await prisma.invoiceVerification.create({
+     *   data: {
+     *     // ... data to create a InvoiceVerification
+     *   }
+     * })
+     * 
+     */
+    create<T extends InvoiceVerificationCreateArgs>(args: SelectSubset<T, InvoiceVerificationCreateArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many InvoiceVerifications.
+     * @param {InvoiceVerificationCreateManyArgs} args - Arguments to create many InvoiceVerifications.
+     * @example
+     * // Create many InvoiceVerifications
+     * const invoiceVerification = await prisma.invoiceVerification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InvoiceVerificationCreateManyArgs>(args?: SelectSubset<T, InvoiceVerificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InvoiceVerifications and returns the data saved in the database.
+     * @param {InvoiceVerificationCreateManyAndReturnArgs} args - Arguments to create many InvoiceVerifications.
+     * @example
+     * // Create many InvoiceVerifications
+     * const invoiceVerification = await prisma.invoiceVerification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InvoiceVerifications and only return the `id`
+     * const invoiceVerificationWithIdOnly = await prisma.invoiceVerification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InvoiceVerificationCreateManyAndReturnArgs>(args?: SelectSubset<T, InvoiceVerificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a InvoiceVerification.
+     * @param {InvoiceVerificationDeleteArgs} args - Arguments to delete one InvoiceVerification.
+     * @example
+     * // Delete one InvoiceVerification
+     * const InvoiceVerification = await prisma.invoiceVerification.delete({
+     *   where: {
+     *     // ... filter to delete one InvoiceVerification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InvoiceVerificationDeleteArgs>(args: SelectSubset<T, InvoiceVerificationDeleteArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one InvoiceVerification.
+     * @param {InvoiceVerificationUpdateArgs} args - Arguments to update one InvoiceVerification.
+     * @example
+     * // Update one InvoiceVerification
+     * const invoiceVerification = await prisma.invoiceVerification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InvoiceVerificationUpdateArgs>(args: SelectSubset<T, InvoiceVerificationUpdateArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more InvoiceVerifications.
+     * @param {InvoiceVerificationDeleteManyArgs} args - Arguments to filter InvoiceVerifications to delete.
+     * @example
+     * // Delete a few InvoiceVerifications
+     * const { count } = await prisma.invoiceVerification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InvoiceVerificationDeleteManyArgs>(args?: SelectSubset<T, InvoiceVerificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InvoiceVerifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceVerificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InvoiceVerifications
+     * const invoiceVerification = await prisma.invoiceVerification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InvoiceVerificationUpdateManyArgs>(args: SelectSubset<T, InvoiceVerificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InvoiceVerifications and returns the data updated in the database.
+     * @param {InvoiceVerificationUpdateManyAndReturnArgs} args - Arguments to update many InvoiceVerifications.
+     * @example
+     * // Update many InvoiceVerifications
+     * const invoiceVerification = await prisma.invoiceVerification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more InvoiceVerifications and only return the `id`
+     * const invoiceVerificationWithIdOnly = await prisma.invoiceVerification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends InvoiceVerificationUpdateManyAndReturnArgs>(args: SelectSubset<T, InvoiceVerificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one InvoiceVerification.
+     * @param {InvoiceVerificationUpsertArgs} args - Arguments to update or create a InvoiceVerification.
+     * @example
+     * // Update or create a InvoiceVerification
+     * const invoiceVerification = await prisma.invoiceVerification.upsert({
+     *   create: {
+     *     // ... data to create a InvoiceVerification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InvoiceVerification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InvoiceVerificationUpsertArgs>(args: SelectSubset<T, InvoiceVerificationUpsertArgs<ExtArgs>>): Prisma__InvoiceVerificationClient<$Result.GetResult<Prisma.$InvoiceVerificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of InvoiceVerifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceVerificationCountArgs} args - Arguments to filter InvoiceVerifications to count.
+     * @example
+     * // Count the number of InvoiceVerifications
+     * const count = await prisma.invoiceVerification.count({
+     *   where: {
+     *     // ... the filter for the InvoiceVerifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvoiceVerificationCountArgs>(
+      args?: Subset<T, InvoiceVerificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvoiceVerificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InvoiceVerification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceVerificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvoiceVerificationAggregateArgs>(args: Subset<T, InvoiceVerificationAggregateArgs>): Prisma.PrismaPromise<GetInvoiceVerificationAggregateType<T>>
+
+    /**
+     * Group by InvoiceVerification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvoiceVerificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvoiceVerificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvoiceVerificationGroupByArgs['orderBy'] }
+        : { orderBy?: InvoiceVerificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvoiceVerificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvoiceVerificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InvoiceVerification model
+   */
+  readonly fields: InvoiceVerificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InvoiceVerification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InvoiceVerificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    invoice<T extends InvoiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InvoiceDefaultArgs<ExtArgs>>): Prisma__InvoiceClient<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InvoiceVerification model
+   */
+  interface InvoiceVerificationFieldRefs {
+    readonly id: FieldRef<"InvoiceVerification", 'String'>
+    readonly token: FieldRef<"InvoiceVerification", 'String'>
+    readonly invoiceId: FieldRef<"InvoiceVerification", 'String'>
+    readonly expiresAt: FieldRef<"InvoiceVerification", 'DateTime'>
+    readonly createdAt: FieldRef<"InvoiceVerification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InvoiceVerification findUnique
+   */
+  export type InvoiceVerificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InvoiceVerification to fetch.
+     */
+    where: InvoiceVerificationWhereUniqueInput
+  }
+
+  /**
+   * InvoiceVerification findUniqueOrThrow
+   */
+  export type InvoiceVerificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InvoiceVerification to fetch.
+     */
+    where: InvoiceVerificationWhereUniqueInput
+  }
+
+  /**
+   * InvoiceVerification findFirst
+   */
+  export type InvoiceVerificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InvoiceVerification to fetch.
+     */
+    where?: InvoiceVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvoiceVerifications to fetch.
+     */
+    orderBy?: InvoiceVerificationOrderByWithRelationInput | InvoiceVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvoiceVerifications.
+     */
+    cursor?: InvoiceVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvoiceVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvoiceVerifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvoiceVerifications.
+     */
+    distinct?: InvoiceVerificationScalarFieldEnum | InvoiceVerificationScalarFieldEnum[]
+  }
+
+  /**
+   * InvoiceVerification findFirstOrThrow
+   */
+  export type InvoiceVerificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InvoiceVerification to fetch.
+     */
+    where?: InvoiceVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvoiceVerifications to fetch.
+     */
+    orderBy?: InvoiceVerificationOrderByWithRelationInput | InvoiceVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvoiceVerifications.
+     */
+    cursor?: InvoiceVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvoiceVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvoiceVerifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvoiceVerifications.
+     */
+    distinct?: InvoiceVerificationScalarFieldEnum | InvoiceVerificationScalarFieldEnum[]
+  }
+
+  /**
+   * InvoiceVerification findMany
+   */
+  export type InvoiceVerificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InvoiceVerifications to fetch.
+     */
+    where?: InvoiceVerificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvoiceVerifications to fetch.
+     */
+    orderBy?: InvoiceVerificationOrderByWithRelationInput | InvoiceVerificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InvoiceVerifications.
+     */
+    cursor?: InvoiceVerificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvoiceVerifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvoiceVerifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvoiceVerifications.
+     */
+    distinct?: InvoiceVerificationScalarFieldEnum | InvoiceVerificationScalarFieldEnum[]
+  }
+
+  /**
+   * InvoiceVerification create
+   */
+  export type InvoiceVerificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InvoiceVerification.
+     */
+    data: XOR<InvoiceVerificationCreateInput, InvoiceVerificationUncheckedCreateInput>
+  }
+
+  /**
+   * InvoiceVerification createMany
+   */
+  export type InvoiceVerificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InvoiceVerifications.
+     */
+    data: InvoiceVerificationCreateManyInput | InvoiceVerificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InvoiceVerification createManyAndReturn
+   */
+  export type InvoiceVerificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many InvoiceVerifications.
+     */
+    data: InvoiceVerificationCreateManyInput | InvoiceVerificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InvoiceVerification update
+   */
+  export type InvoiceVerificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InvoiceVerification.
+     */
+    data: XOR<InvoiceVerificationUpdateInput, InvoiceVerificationUncheckedUpdateInput>
+    /**
+     * Choose, which InvoiceVerification to update.
+     */
+    where: InvoiceVerificationWhereUniqueInput
+  }
+
+  /**
+   * InvoiceVerification updateMany
+   */
+  export type InvoiceVerificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InvoiceVerifications.
+     */
+    data: XOR<InvoiceVerificationUpdateManyMutationInput, InvoiceVerificationUncheckedUpdateManyInput>
+    /**
+     * Filter which InvoiceVerifications to update
+     */
+    where?: InvoiceVerificationWhereInput
+    /**
+     * Limit how many InvoiceVerifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * InvoiceVerification updateManyAndReturn
+   */
+  export type InvoiceVerificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * The data used to update InvoiceVerifications.
+     */
+    data: XOR<InvoiceVerificationUpdateManyMutationInput, InvoiceVerificationUncheckedUpdateManyInput>
+    /**
+     * Filter which InvoiceVerifications to update
+     */
+    where?: InvoiceVerificationWhereInput
+    /**
+     * Limit how many InvoiceVerifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InvoiceVerification upsert
+   */
+  export type InvoiceVerificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InvoiceVerification to update in case it exists.
+     */
+    where: InvoiceVerificationWhereUniqueInput
+    /**
+     * In case the InvoiceVerification found by the `where` argument doesn't exist, create a new InvoiceVerification with this data.
+     */
+    create: XOR<InvoiceVerificationCreateInput, InvoiceVerificationUncheckedCreateInput>
+    /**
+     * In case the InvoiceVerification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InvoiceVerificationUpdateInput, InvoiceVerificationUncheckedUpdateInput>
+  }
+
+  /**
+   * InvoiceVerification delete
+   */
+  export type InvoiceVerificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
+    /**
+     * Filter which InvoiceVerification to delete.
+     */
+    where: InvoiceVerificationWhereUniqueInput
+  }
+
+  /**
+   * InvoiceVerification deleteMany
+   */
+  export type InvoiceVerificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvoiceVerifications to delete
+     */
+    where?: InvoiceVerificationWhereInput
+    /**
+     * Limit how many InvoiceVerifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * InvoiceVerification without action
+   */
+  export type InvoiceVerificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvoiceVerification
+     */
+    select?: InvoiceVerificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InvoiceVerification
+     */
+    omit?: InvoiceVerificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvoiceVerificationInclude<ExtArgs> | null
   }
 
 
@@ -24162,6 +25353,17 @@ export namespace Prisma {
   export type InvoiceItemScalarFieldEnum = (typeof InvoiceItemScalarFieldEnum)[keyof typeof InvoiceItemScalarFieldEnum]
 
 
+  export const InvoiceVerificationScalarFieldEnum: {
+    id: 'id',
+    token: 'token',
+    invoiceId: 'invoiceId',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt'
+  };
+
+  export type InvoiceVerificationScalarFieldEnum = (typeof InvoiceVerificationScalarFieldEnum)[keyof typeof InvoiceVerificationScalarFieldEnum]
+
+
   export const ReminderScalarFieldEnum: {
     id: 'id',
     type: 'type',
@@ -25422,6 +26624,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     items?: InvoiceItemListRelationFilter
+    verifications?: InvoiceVerificationListRelationFilter
   }
 
   export type InvoiceOrderByWithRelationInput = {
@@ -25442,6 +26645,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
     items?: InvoiceItemOrderByRelationAggregateInput
+    verifications?: InvoiceVerificationOrderByRelationAggregateInput
   }
 
   export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
@@ -25465,6 +26669,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Invoice"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     items?: InvoiceItemListRelationFilter
+    verifications?: InvoiceVerificationListRelationFilter
   }, "id" | "number">
 
   export type InvoiceOrderByWithAggregationInput = {
@@ -25571,6 +26776,61 @@ export namespace Prisma {
     unitPrice?: DecimalWithAggregatesFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     total?: DecimalWithAggregatesFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     invoiceId?: StringWithAggregatesFilter<"InvoiceItem"> | string
+  }
+
+  export type InvoiceVerificationWhereInput = {
+    AND?: InvoiceVerificationWhereInput | InvoiceVerificationWhereInput[]
+    OR?: InvoiceVerificationWhereInput[]
+    NOT?: InvoiceVerificationWhereInput | InvoiceVerificationWhereInput[]
+    id?: StringFilter<"InvoiceVerification"> | string
+    token?: StringFilter<"InvoiceVerification"> | string
+    invoiceId?: StringFilter<"InvoiceVerification"> | string
+    expiresAt?: DateTimeFilter<"InvoiceVerification"> | Date | string
+    createdAt?: DateTimeFilter<"InvoiceVerification"> | Date | string
+    invoice?: XOR<InvoiceScalarRelationFilter, InvoiceWhereInput>
+  }
+
+  export type InvoiceVerificationOrderByWithRelationInput = {
+    id?: SortOrder
+    token?: SortOrder
+    invoiceId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    invoice?: InvoiceOrderByWithRelationInput
+  }
+
+  export type InvoiceVerificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    token?: string
+    AND?: InvoiceVerificationWhereInput | InvoiceVerificationWhereInput[]
+    OR?: InvoiceVerificationWhereInput[]
+    NOT?: InvoiceVerificationWhereInput | InvoiceVerificationWhereInput[]
+    invoiceId?: StringFilter<"InvoiceVerification"> | string
+    expiresAt?: DateTimeFilter<"InvoiceVerification"> | Date | string
+    createdAt?: DateTimeFilter<"InvoiceVerification"> | Date | string
+    invoice?: XOR<InvoiceScalarRelationFilter, InvoiceWhereInput>
+  }, "id" | "token">
+
+  export type InvoiceVerificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    token?: SortOrder
+    invoiceId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    _count?: InvoiceVerificationCountOrderByAggregateInput
+    _max?: InvoiceVerificationMaxOrderByAggregateInput
+    _min?: InvoiceVerificationMinOrderByAggregateInput
+  }
+
+  export type InvoiceVerificationScalarWhereWithAggregatesInput = {
+    AND?: InvoiceVerificationScalarWhereWithAggregatesInput | InvoiceVerificationScalarWhereWithAggregatesInput[]
+    OR?: InvoiceVerificationScalarWhereWithAggregatesInput[]
+    NOT?: InvoiceVerificationScalarWhereWithAggregatesInput | InvoiceVerificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"InvoiceVerification"> | string
+    token?: StringWithAggregatesFilter<"InvoiceVerification"> | string
+    invoiceId?: StringWithAggregatesFilter<"InvoiceVerification"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"InvoiceVerification"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"InvoiceVerification"> | Date | string
   }
 
   export type ReminderWhereInput = {
@@ -26905,6 +28165,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutInvoicesInput
     items?: InvoiceItemCreateNestedManyWithoutInvoiceInput
+    verifications?: InvoiceVerificationCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceUncheckedCreateInput = {
@@ -26924,6 +28185,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+    verifications?: InvoiceVerificationUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceUpdateInput = {
@@ -26943,6 +28205,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutInvoicesNestedInput
     items?: InvoiceItemUpdateManyWithoutInvoiceNestedInput
+    verifications?: InvoiceVerificationUpdateManyWithoutInvoiceNestedInput
   }
 
   export type InvoiceUncheckedUpdateInput = {
@@ -26962,6 +28225,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+    verifications?: InvoiceVerificationUncheckedUpdateManyWithoutInvoiceNestedInput
   }
 
   export type InvoiceCreateManyInput = {
@@ -27077,6 +28341,61 @@ export namespace Prisma {
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     invoiceId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InvoiceVerificationCreateInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+    invoice: InvoiceCreateNestedOneWithoutVerificationsInput
+  }
+
+  export type InvoiceVerificationUncheckedCreateInput = {
+    id?: string
+    token: string
+    invoiceId: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type InvoiceVerificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoice?: InvoiceUpdateOneRequiredWithoutVerificationsNestedInput
+  }
+
+  export type InvoiceVerificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    invoiceId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceVerificationCreateManyInput = {
+    id?: string
+    token: string
+    invoiceId: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type InvoiceVerificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceVerificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    invoiceId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ReminderCreateInput = {
@@ -28435,7 +29754,17 @@ export namespace Prisma {
     none?: InvoiceItemWhereInput
   }
 
+  export type InvoiceVerificationListRelationFilter = {
+    every?: InvoiceVerificationWhereInput
+    some?: InvoiceVerificationWhereInput
+    none?: InvoiceVerificationWhereInput
+  }
+
   export type InvoiceItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InvoiceVerificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28588,6 +29917,30 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type InvoiceVerificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    token?: SortOrder
+    invoiceId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type InvoiceVerificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    token?: SortOrder
+    invoiceId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type InvoiceVerificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    token?: SortOrder
+    invoiceId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type EnumReminderTypeFilter<$PrismaModel = never> = {
@@ -30002,11 +31355,25 @@ export namespace Prisma {
     connect?: InvoiceItemWhereUniqueInput | InvoiceItemWhereUniqueInput[]
   }
 
+  export type InvoiceVerificationCreateNestedManyWithoutInvoiceInput = {
+    create?: XOR<InvoiceVerificationCreateWithoutInvoiceInput, InvoiceVerificationUncheckedCreateWithoutInvoiceInput> | InvoiceVerificationCreateWithoutInvoiceInput[] | InvoiceVerificationUncheckedCreateWithoutInvoiceInput[]
+    connectOrCreate?: InvoiceVerificationCreateOrConnectWithoutInvoiceInput | InvoiceVerificationCreateOrConnectWithoutInvoiceInput[]
+    createMany?: InvoiceVerificationCreateManyInvoiceInputEnvelope
+    connect?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+  }
+
   export type InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput = {
     create?: XOR<InvoiceItemCreateWithoutInvoiceInput, InvoiceItemUncheckedCreateWithoutInvoiceInput> | InvoiceItemCreateWithoutInvoiceInput[] | InvoiceItemUncheckedCreateWithoutInvoiceInput[]
     connectOrCreate?: InvoiceItemCreateOrConnectWithoutInvoiceInput | InvoiceItemCreateOrConnectWithoutInvoiceInput[]
     createMany?: InvoiceItemCreateManyInvoiceInputEnvelope
     connect?: InvoiceItemWhereUniqueInput | InvoiceItemWhereUniqueInput[]
+  }
+
+  export type InvoiceVerificationUncheckedCreateNestedManyWithoutInvoiceInput = {
+    create?: XOR<InvoiceVerificationCreateWithoutInvoiceInput, InvoiceVerificationUncheckedCreateWithoutInvoiceInput> | InvoiceVerificationCreateWithoutInvoiceInput[] | InvoiceVerificationUncheckedCreateWithoutInvoiceInput[]
+    connectOrCreate?: InvoiceVerificationCreateOrConnectWithoutInvoiceInput | InvoiceVerificationCreateOrConnectWithoutInvoiceInput[]
+    createMany?: InvoiceVerificationCreateManyInvoiceInputEnvelope
+    connect?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
   }
 
   export type EnumInvoiceStatusFieldUpdateOperationsInput = {
@@ -30035,6 +31402,20 @@ export namespace Prisma {
     deleteMany?: InvoiceItemScalarWhereInput | InvoiceItemScalarWhereInput[]
   }
 
+  export type InvoiceVerificationUpdateManyWithoutInvoiceNestedInput = {
+    create?: XOR<InvoiceVerificationCreateWithoutInvoiceInput, InvoiceVerificationUncheckedCreateWithoutInvoiceInput> | InvoiceVerificationCreateWithoutInvoiceInput[] | InvoiceVerificationUncheckedCreateWithoutInvoiceInput[]
+    connectOrCreate?: InvoiceVerificationCreateOrConnectWithoutInvoiceInput | InvoiceVerificationCreateOrConnectWithoutInvoiceInput[]
+    upsert?: InvoiceVerificationUpsertWithWhereUniqueWithoutInvoiceInput | InvoiceVerificationUpsertWithWhereUniqueWithoutInvoiceInput[]
+    createMany?: InvoiceVerificationCreateManyInvoiceInputEnvelope
+    set?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    disconnect?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    delete?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    connect?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    update?: InvoiceVerificationUpdateWithWhereUniqueWithoutInvoiceInput | InvoiceVerificationUpdateWithWhereUniqueWithoutInvoiceInput[]
+    updateMany?: InvoiceVerificationUpdateManyWithWhereWithoutInvoiceInput | InvoiceVerificationUpdateManyWithWhereWithoutInvoiceInput[]
+    deleteMany?: InvoiceVerificationScalarWhereInput | InvoiceVerificationScalarWhereInput[]
+  }
+
   export type InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput = {
     create?: XOR<InvoiceItemCreateWithoutInvoiceInput, InvoiceItemUncheckedCreateWithoutInvoiceInput> | InvoiceItemCreateWithoutInvoiceInput[] | InvoiceItemUncheckedCreateWithoutInvoiceInput[]
     connectOrCreate?: InvoiceItemCreateOrConnectWithoutInvoiceInput | InvoiceItemCreateOrConnectWithoutInvoiceInput[]
@@ -30047,6 +31428,20 @@ export namespace Prisma {
     update?: InvoiceItemUpdateWithWhereUniqueWithoutInvoiceInput | InvoiceItemUpdateWithWhereUniqueWithoutInvoiceInput[]
     updateMany?: InvoiceItemUpdateManyWithWhereWithoutInvoiceInput | InvoiceItemUpdateManyWithWhereWithoutInvoiceInput[]
     deleteMany?: InvoiceItemScalarWhereInput | InvoiceItemScalarWhereInput[]
+  }
+
+  export type InvoiceVerificationUncheckedUpdateManyWithoutInvoiceNestedInput = {
+    create?: XOR<InvoiceVerificationCreateWithoutInvoiceInput, InvoiceVerificationUncheckedCreateWithoutInvoiceInput> | InvoiceVerificationCreateWithoutInvoiceInput[] | InvoiceVerificationUncheckedCreateWithoutInvoiceInput[]
+    connectOrCreate?: InvoiceVerificationCreateOrConnectWithoutInvoiceInput | InvoiceVerificationCreateOrConnectWithoutInvoiceInput[]
+    upsert?: InvoiceVerificationUpsertWithWhereUniqueWithoutInvoiceInput | InvoiceVerificationUpsertWithWhereUniqueWithoutInvoiceInput[]
+    createMany?: InvoiceVerificationCreateManyInvoiceInputEnvelope
+    set?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    disconnect?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    delete?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    connect?: InvoiceVerificationWhereUniqueInput | InvoiceVerificationWhereUniqueInput[]
+    update?: InvoiceVerificationUpdateWithWhereUniqueWithoutInvoiceInput | InvoiceVerificationUpdateWithWhereUniqueWithoutInvoiceInput[]
+    updateMany?: InvoiceVerificationUpdateManyWithWhereWithoutInvoiceInput | InvoiceVerificationUpdateManyWithWhereWithoutInvoiceInput[]
+    deleteMany?: InvoiceVerificationScalarWhereInput | InvoiceVerificationScalarWhereInput[]
   }
 
   export type InvoiceCreateNestedOneWithoutItemsInput = {
@@ -30069,6 +31464,20 @@ export namespace Prisma {
     upsert?: InvoiceUpsertWithoutItemsInput
     connect?: InvoiceWhereUniqueInput
     update?: XOR<XOR<InvoiceUpdateToOneWithWhereWithoutItemsInput, InvoiceUpdateWithoutItemsInput>, InvoiceUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type InvoiceCreateNestedOneWithoutVerificationsInput = {
+    create?: XOR<InvoiceCreateWithoutVerificationsInput, InvoiceUncheckedCreateWithoutVerificationsInput>
+    connectOrCreate?: InvoiceCreateOrConnectWithoutVerificationsInput
+    connect?: InvoiceWhereUniqueInput
+  }
+
+  export type InvoiceUpdateOneRequiredWithoutVerificationsNestedInput = {
+    create?: XOR<InvoiceCreateWithoutVerificationsInput, InvoiceUncheckedCreateWithoutVerificationsInput>
+    connectOrCreate?: InvoiceCreateOrConnectWithoutVerificationsInput
+    upsert?: InvoiceUpsertWithoutVerificationsInput
+    connect?: InvoiceWhereUniqueInput
+    update?: XOR<XOR<InvoiceUpdateToOneWithWhereWithoutVerificationsInput, InvoiceUpdateWithoutVerificationsInput>, InvoiceUncheckedUpdateWithoutVerificationsInput>
   }
 
   export type ClientCreateNestedOneWithoutRemindersInput = {
@@ -31108,6 +32517,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: InvoiceItemCreateNestedManyWithoutInvoiceInput
+    verifications?: InvoiceVerificationCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceUncheckedCreateWithoutClientInput = {
@@ -31126,6 +32536,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+    verifications?: InvoiceVerificationUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateOrConnectWithoutClientInput = {
@@ -32604,6 +34015,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type InvoiceVerificationCreateWithoutInvoiceInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type InvoiceVerificationUncheckedCreateWithoutInvoiceInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type InvoiceVerificationCreateOrConnectWithoutInvoiceInput = {
+    where: InvoiceVerificationWhereUniqueInput
+    create: XOR<InvoiceVerificationCreateWithoutInvoiceInput, InvoiceVerificationUncheckedCreateWithoutInvoiceInput>
+  }
+
+  export type InvoiceVerificationCreateManyInvoiceInputEnvelope = {
+    data: InvoiceVerificationCreateManyInvoiceInput | InvoiceVerificationCreateManyInvoiceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ClientUpsertWithoutInvoicesInput = {
     update: XOR<ClientUpdateWithoutInvoicesInput, ClientUncheckedUpdateWithoutInvoicesInput>
     create: XOR<ClientCreateWithoutInvoicesInput, ClientUncheckedCreateWithoutInvoicesInput>
@@ -32689,6 +34124,33 @@ export namespace Prisma {
     invoiceId?: StringFilter<"InvoiceItem"> | string
   }
 
+  export type InvoiceVerificationUpsertWithWhereUniqueWithoutInvoiceInput = {
+    where: InvoiceVerificationWhereUniqueInput
+    update: XOR<InvoiceVerificationUpdateWithoutInvoiceInput, InvoiceVerificationUncheckedUpdateWithoutInvoiceInput>
+    create: XOR<InvoiceVerificationCreateWithoutInvoiceInput, InvoiceVerificationUncheckedCreateWithoutInvoiceInput>
+  }
+
+  export type InvoiceVerificationUpdateWithWhereUniqueWithoutInvoiceInput = {
+    where: InvoiceVerificationWhereUniqueInput
+    data: XOR<InvoiceVerificationUpdateWithoutInvoiceInput, InvoiceVerificationUncheckedUpdateWithoutInvoiceInput>
+  }
+
+  export type InvoiceVerificationUpdateManyWithWhereWithoutInvoiceInput = {
+    where: InvoiceVerificationScalarWhereInput
+    data: XOR<InvoiceVerificationUpdateManyMutationInput, InvoiceVerificationUncheckedUpdateManyWithoutInvoiceInput>
+  }
+
+  export type InvoiceVerificationScalarWhereInput = {
+    AND?: InvoiceVerificationScalarWhereInput | InvoiceVerificationScalarWhereInput[]
+    OR?: InvoiceVerificationScalarWhereInput[]
+    NOT?: InvoiceVerificationScalarWhereInput | InvoiceVerificationScalarWhereInput[]
+    id?: StringFilter<"InvoiceVerification"> | string
+    token?: StringFilter<"InvoiceVerification"> | string
+    invoiceId?: StringFilter<"InvoiceVerification"> | string
+    expiresAt?: DateTimeFilter<"InvoiceVerification"> | Date | string
+    createdAt?: DateTimeFilter<"InvoiceVerification"> | Date | string
+  }
+
   export type InvoiceCreateWithoutItemsInput = {
     id?: string
     number: string
@@ -32705,6 +34167,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutInvoicesInput
+    verifications?: InvoiceVerificationCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceUncheckedCreateWithoutItemsInput = {
@@ -32723,6 +34186,7 @@ export namespace Prisma {
     clientId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    verifications?: InvoiceVerificationUncheckedCreateNestedManyWithoutInvoiceInput
   }
 
   export type InvoiceCreateOrConnectWithoutItemsInput = {
@@ -32757,6 +34221,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutInvoicesNestedInput
+    verifications?: InvoiceVerificationUpdateManyWithoutInvoiceNestedInput
   }
 
   export type InvoiceUncheckedUpdateWithoutItemsInput = {
@@ -32775,6 +34240,99 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifications?: InvoiceVerificationUncheckedUpdateManyWithoutInvoiceNestedInput
+  }
+
+  export type InvoiceCreateWithoutVerificationsInput = {
+    id?: string
+    number: string
+    date: Date | string
+    dueDate: Date | string
+    subtotal: Decimal | DecimalJsLike | number | string
+    discountAmount?: Decimal | DecimalJsLike | number | string
+    discountDescription?: string | null
+    taxRate?: Decimal | DecimalJsLike | number | string
+    taxAmount: Decimal | DecimalJsLike | number | string
+    total: Decimal | DecimalJsLike | number | string
+    status?: $Enums.InvoiceStatus
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client: ClientCreateNestedOneWithoutInvoicesInput
+    items?: InvoiceItemCreateNestedManyWithoutInvoiceInput
+  }
+
+  export type InvoiceUncheckedCreateWithoutVerificationsInput = {
+    id?: string
+    number: string
+    date: Date | string
+    dueDate: Date | string
+    subtotal: Decimal | DecimalJsLike | number | string
+    discountAmount?: Decimal | DecimalJsLike | number | string
+    discountDescription?: string | null
+    taxRate?: Decimal | DecimalJsLike | number | string
+    taxAmount: Decimal | DecimalJsLike | number | string
+    total: Decimal | DecimalJsLike | number | string
+    status?: $Enums.InvoiceStatus
+    notes?: string | null
+    clientId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: InvoiceItemUncheckedCreateNestedManyWithoutInvoiceInput
+  }
+
+  export type InvoiceCreateOrConnectWithoutVerificationsInput = {
+    where: InvoiceWhereUniqueInput
+    create: XOR<InvoiceCreateWithoutVerificationsInput, InvoiceUncheckedCreateWithoutVerificationsInput>
+  }
+
+  export type InvoiceUpsertWithoutVerificationsInput = {
+    update: XOR<InvoiceUpdateWithoutVerificationsInput, InvoiceUncheckedUpdateWithoutVerificationsInput>
+    create: XOR<InvoiceCreateWithoutVerificationsInput, InvoiceUncheckedCreateWithoutVerificationsInput>
+    where?: InvoiceWhereInput
+  }
+
+  export type InvoiceUpdateToOneWithWhereWithoutVerificationsInput = {
+    where?: InvoiceWhereInput
+    data: XOR<InvoiceUpdateWithoutVerificationsInput, InvoiceUncheckedUpdateWithoutVerificationsInput>
+  }
+
+  export type InvoiceUpdateWithoutVerificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discountDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneRequiredWithoutInvoicesNestedInput
+    items?: InvoiceItemUpdateManyWithoutInvoiceNestedInput
+  }
+
+  export type InvoiceUncheckedUpdateWithoutVerificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    number?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discountAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discountDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    taxRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    taxAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
   }
 
   export type ClientCreateWithoutRemindersInput = {
@@ -33854,6 +35412,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: InvoiceItemUpdateManyWithoutInvoiceNestedInput
+    verifications?: InvoiceVerificationUpdateManyWithoutInvoiceNestedInput
   }
 
   export type InvoiceUncheckedUpdateWithoutClientInput = {
@@ -33872,6 +35431,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: InvoiceItemUncheckedUpdateManyWithoutInvoiceNestedInput
+    verifications?: InvoiceVerificationUncheckedUpdateManyWithoutInvoiceNestedInput
   }
 
   export type InvoiceUncheckedUpdateManyWithoutClientInput = {
@@ -34382,6 +35942,13 @@ export namespace Prisma {
     total: Decimal | DecimalJsLike | number | string
   }
 
+  export type InvoiceVerificationCreateManyInvoiceInput = {
+    id?: string
+    token: string
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
   export type InvoiceItemUpdateWithoutInvoiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
@@ -34404,6 +35971,27 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+  }
+
+  export type InvoiceVerificationUpdateWithoutInvoiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceVerificationUncheckedUpdateWithoutInvoiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvoiceVerificationUncheckedUpdateManyWithoutInvoiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type GoalMilestoneCreateManyGoalInput = {

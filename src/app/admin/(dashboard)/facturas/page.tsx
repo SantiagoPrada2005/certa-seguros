@@ -2,6 +2,7 @@ import { SectionCard } from "@/components/admin/section-card";
 import { CrearFacturaDialog } from "@/components/admin/facturas/crear-factura-dialog";
 import { FacturasTable } from "@/components/admin/facturas/facturas-table";
 import prisma from "@/lib/prisma";
+import { getOrCreateInvoiceToken } from "@/lib/invoice/verification";
 
 export default async function FacturasPage() {
   // KPI stats server-side
@@ -28,7 +29,7 @@ export default async function FacturasPage() {
     },
   });
 
-  const initialInvoices = invoicesRaw.map(i => ({
+  const initialInvoices = await Promise.all(invoicesRaw.map(async (i) => ({
     ...i,
     subtotal: i.subtotal.toNumber(),
     discountAmount: i.discountAmount.toNumber(),
@@ -39,8 +40,10 @@ export default async function FacturasPage() {
       ...item,
       unitPrice: item.unitPrice.toNumber(),
       total: item.total.toNumber()
-    }))
-  }));
+    })),
+    // Generate or get verification token for PDF
+    verificationToken: await getOrCreateInvoiceToken(i.id),
+  })));
 
   const formatCOP = (n: number | bigint) => {
     const num = typeof n === "bigint" ? Number(n) : n;
