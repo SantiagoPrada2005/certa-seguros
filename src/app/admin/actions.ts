@@ -643,6 +643,277 @@ export async function getDashboardChartData() {
   };
 }
 
+// ─── Unified Dashboard Data ────────────────────────────────────────────────────
+
+export interface WeeklyActivity {
+  dia: string;
+  nuevos: number;
+  gestiones: number;
+  cerrados: number;
+}
+
+export interface DashboardData {
+  feed: {
+    id: string;
+    action: string;
+    type: string;
+    createdAt: Date;
+    client: { name: string; type: string } | null;
+  }[];
+  stats: {
+    totalClients: number;
+    totalProspects: number;
+    activePolicies: number;
+    monthlyRevenue: number;
+    pendingReminders: number;
+    conversionRate: number;
+    prospectsBreakdown: Record<string, number>;
+  };
+  revenueData: { month: string; primas: number; comisiones: number }[];
+  serviceDistributionData: { servicio: string; cantidad: number; fill: string }[];
+  leadSourcesData: { fuente: string; valor: number; fill: string }[];
+  conversionData: { name: string; valor: number; fill: string }[];
+  weeklyActivityData: WeeklyActivity[];
+  goalsData: {
+    id: string;
+    name: string;
+    current: number;
+    goal: number;
+    unit: string;
+    percentage: number;
+  }[];
+}
+
+export async function getDashboardData(): Promise<DashboardData> {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // Reset startOfWeek to Monday 00:00:00
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Monday
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  // End of week (Sunday 23:59:59)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(endOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+
+  const [
+    activityFeed,
+    totalClients,
+    totalProspects,
+    activePolicies,
+    monthlyRevenue,
+    pendingReminders,
+    prospectsByStatus,
+    convertedProspectsCount,
+    policies,
+    serviceDistributionDist,
+    leadSourcesDist,
+    goals,
+  ] = await Promise.all([
+    // 1. Feed
+    prisma.activityLog.findMany({
+      take: 10,
+      orderBy: { createdAt: "desc" },
+      include: { client: { select: { name: true, type: true } } },
+    }),
+    // 2. Active clients
+    prisma.client.count({ where: { status: "ACTIVO" } }),
+    // 3. Non-descarted prospects
+    prisma.prospect.count({ where: { status: { not: "DESCARTADO" }, deletedAt: null } }),
+    // 4. Active policies
+    prisma.policy.count({ where: { status: "ACTIVE" } }),
+    // 5. Monthly revenue
+    prisma.invoice.aggregate({
+      where: { status: "PAID", date: { gte: startOfMonth } },
+      _sum: { total: true },
+    }),
+    // 6. Pending reminders
+    prisma.reminder.count({ where: { status: "PENDIENTE" } }),
+    // 7. Prospects by status
+    prisma.prospect.groupBy({
+      by: ["status"],
+      where: { deletedAt: null },
+      _count: { _all: true },
+    }),
+    // 8. Converted prospects (for conversion rate)
+    prisma.prospect.count({ where: { status: "CONVERTIDO" } }),
+    // 9. All policies this year (for revenue chart)
+    prisma.policy.findMany({
+      where: { startDate: { gte: startOfYear } },
+      select: { startDate: true, premiumAmount: true, commissionAmount: true },
+    }),
+    // 10. Active policies by type
+    prisma.policy.groupBy({
+      by: ["type"],
+      where: { status: "ACTIVE" },
+      _count: { _all: true },
+    }),
+    // 11. Lead sources
+    prisma.prospect.groupBy({
+      by: ["source"],
+      where: { source: { not: null }, deletedAt: null },
+      _count: { _all: true },
+    }),
+    // 12. Active goals
+    prisma.goal.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  // --- Process revenue chart ---
+  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const revenueDataMap = new Map<string, { month: string; primas: number; comisiones: number }>();
+  months.forEach((m) => revenueDataMap.set(m, { month: m, primas: 0, comisiones: 0 }));
+  policies.forEach((p) => {
+    const monthName = months[p.startDate.getMonth()];
+    const current = revenueDataMap.get(monthName)!;
+    current.primas += Number(p.premiumAmount);
+    current.comisiones += Number(p.commissionAmount);
+  });
+  const revenueData = Array.from(revenueDataMap.values());
+
+  // --- Process service distribution ---
+  const typeColors: Record<string, string> = {
+    SOAT: "var(--color-primary)",
+    VEHICULAR: "var(--color-chart-2)",
+    VIDA: "var(--color-chart-3)",
+    ARL: "var(--color-chart-4)",
+    TODO_RIESGO: "var(--color-chart-5)",
+  };
+  const serviceDistributionData = serviceDistributionDist.map((s) => ({
+    servicio: s.type,
+    cantidad: s._count._all,
+    fill: typeColors[s.type] || "var(--color-muted)",
+  }));
+
+  // --- Process lead sources ---
+  const sourceColors: Record<string, string> = {
+    WEB_PUBLICA: "var(--color-primary)",
+    REFERIDOS: "var(--color-chart-2)",
+    REDES_SOCIALES: "var(--color-chart-3)",
+    DIRECTOS: "var(--color-chart-4)",
+  };
+  const sourceNames: Record<string, string> = {
+    WEB_PUBLICA: "Web Pública",
+    REFERIDOS: "Referidos",
+    REDES_SOCIALES: "Redes Sociales",
+    DIRECTOS: "Directos",
+  };
+  const leadSourcesData = leadSourcesDist
+    .filter((s) => s.source !== null)
+    .map((s) => ({
+      fuente: sourceNames[s.source!] || s.source!,
+      valor: s._count._all,
+      fill: sourceColors[s.source!] || "var(--color-muted)",
+    }));
+
+  // --- Process conversion ---
+  const totalProspectsAll = totalProspects + convertedProspectsCount;
+  const conversionRate = totalProspectsAll > 0
+    ? Math.round((convertedProspectsCount / totalProspectsAll) * 100)
+    : 0;
+  const conversionData = [{ name: "Conversión", valor: conversionRate, fill: "var(--color-primary)" }];
+
+  // --- Process weekly activity (FIXED semantic mapping) ---
+  const prospectActivity = await prisma.activityLog.findMany({
+    where: {
+      createdAt: { gte: startOfWeek, lte: endOfWeek },
+      prospectId: { not: null },
+    },
+    select: { createdAt: true },
+  });
+
+  const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+  const weekDays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+  const weeklyMap = new Map<string, WeeklyActivity>();
+  weekDays.forEach((d) => weeklyMap.set(d, { dia: d, nuevos: 0, gestiones: 0, cerrados: 0 }));
+
+  // "Nuevos": prospects created each day this week
+  for (let i = 0; i < 7; i++) {
+    const dayStart = new Date(startOfWeek);
+    dayStart.setDate(dayStart.getDate() + i);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setHours(23, 59, 59, 999);
+    const dayName = weekDays[i];
+
+    const nuevos = await prisma.prospect.count({
+      where: { createdAt: { gte: dayStart, lte: dayEnd }, deletedAt: null },
+    });
+    const cerrados = await prisma.prospect.count({
+      where: {
+        updatedAt: { gte: dayStart, lte: dayEnd },
+        status: { in: ["CONVERTIDO", "DESCARTADO"] },
+        deletedAt: null,
+      },
+    });
+
+    const entry = weeklyMap.get(dayName)!;
+    entry.nuevos = nuevos;
+    entry.cerrados = cerrados;
+  }
+
+  // "Gestiones": ActivityLog entries per day with prospectId
+  prospectActivity.forEach((log) => {
+    const dayName = days[log.createdAt.getDay()];
+    if (weeklyMap.has(dayName)) {
+      weeklyMap.get(dayName)!.gestiones++;
+    }
+  });
+
+  const weeklyActivityData = Array.from(weeklyMap.values());
+
+  // --- Process goals with real progress ---
+  const goalsData = await Promise.all(
+    goals.map(async (goal) => {
+      const current = await calculateGoalProgress(goal);
+      return {
+        id: goal.id,
+        name: goal.name,
+        current: current,
+        goal: Number(goal.targetValue),
+        unit: goal.unit,
+        percentage: Math.min(Math.round((current / Number(goal.targetValue)) * 100), 100),
+      };
+    })
+  );
+
+  // --- Build prospects breakdown ---
+  const prospectsBreakdown: Record<string, number> = {};
+  prospectsByStatus.forEach(({ status, _count }) => {
+    prospectsBreakdown[status] = _count._all;
+  });
+
+  return {
+    feed: activityFeed.map((f) => ({
+      id: f.id,
+      action: f.action,
+      type: f.type,
+      createdAt: f.createdAt,
+      client: f.client,
+    })),
+    stats: {
+      totalClients,
+      totalProspects,
+      activePolicies,
+      monthlyRevenue: Number(monthlyRevenue._sum.total || 0),
+      pendingReminders,
+      conversionRate,
+      prospectsBreakdown,
+    },
+    revenueData,
+    serviceDistributionData,
+    leadSourcesData,
+    conversionData,
+    weeklyActivityData,
+    goalsData,
+  };
+}
+
 // ─── Fetch Actions for Forms ───────────────────────────────────────────────────
 
 export async function getServicesForInvoicing() {
