@@ -8,23 +8,29 @@ import { cn } from "@lib/utils";
 import { MarkdownRenderer } from "@/components/ui/markdown";
 import { toolsMetadata } from "@/lib/tools/index";
 import {
+    Activity,
+    ArrowLeft,
+    Bell,
+    Bot,
     Check,
+    CircleUserRound,
+    Command,
     Copy,
+    File,
+    FileText,
     ImageIcon,
     LayoutDashboard,
-    CircleUserRound,
+    LoaderIcon,
+    Package,
     Paperclip,
     Receipt,
     SendIcon,
-    XIcon,
-    LoaderIcon,
     Sparkles,
+    Star,
+    Target,
+    UserPlus,
     Users,
-    Command,
-    ArrowLeft,
-    File,
-    FileText,
-    Bot,
+    XIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as React from "react"
@@ -180,7 +186,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
         scrollToBottom();
     }, [messages]);
 
-    const commandSuggestions: CommandSuggestion[] = [
+    const allSuggestions: CommandSuggestion[] = [
         {
             icon: <Users className="w-4 h-4" />,
             label: "Ver Clientes",
@@ -188,24 +194,75 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
             prefix: "/clientes"
         },
         {
+            icon: <UserPlus className="w-4 h-4" />,
+            label: "Prospectos Nuevos",
+            description: "Muestra prospectos recién registrados",
+            prefix: "/prospectos"
+        },
+        {
             icon: <FileText className="w-4 h-4" />,
             label: "Pólizas por Vencer",
-            description: "Muestra pólizas próximas a vencer",
+            description: "Pólizas próximas a vencer",
             prefix: "/polizas"
         },
         {
             icon: <LayoutDashboard className="w-4 h-4" />,
             label: "Resumen del Negocio",
-            description: "Dashboard ejecutivo del estado actual",
+            description: "Dashboard ejecutivo",
             prefix: "/resumen"
         },
         {
             icon: <Receipt className="w-4 h-4" />,
             label: "Facturas Pendientes",
-            description: "Lista facturas pendientes de pago",
+            description: "Facturas sin pagar",
             prefix: "/facturas"
         },
+        {
+            icon: <Target className="w-4 h-4" />,
+            label: "Metas del Mes",
+            description: "Progreso de objetivos comerciales",
+            prefix: "/metas"
+        },
+        {
+            icon: <Bell className="w-4 h-4" />,
+            label: "Recordatorios",
+            description: "Tareas y alertas pendientes",
+            prefix: "/recordatorios"
+        },
+        {
+            icon: <Activity className="w-4 h-4" />,
+            label: "Actividad Reciente",
+            description: "Últimos movimientos del sistema",
+            prefix: "/actividad"
+        },
+        {
+            icon: <Star className="w-4 h-4" />,
+            label: "Clientes VIP",
+            description: "Clientes destacados",
+            prefix: "/vip"
+        },
+        {
+            icon: <Package className="w-4 h-4" />,
+            label: "Servicios",
+            description: "Catálogo de seguros disponibles",
+            prefix: "/servicios"
+        },
     ];
+
+    // Random subset for suggestion chips (deterministic SSR, randomized after mount)
+    const firstChips = allSuggestions.slice(0, 4);
+    const [randomChips, setRandomChips] = useState(firstChips);
+
+    useEffect(() => {
+        const shuffled = [...allSuggestions];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        setRandomChips(shuffled.slice(0, 4));
+    }, []);
+
+    const commandSuggestions = allSuggestions;
 
     const toolList = Object.values(toolsMetadata);
 
@@ -359,7 +416,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
     };
 
     return (
-        <div className="min-h-screen flex flex-col w-full h-[100dvh] items-center justify-center bg-background text-foreground p-3 sm:p-6 relative overflow-hidden">
+        <div className="flex flex-col w-full h-[100dvh] bg-background text-foreground relative overflow-hidden">
             {backHref && (
                 <div className="hidden sm:flex absolute top-3 left-3 z-50">
                     <Link href={backHref}>
@@ -389,14 +446,14 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                 accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx"
             />
 
-            <div className="w-full max-w-2xl mx-auto relative">
-                <motion.div
-                    className="relative z-10 space-y-6 sm:space-y-8 w-full max-w-lg sm:max-w-2xl mx-auto px-1 sm:px-0"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                >
-                    {messages.length === 0 ? (
+            {messages.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center overflow-y-auto px-3 sm:px-6 relative z-10">
+                    <motion.div
+                        className="w-full max-w-2xl mx-auto"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                    >
                         <div className="text-center space-y-2 sm:space-y-3">
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
@@ -423,8 +480,17 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                 Type a command or ask a question
                             </motion.p>
                         </div>
-                    ) : (
-                        <div className="space-y-4 sm:space-y-6 max-h-[45vh] sm:max-h-[50vh] overflow-y-auto px-1 sm:px-4 pb-4 scroll-smooth custom-scrollbar touch-auto">
+                    </motion.div>
+                </div>
+            ) : (
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar touch-auto scroll-smooth px-3 sm:px-6 pt-3 sm:pt-6 relative z-10">
+                    <motion.div
+                        className="w-full max-w-2xl mx-auto"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                    >
+                        <div className="space-y-4 sm:space-y-6 pb-4">
                             {messages.map((msg, i) => (
                                 <motion.div
                                     key={i}
@@ -481,7 +547,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                                         <Copy className="w-3.5 h-3.5" />
                                                     )}
                                                 </button>
-                                                {msg.role === 'assistant' && (msg as any).parts?.some(
+                                                {msg.role === 'assistant' && (msg as { parts: Array<{ type: string; toolInvocation?: { state: string } }> }).parts?.some(
                                                     (p: { type: string; toolInvocation?: { state: string } }) => p.type === 'tool-invocation' && p.toolInvocation?.state === 'call'
                                                 ) && (
                                                     <motion.div
@@ -500,8 +566,12 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                             ))}
                             <div ref={messagesEndRef} />
                         </div>
-                    )}
+                    </motion.div>
+                </div>
+            )}
 
+            <div className="shrink-0 px-3 sm:px-6 pb-3 sm:pb-6 relative z-10">
+                <div className="w-full max-w-2xl mx-auto">
                     <motion.div
                         className="relative backdrop-blur-2xl bg-card/60 sm:bg-card/40 rounded-2xl sm:rounded-2xl border border-border/50 shadow-2xl"
                         initial={{ scale: 0.98 }}
@@ -565,7 +635,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                     "resize-none",
                                     "bg-transparent",
                                     "border-none",
-                                    "text-foreground/90 text-sm",
+                                    "text-foreground/90 text-base sm:text-sm",
                                     "focus:outline-none",
                                     "placeholder:text-muted-foreground/30",
                                     "min-h-[48px] sm:min-h-[60px]"
@@ -694,15 +764,18 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                         </div>
                     </motion.div>
 
-                    <div className="hidden lg:flex flex-wrap items-center justify-center gap-2">
-                        {commandSuggestions.map((suggestion, index) => (
+                    <div className="hidden lg:flex flex-wrap items-center justify-center gap-2 mt-6">
+                        {randomChips.map((suggestion, chipIdx) => (
                             <motion.button
                                 key={suggestion.prefix}
-                                onClick={() => selectCommandSuggestion(index)}
+                                onClick={() => {
+                                    const idx = commandSuggestions.findIndex(s => s.prefix === suggestion.prefix);
+                                    selectCommandSuggestion(idx);
+                                }}
                                 className="flex items-center gap-2 px-3 py-2 bg-accent/5 hover:bg-accent/10 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-all relative group"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
+                                transition={{ delay: chipIdx * 0.1 }}
                             >
                                 {suggestion.icon}
                                 <span>{suggestion.label}</span>
@@ -721,7 +794,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                             </motion.button>
                         ))}
                     </div>
-                </motion.div>
+                </div>
             </div>
 
             <AnimatePresence>
@@ -750,53 +823,57 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                 {showToolsPanel && (
                     <>
                         <motion.div
-                            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm sm:hidden z-40"
+                            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowToolsPanel(false)}
                         />
                         <motion.div
-                            className="fixed sm:absolute sm:right-4 sm:top-1/2 sm:transform sm:-translate-y-1/2 sm:w-64 bottom-0 left-0 right-0 backdrop-blur-2xl bg-card/95 sm:bg-card/80 rounded-t-2xl sm:rounded-xl p-4 shadow-2xl sm:shadow-lg border-t sm:border border-border/50 z-50"
-                            initial={{ opacity: 1, y: 0 }}
+                            className="fixed bottom-0 left-0 right-0 sm:left-1/2 sm:top-1/2 sm:bottom-auto sm:right-auto sm:-translate-x-1/2 sm:-translate-y-1/2 backdrop-blur-2xl bg-card/95 sm:bg-card rounded-t-2xl sm:rounded-xl p-4 sm:p-6 shadow-2xl border-t sm:border border-border/50 z-50 sm:max-w-2xl sm:w-[90vw] sm:max-h-[80vh]"
+                            initial={{ opacity: 0, y: 100 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 100 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         >
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="w-12 h-1 bg-border rounded-full mx-auto mb-2 sm:hidden" />
-                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                Herramientas
-                            </span>
-                            <button
-                                onClick={() => setShowToolsPanel(false)}
-                                className="p-1 hover:bg-accent/50 rounded sm:hidden"
-                                aria-label="Cerrar panel"
-                            >
-                                <XIcon className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 sm:space-y-1 max-h-[40vh] sm:max-h-none overflow-y-auto">
-                            {toolList.map((tool) => (
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="w-12 h-1 bg-border rounded-full mx-auto mb-2 sm:hidden" />
+                                <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Herramientas
+                                </span>
                                 <button
-                                    key={tool.name}
-                                    onClick={() => insertTool(tool.name)}
-                                    className="flex items-start gap-3 p-3 sm:p-2 rounded-xl sm:rounded-lg hover:bg-accent/50 transition-colors text-left bg-accent/5 sm:bg-transparent"
+                                    onClick={() => setShowToolsPanel(false)}
+                                    className="p-1.5 hover:bg-accent/50 rounded-lg transition-colors"
+                                    aria-label="Cerrar panel"
                                 >
-                                    <div className="w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                                        {tool.icon}
-                                    </div>
-                                    <div>
-                                        <div className="text-sm font-medium text-foreground">
-                                            {tool.description}
-                                        </div>
-                                        <div className="text-xs text-muted-foreground hidden sm:block">
-                                            {tool.name}
-                                        </div>
-                                    </div>
+                                    <XIcon className="w-4 h-4" />
                                 </button>
-                            ))}
-                        </div>
-                    </motion.div>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 max-h-[50vh] sm:max-h-[60vh] overflow-y-auto custom-scrollbar px-0.5">
+                                {toolList.map((tool) => (
+                                    <button
+                                        key={tool.name}
+                                        onClick={() => {
+                                            insertTool(tool.name);
+                                            setShowToolsPanel(false);
+                                        }}
+                                        className="flex flex-col items-center gap-2 p-3 sm:p-4 rounded-xl hover:bg-accent/50 transition-colors text-center bg-accent/5 border border-border/30 hover:border-border/60"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                                            {tool.icon}
+                                        </div>
+                                        <div>
+                                            <div className="text-xs font-medium text-foreground leading-tight">
+                                                {tool.description}
+                                            </div>
+                                            <div className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">
+                                                {tool.name}
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </motion.div>
                     </>
                 )}
             </AnimatePresence>
