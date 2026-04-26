@@ -1,10 +1,11 @@
-import { streamText, convertToModelMessages, type UIMessage } from "ai";
+import { streamText, convertToModelMessages, isLoopFinished, stepCountIs, type UIMessage } from "ai";
 import { gateway } from "@ai-sdk/gateway";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { getClientsTool } from "@/lib/tools/get-clients";
 import { getClientDetailsTool } from "@/lib/tools/get-client-details";
 import { getServicesTool } from "@/lib/tools/get-services";
 import { getServiceDetailsTool } from "@/lib/tools/get-service-details";
+import { SYSTEM_PROMPT } from "@/lib/ai/system-prompt";
 
 export const runtime = "nodejs";
 
@@ -35,6 +36,8 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: getModel(),
+      system: SYSTEM_PROMPT,
+      stopWhen: [isLoopFinished(), stepCountIs(5)],
       messages: await convertToModelMessages(messages),
       tools: {
         get_clients: getClientsTool,
