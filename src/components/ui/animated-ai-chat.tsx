@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useTransition } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useState } from "react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { cn } from "@lib/utils";
 import {
     ImageIcon,
-    FileUp,
     LayoutDashboard,
     MonitorIcon,
     CircleUserRound,
-    ArrowUpIcon,
     Paperclip,
-    PlusIcon,
     SendIcon,
     XIcon,
     LoaderIcon,
@@ -136,12 +135,20 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 )
 Textarea.displayName = "Textarea"
 
+function getMessageText(msg: { parts: Array<{ type: string; text?: string }> }): string {
+    return msg.parts
+        .filter((p): p is { type: "text"; text: string } => p.type === "text")
+        .map((p) => p.text)
+        .join("");
+}
+
 export function AnimatedAIChat({ backHref }: { backHref?: string }) {
-    const [messages, setMessages] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
+    const { messages, sendMessage, status } = useChat({
+      transport: new DefaultChatTransport({ api: "/api/chat" }),
+    });
+    const isStreaming = status === "streaming";
     const [value, setValue] = useState("");
     const [attachments, setAttachments] = useState<string[]>([]);
-    const [isTyping, setIsTyping] = useState(false);
-    const [isPending, startTransition] = useTransition();
     const [activeSuggestion, setActiveSuggestion] = useState<number>(-1);
     const [showCommandPalette, setShowCommandPalette] = useState(false);
     const [recentCommand, setRecentCommand] = useState<string | null>(null);
@@ -151,7 +158,6 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
         maxHeight: 200,
     });
     const [inputFocused, setInputFocused] = useState(false);
-    const [isStreaming, setIsStreaming] = useState(false);
     const commandPaletteRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -271,52 +277,11 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
         }
     };
 
-    const handleSendMessage = async () => {
+    const handleSendMessage = () => {
         if (!value.trim()) return;
-
-        const userMsg = value.trim();
+        sendMessage({ text: value.trim() });
         setValue("");
         adjustHeight(true);
-
-        const newMessages = [...messages, { role: 'user' as const, content: userMsg }];
-        setMessages([...newMessages, { role: 'assistant' as const, content: '' }]);
-        setIsStreaming(true);
-
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: newMessages }),
-            });
-
-            if (!response.ok) throw new Error('Failed to fetch');
-            if (!response.body) throw new Error('No response body');
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let assistantContent = "";
-
-            while (true) {
-                const { done, value: chunk } = await reader.read();
-                if (done) break;
-
-                const text = decoder.decode(chunk);
-                assistantContent += text;
-
-                setMessages((prev: { role: 'user' | 'assistant', content: string }[]) => {
-                    const last = prev[prev.length - 1];
-                    if (last && last.role === 'assistant') {
-                        return [...prev.slice(0, -1), { ...last, content: assistantContent }];
-                    }
-                    return prev;
-                });
-            }
-        } catch (error) {
-            console.error("Chat Error:", error);
-            setMessages((prev: { role: 'user' | 'assistant', content: string }[]) => [...prev, { role: 'assistant', content: "Lo siento, hubo un error al procesar tu solicitud." }]);
-        } finally {
-            setIsStreaming(false);
-        }
     };
 
     const handleAttachFile = () => {
@@ -423,7 +388,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                             {msg.role === 'user' ? 'Tú' : 'Zap AI'}
                                         </div>
                                         <div className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                                            {msg.content || (msg.role === 'assistant' && i === messages.length - 1 && isStreaming ? <TypingDots /> : '')}
+                                            {getMessageText(msg) || (msg.role === 'assistant' && i === messages.length - 1 && isStreaming ? <TypingDots /> : '')}
                                         </div>
                                     </div>
                                 </motion.div>
