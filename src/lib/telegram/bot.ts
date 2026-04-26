@@ -100,6 +100,13 @@ export interface AuthedContext extends Context {
 
 function setupBot(bot: Bot<AuthedContext>) {
   bot.command("start", async (ctx) => {
+    // Si viene con un código via deep link (?start=CODE), procesarlo directo
+    const codeParam = ctx.match?.trim();
+    if (codeParam && /^[A-Z0-9]{6}$/.test(codeParam)) {
+      await handleVerificationCode(ctx, codeParam);
+      return;
+    }
+
     const connection = await prisma.telegramConnection.findUnique({
       where: { telegramId: String(ctx.from!.id) },
       include: { user: true },
@@ -156,6 +163,11 @@ function setupBot(bot: Bot<AuthedContext>) {
       return;
     }
     if (ctx.callbackQuery) {
+      await next();
+      return;
+    }
+    // Permitir mensajes que parezcan códigos de verificación (6 caracteres alfanuméricos)
+    if (ctx.message?.text && /^[A-Z0-9]{6}$/.test(ctx.message.text.trim().toUpperCase())) {
       await next();
       return;
     }

@@ -14,11 +14,12 @@ export function generateVerificationCode(): string {
 }
 
 /**
- * Genera la URL/data para el código QR.
- * El QR codifica un texto simple con el código para que
- * el usuario pueda escanearlo o copiar el código manualmente.
+ * Genera la URL para el código QR.
+ * El QR codifica un deep link de Telegram que al escanearlo
+ * abre el chat del bot con el código pre-escrito.
+ * Ejemplo: https://t.me/certasegurosbot?start=ABC123
  */
 export function getVerificationQRData(code: string, botUsername?: string): string {
-  const bot = botUsername ? `@${botUsername}` : "el bot";
-  return `Vinculate a Certa Seguros CRM. Codigo: ${code}. Envia este codigo a ${bot}`;
+  const botName = (botUsername ?? "@certasegurosbot").replace("@", "");
+  return `https://t.me/${botName}?start=${code}`;
 }
