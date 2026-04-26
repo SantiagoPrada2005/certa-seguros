@@ -46,3 +46,13 @@ export async function getInvoiceByToken(token: string) {
     },
   });
 }
+
+export async function getInvoiceById(invoiceId: string) {
+  return prisma.invoice.findUnique({
+    where: { id: invoiceId },
+    include: {
+      client: true,
+      items: true,
+    },
+  });
+}

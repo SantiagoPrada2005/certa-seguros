@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { PolicyStatus, PolicyType } from "@/generated/prisma"
-import { ShieldCheck, MoreHorizontal, FileText, CalendarDays, AlertTriangle, XCircle, FileClock, ReceiptIcon } from "lucide-react"
+import { ShieldCheck, MoreHorizontal, FileText, CalendarDays, AlertTriangle, XCircle, FileClock, ReceiptIcon, DollarSign } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { CrearFacturaDialog } from "@/components/admin/facturas/crear-factura-dialog"
+import { CrearCuentaCobroDialog } from "@/components/admin/cuentas-cobro/crear-cuenta-cobro-dialog"
 
 export type PolicyData = {
   id: string
@@ -45,11 +46,17 @@ interface PoliciesTableProps {
 
 export function PoliciesTable({ policies, onEdit, onChangeStatus, onDelete }: PoliciesTableProps) {
   const [invoiceDialogOpen, setInvoiceDialogOpen] = React.useState(false)
+  const [prDialogOpen, setPrDialogOpen] = React.useState(false)
   const [selectedPolicy, setSelectedPolicy] = React.useState<PolicyData | null>(null)
 
   const handleCreateInvoice = (policy: PolicyData) => {
     setSelectedPolicy(policy)
     setInvoiceDialogOpen(true)
+  }
+
+  const handleCreatePaymentRequest = (policy: PolicyData) => {
+    setSelectedPolicy(policy)
+    setPrDialogOpen(true)
   }
   
   const getStatusInfo = (status: PolicyStatus) => {
@@ -197,6 +204,10 @@ export function PoliciesTable({ policies, onEdit, onChangeStatus, onDelete }: Po
                         <ReceiptIcon data-icon="inline-start" className="size-4" />
                         Crear Factura
                       </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleCreatePaymentRequest(policy)}>
+                        <DollarSign data-icon="inline-start" className="size-4" />
+                        Crear Cuenta de Cobro
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
                         onClick={() => onChangeStatus(policy.id, "PENDING_RENEWAL")}
@@ -242,6 +253,16 @@ export function PoliciesTable({ policies, onEdit, onChangeStatus, onDelete }: Po
         defaultServiceId={selectedPolicy?.service?.id}
         defaultAmount={selectedPolicy?.premiumAmount}
         defaultCommissionAmount={selectedPolicy?.commissionAmount}
+        defaultDescription={selectedPolicy ? `Prima de Póliza #${selectedPolicy.policyNumber}` : undefined}
+      />
+      <CrearCuentaCobroDialog
+        open={prDialogOpen}
+        onOpenChange={setPrDialogOpen}
+        defaultClientName={selectedPolicy?.client.name}
+        defaultClientDocument={selectedPolicy?.client.documentNumber || undefined}
+        defaultClientId={selectedPolicy?.client.id}
+        defaultServiceId={selectedPolicy?.service?.id}
+        defaultAmount={selectedPolicy?.premiumAmount}
         defaultDescription={selectedPolicy ? `Prima de Póliza #${selectedPolicy.policyNumber}` : undefined}
       />
     </div>

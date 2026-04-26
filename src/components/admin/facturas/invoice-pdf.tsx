@@ -1,6 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { Invoice } from '@/types/billing';
+import { generateQRDataURL } from '@/lib/invoice/qr-generator';
 
 const LOGO_URL = '/images/logo/Certa Seguros.png';
 
@@ -255,14 +256,20 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
     concept: `Factura No. ${invoice.number}`,
   };
 
-  const generatedDate = new Intl.DateTimeFormat('es-CO', {
+const generatedDate = new Intl.DateTimeFormat('es-CO', {
     dateStyle: 'medium',
   }).format(new Date());
 
   const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://seguroscerta.com';
-const qrVerifyUrl = invoice.verificationToken
-  ? `${BASE_URL}/factura/${invoice.verificationToken}`
-  : undefined;
+  const qrVerifyUrl = invoice.verificationToken
+    ? `${BASE_URL}/factura/${invoice.verificationToken}`
+    : `${BASE_URL}/factura/${invoice.id}`;
+
+  const qrLabel = invoice.verificationToken
+    ? 'Verifica tu factura en línea'
+    : 'Verifica tu factura en línea';
+
+  const qrImageSrc = invoice.qrDataURL || qrVerifyUrl;
 
   return (
     <Document>
@@ -386,14 +393,20 @@ const qrVerifyUrl = invoice.verificationToken
         </View>
 
         {/* QR Code Verification */}
-        {qrVerifyUrl && (
         <View style={styles.qrSection}>
-          <View style={styles.qrPlaceholder}>
-            <Text style={{ fontSize: 8, color: colors.textMuted }}>QR</Text>
-          </View>
+          {qrImageSrc ? (
+            <Image 
+              src={qrImageSrc} 
+              style={{ width: 70, height: 70, objectFit: 'contain' }} 
+            />
+          ) : (
+            <View style={styles.qrPlaceholder}>
+              <Text style={{ fontSize: 8, color: colors.textMuted }}>QR</Text>
+            </View>
+          )}
           <Text style={styles.qrText}>{qrVerifyUrl}</Text>
+          <Text style={{ fontSize: 7, color: colors.textMuted, marginTop: 2 }}>{qrLabel}</Text>
         </View>
-        )}
 
         {/* Footer */}
         <View style={styles.footer}>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { getOrCreateInvoiceToken } from "@/lib/invoice/verification";
+import { generateQRDataURL } from "@/lib/invoice/qr-generator";
 
 const invoiceCreateSchema = z.object({
   number: z.string().min(1, "Invoice number is required"),
@@ -45,20 +46,28 @@ export async function GET(request: Request) {
       orderBy: { date: "desc" },
     });
 
-    const invoices = await Promise.all(invoicesRaw.map(async (inv) => ({
-      ...inv,
-      subtotal: Number(inv.subtotal),
-      discountAmount: Number(inv.discountAmount),
-      taxRate: Number(inv.taxRate),
-      taxAmount: Number(inv.taxAmount),
-      total: Number(inv.total),
-      items: inv.items.map(item => ({
-        ...item,
-        unitPrice: Number(item.unitPrice),
-        total: Number(item.total),
-      })),
-      verificationToken: await getOrCreateInvoiceToken(inv.id),
-    })));
+    const invoices = await Promise.all(invoicesRaw.map(async (inv) => {
+      const token = await getOrCreateInvoiceToken(inv.id);
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://seguroscerta.com';
+      const qrUrl = token ? `${baseUrl}/factura/${token}` : `${baseUrl}/factura/${inv.id}`;
+      const qrDataURL = await generateQRDataURL(qrUrl);
+      
+      return {
+        ...inv,
+        subtotal: Number(inv.subtotal),
+        discountAmount: Number(inv.discountAmount),
+        taxRate: Number(inv.taxRate),
+        taxAmount: Number(inv.taxAmount),
+        total: Number(inv.total),
+        items: inv.items.map(item => ({
+          ...item,
+          unitPrice: Number(item.unitPrice),
+          total: Number(item.total),
+        })),
+        verificationToken: token,
+        qrDataURL,
+      };
+    }));
 
     return NextResponse.json(invoices);
   } catch (error) {

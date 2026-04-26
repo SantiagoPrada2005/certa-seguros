@@ -31,14 +31,39 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 
-export function CrearCuentaCobroDialog() {
-  const [open, setOpen] = useState(false);
+export interface CrearCuentaCobroDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactElement;
+  defaultClientName?: string;
+  defaultClientDocument?: string;
+  defaultClientId?: string;
+  defaultServiceId?: string;
+  defaultAmount?: number;
+  defaultDescription?: string;
+}
+
+export function CrearCuentaCobroDialog({
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
+  trigger,
+  defaultClientName,
+  defaultClientDocument,
+  defaultClientId,
+  defaultServiceId,
+  defaultAmount,
+  defaultDescription,
+}: CrearCuentaCobroDialogProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = isControlled && externalOnOpenChange ? externalOnOpenChange : setInternalOpen;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [fechaVence, setFechaVence] = useState<Date | undefined>(undefined);
-  const [items, setItems] = useState<Array<{ id: string, description: string, quantity: number, unitPrice: number }>>([
-    { id: '1', description: '', quantity: 1, unitPrice: 0 }
+  const [items, setItems] = useState<Array<{ id: string, serviceId?: string, description: string, quantity: number, unitPrice: number }>>([
+    { id: '1', serviceId: '', description: '', quantity: 1, unitPrice: 0 }
   ]);
   const [includeIVA, setIncludeIVA] = useState(false);
   const [taxRate, setTaxRate] = useState(0.19);
@@ -53,6 +78,7 @@ export function CrearCuentaCobroDialog() {
   const [accountType, setAccountType] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
 
+  const [dbServices, setDbServices] = useState<any[]>([]);
   const [dbClients, setDbClients] = useState<any[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(false);
 
@@ -60,9 +86,13 @@ export function CrearCuentaCobroDialog() {
     if (open) {
       setIsLoadingData(true);
       import("@/app/admin/actions").then((actions) => {
-        actions.getClientsForPaymentRequests().then((res) => {
-          if (res.success && res.data) setDbClients(res.data);
-          setIsLoadingData(false);
+        Promise.all([
+          actions.getServicesForInvoicing(),
+          actions.getClientsForPaymentRequests()
+        ]).then(([servicesRes, clientsRes]) => {
+           if (servicesRes.success && servicesRes.data) setDbServices(servicesRes.data);
+           if (clientsRes.success && clientsRes.data) setDbClients(clientsRes.data);
+           setIsLoadingData(false);
         });
       });
     }
@@ -75,15 +105,38 @@ export function CrearCuentaCobroDialog() {
       setDiscountDescription('');
       setIncludeIVA(false);
       setTaxRate(0.19);
-      setClientName('');
-      setClientNit('');
-      setClientId('');
+      setClientName(defaultClientName || '');
+      setClientNit(defaultClientDocument || '');
+      setClientId(defaultClientId || '');
       setBankName('');
       setAccountType('');
       setAccountNumber('');
-      setItems([{ id: '1', description: '', quantity: 1, unitPrice: 0 }]);
+
+      const initialItems: Array<{ id: string, serviceId?: string, description: string, quantity: number, unitPrice: number }> = [];
+
+      if (defaultAmount) {
+        initialItems.push({
+          id: '1',
+          serviceId: defaultServiceId,
+          description: defaultDescription || 'Honorarios profesionales',
+          quantity: 1,
+          unitPrice: defaultAmount,
+        });
+      }
+
+      if (initialItems.length === 0) {
+        initialItems.push({
+          id: '1',
+          serviceId: '',
+          description: '',
+          quantity: 1,
+          unitPrice: 0,
+        });
+      }
+
+      setItems(initialItems);
     }
-  }, [open]);
+  }, [open, defaultClientName, defaultClientDocument, defaultClientId, defaultServiceId, defaultAmount, defaultDescription]);
 
   const handleAddItem = () => {
     setItems([...items, { id: Math.random().toString(36).substr(2, 9), description: '', quantity: 1, unitPrice: 0 }]);
@@ -94,7 +147,27 @@ export function CrearCuentaCobroDialog() {
   };
 
   const updateItem = (id: string, field: string, value: any) => {
-    setItems(items.map((item) => item.id === id ? { ...item, [field]: value } : item));
+    setItems(items.map((item) => {
+      if (item.id === id) {
+        const updatedItem = { ...item, [field]: value };
+
+        if (field === 'serviceId') {
+          if (value === 'manual') {
+            updatedItem.description = '';
+            updatedItem.unitPrice = 0;
+          } else {
+            const service = dbServices.find(s => s.id === value);
+            if (service) {
+              updatedItem.description = service.name;
+              updatedItem.unitPrice = Number(service.price) || 0;
+            }
+          }
+        }
+
+        return updatedItem;
+      }
+      return item;
+    }));
   };
 
   const subtotal = items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
@@ -147,6 +220,10 @@ export function CrearCuentaCobroDialog() {
         toast.success(`Cuenta de cobro #${number} creada con éxito`, {
           description: `Se ha registrado el cobro por ${total.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}`,
         });
+        setItems([{ id: '1', description: '', quantity: 1, unitPrice: 0 }]);
+        setFechaVence(undefined);
+        setDiscountAmount(0);
+        setDiscountDescription('');
         setOpen(false);
       } else {
         toast.error("Error al crear la cuenta de cobro", { description: result.error });
@@ -160,10 +237,14 @@ export function CrearCuentaCobroDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button render={<DialogTrigger />}>
-        <PlusIcon data-icon="inline-start" />
-        Crear Cuenta de Cobro
-      </Button>
+      {trigger ? (
+        <DialogTrigger render={trigger} />
+      ) : (
+        <Button render={<DialogTrigger />}>
+          <PlusIcon data-icon="inline-start" />
+          Crear Cuenta de Cobro
+        </Button>
+      )}
       <DialogContent
         className="max-w-[calc(100vw-1rem)] sm:max-w-4xl flex flex-col p-0 overflow-hidden top-[2vh] translate-y-0 h-[96vh] sm:h-[90vh] max-h-[900px] gap-0 border-none shadow-2xl rounded-2xl"
       >
@@ -202,6 +283,7 @@ export function CrearCuentaCobroDialog() {
                           setClientNit("");
                         }
                       }}
+                      disabled={!!defaultClientId}
                     >
                       <SelectTrigger className="bg-background shadow-xs h-11" id="cliente-select">
                         <SelectValue placeholder={isLoadingData ? "Cargando clientes..." : "Seleccionar o buscar cliente..."}>
@@ -275,16 +357,48 @@ export function CrearCuentaCobroDialog() {
                         </div>
                       )}
                       <div className="grid gap-6">
-                        <Field>
-                          <FieldLabel htmlFor={`desc-${item.id}`}>Descripción</FieldLabel>
-                          <Input
-                            id={`desc-${item.id}`}
-                            required
-                            value={item.description}
-                            onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                            className="bg-muted/30 border-muted h-11"
-                          />
-                        </Field>
+                        <div className="grid gap-6 sm:grid-cols-2">
+                          <Field>
+                            <FieldLabel>Tipo de Servicio</FieldLabel>
+                            <Select
+                              value={item.serviceId ?? ""}
+                              onValueChange={(val: string | null) => updateItem(item.id, 'serviceId', val ?? "")}
+                              disabled={isLoadingData}
+                            >
+                              <SelectTrigger className={cn("bg-muted/30 border-muted h-11", !item.serviceId && "border-destructive/50")}>
+                                <SelectValue placeholder={isLoadingData ? "Cargando..." : "Seleccionar del catálogo..."}>
+                                  {item.serviceId && (() => {
+                                    if (item.serviceId === 'manual') return <span>+ Servicio Personalizado / Otro</span>;
+                                    const svc = dbServices.find(s => s.id === item.serviceId);
+                                    if (svc) return <span>{svc.name}</span>;
+                                    return null;
+                                  })()}
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                {dbServices.map(s => (
+                                  <SelectItem key={s.id} value={s.id}>
+                                    {s.name} {s.price ? ` - $${Number(s.price).toLocaleString('es-CO')}` : ''}
+                                  </SelectItem>
+                                ))}
+                                <SelectItem value="manual" className="font-medium text-amber-600 dark:text-amber-500">
+                                  + Servicio Personalizado / Otro
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </Field>
+                          <Field>
+                            <FieldLabel htmlFor={`desc-${item.id}`}>Descripción</FieldLabel>
+                            <Input
+                              id={`desc-${item.id}`}
+                              required
+                              value={item.description}
+                              onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                              className="bg-muted/30 border-muted h-11"
+                            />
+                          </Field>
+                        </div>
+
                         <div className="grid gap-6 items-end sm:grid-cols-12">
                           <Field className="sm:col-span-3">
                             <FieldLabel htmlFor={`qty-${item.id}`}>Cantidad</FieldLabel>

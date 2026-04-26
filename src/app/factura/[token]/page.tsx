@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getInvoiceByToken } from "@/lib/invoice/verification";
+import { getInvoiceByToken, getInvoiceById } from "@/lib/invoice/verification";
 import { formatCurrency } from "@/lib/utils";
 
 export default async function InvoiceVerificationPage({
@@ -8,13 +8,27 @@ export default async function InvoiceVerificationPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
+  
+  // First try: buscar por token de verificación
+  let invoice: any = null;
+  let verificationInfo: { id: string; createdAt: Date } | null = null;
+  
   const verification = await getInvoiceByToken(token);
-
-  if (!verification || new Date() > verification.expiresAt) {
-    return notFound();
+  
+  if (verification && new Date() <= verification.expiresAt) {
+    invoice = verification.invoice;
+    verificationInfo = { id: verification.id, createdAt: verification.createdAt };
+  } else {
+    // Second try: buscar directamente por ID de invoice
+    const invoiceById = await getInvoiceById(token);
+    if (invoiceById) {
+      invoice = invoiceById;
+    }
   }
 
-  const invoice = verification.invoice;
+  if (!invoice) {
+    return notFound();
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 py-12 px-4">
@@ -29,7 +43,7 @@ export default async function InvoiceVerificationPage({
 
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-slate-500 uppercase mb-2">Cliente</h2>
-            <p className="font-medium text-slate-900">{invoice.clientId}</p>
+            <p className="font-medium text-slate-900">ID: {invoice.clientId}</p>
           </div>
 
           <div className="mb-6">
@@ -43,7 +57,7 @@ export default async function InvoiceVerificationPage({
                 </tr>
               </thead>
               <tbody>
-                {invoice.items.map((item: any) => (
+                {invoice.items?.map((item: any) => (
                   <tr key={item.id} className="border-b">
                     <td className="py-3">{item.description}</td>
                     <td className="text-center py-3">{item.quantity}</td>
@@ -79,8 +93,15 @@ export default async function InvoiceVerificationPage({
           )}
 
           <div className="mt-8 text-center text-slate-400 text-sm">
-            <p>Verification ID: {verification.id.slice(0, 8)}</p>
-            <p>Generated: {new Date(verification.createdAt).toLocaleDateString("es-CO")}</p>
+            {verificationInfo && (
+              <>
+                <p>Verification ID: {verificationInfo.id.slice(0, 8)}</p>
+                <p>Generated: {new Date(verificationInfo.createdAt).toLocaleDateString("es-CO")}</p>
+              </>
+            )}
+            {!verificationInfo && (
+              <p>Verificado por ID de factura</p>
+            )}
           </div>
         </div>
       </div>

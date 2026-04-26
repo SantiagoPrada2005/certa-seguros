@@ -148,6 +148,7 @@ export interface InvoiceRecord {
   client: { id: string; name: string; email: string | null };
   items?: { id: string; description: string; quantity: number; unitPrice: number; total: number }[];
   verificationToken?: string;
+  qrDataURL?: string;
 }
 
 export async function fetchInvoices(params?: {

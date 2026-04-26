@@ -47,6 +47,7 @@ export interface Invoice {
   companyEmail?: string;
   paymentInfo?: PaymentInfo;
   verificationToken?: string;
+  qrDataURL?: string;
 }
 
 export type PaymentRequestStatus = 'draft' | 'pending' | 'paid' | 'cancelled';

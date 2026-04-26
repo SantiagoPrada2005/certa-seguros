@@ -124,6 +124,7 @@ export function FacturasTable({ initialInvoices }: FacturasTableProps) {
       total: typeof item.total === 'number' ? item.total : Number(item.total),
     })),
     verificationToken: inv.verificationToken,
+    qrDataURL: inv.qrDataURL,
   });
 
   return (
