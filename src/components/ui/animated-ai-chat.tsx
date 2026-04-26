@@ -8,20 +8,22 @@ import { cn } from "@lib/utils";
 import { MarkdownRenderer } from "@/components/ui/markdown";
 import { toolsMetadata } from "@/lib/tools/index";
 import {
+    Check,
+    Copy,
     ImageIcon,
     LayoutDashboard,
-    MonitorIcon,
     CircleUserRound,
     Paperclip,
+    Receipt,
     SendIcon,
     XIcon,
     LoaderIcon,
     Sparkles,
+    Users,
     Command,
     ArrowLeft,
-    FileText,
     File,
-    Workflow,
+    FileText,
     Bot,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -159,6 +161,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
     const [showCommandPalette, setShowCommandPalette] = useState(false);
     const [showToolsPanel, setShowToolsPanel] = useState(false);
     const [recentCommand, setRecentCommand] = useState<string | null>(null);
+    const [copiedMessageId, setCopiedMessageId] = useState<number | null>(null);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 60,
@@ -179,28 +182,28 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
 
     const commandSuggestions: CommandSuggestion[] = [
         {
-            icon: <ImageIcon className="w-4 h-4" />,
-            label: "Clone UI",
-            description: "Generate a UI from a screenshot",
-            prefix: "/clone"
+            icon: <Users className="w-4 h-4" />,
+            label: "Ver Clientes",
+            description: "Lista todos los clientes registrados",
+            prefix: "/clientes"
+        },
+        {
+            icon: <FileText className="w-4 h-4" />,
+            label: "Pólizas por Vencer",
+            description: "Muestra pólizas próximas a vencer",
+            prefix: "/polizas"
         },
         {
             icon: <LayoutDashboard className="w-4 h-4" />,
-            label: "Dashboard UI",
-            description: "Go to your dashboard",
-            prefix: "/dashboard"
+            label: "Resumen del Negocio",
+            description: "Dashboard ejecutivo del estado actual",
+            prefix: "/resumen"
         },
         {
-            icon: <MonitorIcon className="w-4 h-4" />,
-            label: "Create Page",
-            description: "Generate a new web page",
-            prefix: "/page"
-        },
-        {
-            icon: <Sparkles className="w-4 h-4" />,
-            label: "Improve",
-            description: "Improve existing UI design",
-            prefix: "/improve"
+            icon: <Receipt className="w-4 h-4" />,
+            label: "Facturas Pendientes",
+            description: "Lista facturas pendientes de pago",
+            prefix: "/facturas"
         },
     ];
 
@@ -273,7 +276,7 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                     setShowCommandPalette(false);
 
                     setRecentCommand(selectedCommand.label);
-                    setTimeout(() => setRecentCommand(null), 3500);
+                    setTimeout(() => setRecentCommand(null), 2000);
                 }
             } else if (e.key === 'Escape') {
                 e.preventDefault();
@@ -455,13 +458,42 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                                 {getMessageText(msg)}
                                             </p>
                                         ) : (
-                                            <MarkdownRenderer
-                                                content={getMessageText(msg) || (i === messages.length - 1 && isStreaming ? '' : '')}
-                                                className={cn(
-                                                    "text-sm",
-                                                    i === messages.length - 1 && isStreaming && "animate-pulse"
+                                            <div className="relative">
+                                                <MarkdownRenderer
+                                                    content={getMessageText(msg) || (i === messages.length - 1 && isStreaming ? '' : '')}
+                                                    className={cn(
+                                                        "text-sm",
+                                                        i === messages.length - 1 && isStreaming && "animate-pulse"
+                                                    )}
+                                                />
+                                                <button
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(getMessageText(msg));
+                                                        setCopiedMessageId(i);
+                                                        setTimeout(() => setCopiedMessageId(null), 1500);
+                                                    }}
+                                                    className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center rounded-md text-muted-foreground/40 hover:text-foreground hover:bg-accent/50 transition-all opacity-0 group-hover:opacity-100"
+                                                    aria-label="Copiar mensaje"
+                                                >
+                                                    {copiedMessageId === i ? (
+                                                        <Check className="w-3.5 h-3.5 text-green-500" />
+                                                    ) : (
+                                                        <Copy className="w-3.5 h-3.5" />
+                                                    )}
+                                                </button>
+                                                {msg.role === 'assistant' && (msg as any).parts?.some(
+                                                    (p: { type: string; toolInvocation?: { state: string } }) => p.type === 'tool-invocation' && p.toolInvocation?.state === 'call'
+                                                ) && (
+                                                    <motion.div
+                                                        className="flex items-center gap-2 text-xs text-muted-foreground bg-accent/10 rounded-lg px-3 py-2 mt-2"
+                                                        initial={{ opacity: 0, y: 5 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                    >
+                                                        <LoaderIcon className="w-3 h-3 animate-spin" />
+                                                        <span>Consultando datos...</span>
+                                                    </motion.div>
                                                 )}
-                                            />
+                                            </div>
                                         )}
                                     </div>
                                 </motion.div>
@@ -755,10 +787,10 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                                     </div>
                                     <div>
                                         <div className="text-sm font-medium text-foreground">
-                                            {tool.name}
+                                            {tool.description}
                                         </div>
                                         <div className="text-xs text-muted-foreground hidden sm:block">
-                                            {tool.description}
+                                            {tool.name}
                                         </div>
                                     </div>
                                 </button>
@@ -769,49 +801,6 @@ export function AnimatedAIChat({ backHref }: { backHref?: string }) {
                 )}
             </AnimatePresence>
 
-            <AnimatePresence>
-                {showToolsPanel && (
-                    <motion.div
-                        className="hidden sm:block fixed sm:absolute sm:right-4 sm:top-1/2 sm:transform sm:-translate-y-1/2 sm:w-64 backdrop-blur-2xl bg-card/80 rounded-xl p-4 shadow-lg border border-border/50 z-50"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                    >
-                        <div className="flex items-center justify-between mb-3">
-                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                Herramientas
-                            </span>
-                            <button
-                                onClick={() => setShowToolsPanel(false)}
-                                className="p-1 hover:bg-accent/50 rounded"
-                            >
-                                <XIcon className="w-3 h-3" />
-                            </button>
-                        </div>
-                        <div className="space-y-1">
-                            {toolList.map((tool) => (
-                                <button
-                                    key={tool.name}
-                                    onClick={() => insertTool(tool.name)}
-                                    className="w-full flex items-start gap-3 p-2 rounded-lg hover:bg-accent/50 transition-colors text-left"
-                                >
-                                    <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                                        {tool.icon}
-                                    </div>
-                                    <div>
-                                        <div className="text-sm font-medium text-foreground">
-                                            {tool.name}
-                                        </div>
-                                        <div className="text-xs text-muted-foreground">
-                                            {tool.description}
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             {inputFocused && !window.matchMedia("(pointer: coarse)").matches && (
                 <motion.div
