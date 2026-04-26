@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, Sparkles, FileTextIcon, SettingsIcon, SendIcon } from "lucide-react"
+import { UsersIcon, BellIcon, ExternalLinkIcon, ShieldCheckIcon, BriefcaseIcon, BarChart3Icon, Sparkles, FileTextIcon, SettingsIcon, SendIcon, DollarSign } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 import { NavMain } from "@/components/nav-main"
@@ -107,6 +107,11 @@ const data = {
         {
           title: "Facturas",
           url: "/admin/facturas",
+        },
+        {
+          title: "Cuentas de Cobro",
+          url: "/admin/cuentas-cobro",
+          icon: <DollarSign className="size-4" />,
         },
       ],
     },

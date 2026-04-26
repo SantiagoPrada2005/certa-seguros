@@ -297,7 +297,95 @@ export async function createServiceSubcategory(
   }
 }
 
-// ─── Invoice Actions ──────────────────────────────────────────────────────────
+const paymentRequestItemSchema = z.object({
+  description: z.string().min(1),
+  quantity: z.coerce.number().int().min(1),
+  unitPrice: z.coerce.number().min(0),
+  total: z.coerce.number().min(0),
+});
+
+const paymentRequestCreateSchema = z.object({
+  number: z.string().min(1, "Número de cuenta requerido"),
+  date: z.string().min(1),
+  dueDate: z.string().min(1),
+  clientId: z.string().min(1, "Cliente requerido"),
+  subtotal: z.coerce.number().min(0),
+  discountAmount: z.coerce.number().min(0).optional().default(0),
+  discountDescription: z.string().optional(),
+  taxRate: z.coerce.number().min(0).max(1).optional().default(0),
+  taxAmount: z.coerce.number().min(0).optional().default(0),
+  total: z.coerce.number().min(0),
+  notes: z.string().optional(),
+  bankName: z.string().optional(),
+  accountType: z.string().optional(),
+  accountNumber: z.string().optional(),
+  items: z.array(paymentRequestItemSchema).min(1, "Al menos un ítem requerido"),
+});
+
+// ─── Payment Request Actions ─────────────────────────────────────────────────
+
+export async function createPaymentRequest(
+  formData: Record<string, unknown>
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const validated = paymentRequestCreateSchema.parse(formData);
+    const { items, ...prData } = validated;
+
+    const pr = await prisma.paymentRequest.create({
+      data: {
+        ...prData,
+        date: new Date(prData.date),
+        dueDate: new Date(prData.dueDate),
+        items: { create: items },
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: `Nueva cuenta de cobro creada: ${pr.number}`,
+        type: "INFO",
+        clientId: pr.clientId,
+      },
+    });
+
+    revalidatePath("/admin/cuentas-cobro");
+    return { success: true, data: { id: pr.id } };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { success: false, error: err.issues[0].message };
+    }
+    console.error("createPaymentRequest error:", err);
+    return { success: false, error: "No se pudo crear la cuenta de cobro" };
+  }
+}
+
+export async function updatePaymentRequestStatus(
+  id: string,
+  status: "DRAFT" | "PENDING" | "PAID" | "CANCELLED"
+): Promise<ActionResult> {
+  try {
+    await prisma.paymentRequest.update({ where: { id }, data: { status } });
+    revalidatePath("/admin/cuentas-cobro");
+    return { success: true, data: undefined };
+  } catch (err) {
+    console.error("updatePaymentRequestStatus error:", err);
+    return { success: false, error: "No se pudo actualizar la cuenta de cobro" };
+  }
+}
+
+export async function getClientsForPaymentRequests() {
+  try {
+    const clients = await prisma.client.findMany({
+      where: { status: "ACTIVO" },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, documentType: true, documentNumber: true, email: true }
+    });
+    return { success: true, data: clients };
+  } catch (error) {
+    console.error("getClientsForPaymentRequests error:", error);
+    return { success: false, error: "Error obteniendo clientes" };
+  }
+}
 
 export async function createInvoice(
   formData: Record<string, unknown>

@@ -125,6 +125,13 @@ enum ActivityType {
   DANGER // Siniestro reportado, factura vencida
 }
 
+enum PaymentRequestStatus {
+  DRAFT
+  PENDING
+  PAID
+  CANCELLED
+}
+
 enum DocumentType {
   CC // Cédula de Ciudadanía
   NIT // Número de Identificación Tributaria
@@ -195,6 +202,7 @@ model Client {
   // Relaciones
   policies     Policy[]
   invoices     Invoice[]
+  paymentRequests PaymentRequest[]
   reminders    Reminder[]
   activityLogs ActivityLog[]
   services     ClientService[]
@@ -431,6 +439,57 @@ model InvoiceVerification {
   @@index([token])
 
   @@map("invoice_verifications")
+}
+
+/// Cuentas de cobro emitidas a clientes (similares a facturas pero sin requisitos DIAN)
+model PaymentRequest {
+  id            String                @id @default(cuid())
+  number        String                @unique // CC-001, CC-002...
+  date          DateTime
+  dueDate       DateTime
+  subtotal      Decimal               @db.Decimal(15, 2)
+  discountAmount Decimal               @default(0) @db.Decimal(15, 2)
+  discountDescription String?
+  taxRate       Decimal               @default(0) @db.Decimal(5, 4) // 0 = sin IVA, 0.19 = 19%
+  taxAmount     Decimal               @default(0) @db.Decimal(15, 2)
+  total         Decimal               @db.Decimal(15, 2)
+  status        PaymentRequestStatus  @default(DRAFT)
+  notes         String?
+
+  // Datos bancarios para pago
+  bankName      String?
+  accountType   String?
+  accountNumber String?
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  items PaymentRequestItem[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([number])
+  @@map("payment_requests")
+}
+
+/// Ítems individuales dentro de una cuenta de cobro
+model PaymentRequestItem {
+  id          String  @id @default(cuid())
+  description String
+  quantity    Int     @default(1)
+  unitPrice   Decimal @db.Decimal(15, 2)
+  total       Decimal @db.Decimal(15, 2)
+
+  paymentRequestId String
+  paymentRequest   PaymentRequest @relation(fields: [paymentRequestId], references: [id], onDelete: Cascade)
+
+  @@index([paymentRequestId])
+  @@map("payment_request_items")
 }
 
 /// Recordatorios y alertas preventivas (renovaciones, seguimientos, etc.)

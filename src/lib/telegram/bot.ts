@@ -29,6 +29,10 @@ import { updateClientStatusTool } from "@/lib/tools/update-client-status";
 import { updatePolicyStatusTool } from "@/lib/tools/update-policy-status";
 import { convertProspectToClientTool } from "@/lib/tools/convert-prospect-to-client";
 import { logActivityTool } from "@/lib/tools/log-activity";
+import { getPaymentRequestsTool } from "@/lib/tools/get-payment-requests";
+import { getPaymentRequestDetailsTool } from "@/lib/tools/get-payment-request-details";
+import { createPaymentRequestTool } from "@/lib/tools/create-payment-request";
+import { updatePaymentRequestStatusTool } from "@/lib/tools/update-payment-request-status";
 
 const allTools = {
   get_clients: getClientsTool,
@@ -54,6 +58,10 @@ const allTools = {
   update_policy_status: updatePolicyStatusTool,
   convert_prospect_to_client: convertProspectToClientTool,
   log_activity: logActivityTool,
+  get_payment_requests: getPaymentRequestsTool,
+  get_payment_request_details: getPaymentRequestDetailsTool,
+  create_payment_request: createPaymentRequestTool,
+  update_payment_request_status: updatePaymentRequestStatusTool,
 };
 
 const digestTools = {

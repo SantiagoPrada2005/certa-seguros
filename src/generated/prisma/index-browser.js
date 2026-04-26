@@ -268,6 +268,36 @@ exports.Prisma.InvoiceVerificationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PaymentRequestScalarFieldEnum = {
+  id: 'id',
+  number: 'number',
+  date: 'date',
+  dueDate: 'dueDate',
+  subtotal: 'subtotal',
+  discountAmount: 'discountAmount',
+  discountDescription: 'discountDescription',
+  taxRate: 'taxRate',
+  taxAmount: 'taxAmount',
+  total: 'total',
+  status: 'status',
+  notes: 'notes',
+  bankName: 'bankName',
+  accountType: 'accountType',
+  accountNumber: 'accountNumber',
+  clientId: 'clientId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentRequestItemScalarFieldEnum = {
+  id: 'id',
+  description: 'description',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  total: 'total',
+  paymentRequestId: 'paymentRequestId'
+};
+
 exports.Prisma.ReminderScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -436,6 +466,13 @@ exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
   OVERDUE: 'OVERDUE'
 };
 
+exports.PaymentRequestStatus = exports.$Enums.PaymentRequestStatus = {
+  DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.ReminderType = exports.$Enums.ReminderType = {
   RENOVACION_SOAT: 'RENOVACION_SOAT',
   RENOVACION_POLIZA: 'RENOVACION_POLIZA',
@@ -502,6 +539,8 @@ exports.Prisma.ModelName = {
   Invoice: 'Invoice',
   InvoiceItem: 'InvoiceItem',
   InvoiceVerification: 'InvoiceVerification',
+  PaymentRequest: 'PaymentRequest',
+  PaymentRequestItem: 'PaymentRequestItem',
   Reminder: 'Reminder',
   Goal: 'Goal',
   GoalMilestone: 'GoalMilestone',

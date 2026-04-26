@@ -23,6 +23,8 @@ import {
   ToggleRight,
   UserCheck,
   ClipboardPlus,
+  DollarSign,
+  CreditCard,
 } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -125,6 +127,18 @@ export const toolsMetadata: Record<string, ToolMetadata> = {
     icon: <LayoutDashboard className="w-4 h-4" />,
   },
 
+  // Read — Cuentas de Cobro
+  get_payment_requests: {
+    name: "get_payment_requests",
+    description: "Lista cuentas de cobro con filtros por estado o cliente",
+    icon: <DollarSign className="w-4 h-4" />,
+  },
+  get_payment_request_details: {
+    name: "get_payment_request_details",
+    description: "Obtiene detalles completos de una cuenta de cobro con ítems",
+    icon: <CreditCard className="w-4 h-4" />,
+  },
+
   // Write
   create_reminder: {
     name: "create_reminder",
@@ -160,6 +174,18 @@ export const toolsMetadata: Record<string, ToolMetadata> = {
     name: "log_activity",
     description: "Registra una actividad en el sistema",
     icon: <ClipboardPlus className="w-4 h-4" />,
+  },
+
+  // Write — Cuentas de Cobro
+  create_payment_request: {
+    name: "create_payment_request",
+    description: "Crea una nueva cuenta de cobro",
+    icon: <DollarSign className="w-4 h-4" />,
+  },
+  update_payment_request_status: {
+    name: "update_payment_request_status",
+    description: "Actualiza el estado de una cuenta de cobro",
+    icon: <ToggleRight className="w-4 h-4" />,
   },
 };
 

@@ -15,7 +15,6 @@ export default async function InvoiceVerificationPage({
   }
 
   const invoice = verification.invoice;
-  const client = invoice.client;
 
   return (
     <main className="min-h-screen bg-slate-50 py-12 px-4">
@@ -30,9 +29,7 @@ export default async function InvoiceVerificationPage({
 
           <div className="mb-6">
             <h2 className="text-sm font-semibold text-slate-500 uppercase mb-2">Cliente</h2>
-            <p className="font-medium text-slate-900">{client.name}</p>
-            {client.email && <p className="text-slate-600">{client.email}</p>}
-            {client.address && <p className="text-slate-600">{client.address}</p>}
+            <p className="font-medium text-slate-900">{invoice.clientId}</p>
           </div>
 
           <div className="mb-6">
@@ -46,7 +43,7 @@ export default async function InvoiceVerificationPage({
                 </tr>
               </thead>
               <tbody>
-                {invoice.items.map((item) => (
+                {invoice.items.map((item: any) => (
                   <tr key={item.id} className="border-b">
                     <td className="py-3">{item.description}</td>
                     <td className="text-center py-3">{item.quantity}</td>

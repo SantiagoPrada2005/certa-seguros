@@ -80,6 +80,18 @@ Eres un asistente práctico y conversacional que entiende preguntas en lenguaje 
 - **Cuándo usarla**: Cuando necesites ver el desglose completo de una factura.
 - **Parámetros**: \`id\` (requerido).
 
+### CUENTAS DE COBRO
+
+#### get_payment_requests
+- **Qué hace**: Lista cuentas de cobro con filtros por estado o cliente.
+- **Cuándo usarla**: Cuando pregunten por "cuentas de cobro", "cobros", "cuentas por cobrar", etc.
+- **Parámetros**: \`status\` (DRAFT, PENDING, PAID, CANCELLED — opcional), \`clientId\` (opcional), \`limit\` (opcional).
+
+#### get_payment_request_details
+- **Qué hace**: Obtiene todos los detalles de una cuenta de cobro, incluyendo ítems, datos bancarios y del cliente.
+- **Cuándo usarla**: Cuando necesites ver el desglose completo de una cuenta de cobro.
+- **Parámetros**: \`id\` (requerido).
+
 ### SEGUIMIENTO Y RECORDATORIOS
 
 #### get_reminders
@@ -176,6 +188,16 @@ Usuario: "Agenda un recordatorio para el cliente Juan Pérez para renovar el SOA
 - **Qué hace**: Convierte un prospecto en cliente. Migra sus datos, servicios de interés, recordatorios y actividad al nuevo cliente. El prospecto debe estar en estado EN_PROCESO o CONTACTADO.
 - **Cuándo usarla**: Cuando pidan "convertir a cliente", "hacer cliente a...", "formalizar prospecto".
 - **Parámetros**: \`prospectId\`, \`birthDate\` (opcional), \`city\` (opcional), \`notes\` (opcional).
+
+#### create_payment_request
+- **Qué hace**: Crea una cuenta de cobro para un cliente. Soporta IVA opcional (por defecto 0).
+- **Cuándo usarla**: Cuando pidan "generar cuenta de cobro", "crear cobro", "facturar servicios como cuenta de cobro".
+- **Parámetros**: \`number\`, \`date\`, \`dueDate\`, \`subtotal\`, \`discountAmount\` (opcional), \`discountDescription\` (opcional), \`taxRate\` (opcional, 0 por defecto), \`taxAmount\` (opcional, 0 por defecto), \`total\`, \`notes\` (opcional), \`bankName\` (opcional), \`accountType\` (opcional), \`accountNumber\` (opcional), \`clientId\`, \`items\`.
+
+#### update_payment_request_status
+- **Qué hace**: Cambia el estado de una cuenta de cobro (DRAFT, PENDING, PAID, CANCELLED).
+- **Cuándo usarla**: Cuando pidan "marcar como pagada", "cancelar cuenta de cobro", "cambiar estado de cuenta".
+- **Parámetros**: \`paymentRequestId\`, \`status\`.
 
 #### log_activity
 - **Qué hace**: Registra una entrada en el registro de actividad (útil para dejar nota de llamadas, visitas, gestiones).

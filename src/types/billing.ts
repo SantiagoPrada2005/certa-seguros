@@ -49,6 +49,34 @@ export interface Invoice {
   verificationToken?: string;
 }
 
+export type PaymentRequestStatus = 'draft' | 'pending' | 'paid' | 'cancelled';
+
+export interface PaymentRequest {
+  id: string;
+  number: string;
+  clientId: string;
+  clientName: string;
+  date: string;
+  dueDate: string;
+  items: InvoiceItem[];
+  subtotal: number;
+  discountAmount: number;
+  discountDescription?: string;
+  taxRate: number;
+  taxAmount: number;
+  total: number;
+  status: PaymentRequestStatus;
+  notes?: string;
+  bankName?: string;
+  accountType?: string;
+  accountNumber?: string;
+  companyName?: string;
+  companyNit?: string;
+  companyAddress?: string;
+  companyPhone?: string;
+  companyEmail?: string;
+}
+
 export interface BillingStats {
   totalBilled: number;
   pendingAmount: number;

@@ -147,6 +147,7 @@ export interface InvoiceRecord {
   clientId: string;
   client: { id: string; name: string; email: string | null };
   items?: { id: string; description: string; quantity: number; unitPrice: number; total: number }[];
+  verificationToken?: string;
 }
 
 export async function fetchInvoices(params?: {
@@ -156,6 +157,38 @@ export async function fetchInvoices(params?: {
   if (params?.status && params.status !== "all") url.searchParams.set("status", params.status);
   const res = await fetch(url.toString(), { cache: "no-store" });
   if (!res.ok) throw new Error("Error fetching invoices");
+  return res.json();
+}
+
+// ─── Payment Requests ───────────────────────────────────────────────────────
+
+export interface PaymentRequestRecord {
+  id: string;
+  number: string;
+  date: string;
+  dueDate: string;
+  subtotal: number;
+  discountAmount: number;
+  taxRate: number;
+  taxAmount: number;
+  total: number;
+  status: "DRAFT" | "PENDING" | "PAID" | "CANCELLED";
+  notes: string | null;
+  bankName: string | null;
+  accountType: string | null;
+  accountNumber: string | null;
+  clientId: string;
+  client: { id: string; name: string; email: string | null };
+  items?: { id: string; description: string; quantity: number; unitPrice: number; total: number }[];
+}
+
+export async function fetchPaymentRequests(params?: {
+  status?: string;
+}): Promise<PaymentRequestRecord[]> {
+  const url = new URL(`${BASE_URL}/api/payment-requests`);
+  if (params?.status && params.status !== "all") url.searchParams.set("status", params.status);
+  const res = await fetch(url.toString(), { cache: "no-store" });
+  if (!res.ok) throw new Error("Error fetching payment requests");
   return res.json();
 }
 

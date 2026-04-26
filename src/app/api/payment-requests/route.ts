@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
-import { getOrCreateInvoiceToken } from "@/lib/invoice/verification";
 
-const invoiceCreateSchema = z.object({
-  number: z.string().min(1, "Invoice number is required"),
+const paymentRequestCreateSchema = z.object({
+  number: z.string().min(1, "Number is required"),
   date: z.string().transform((str) => new Date(str)),
   dueDate: z.string().transform((str) => new Date(str)),
   subtotal: z.number().min(0),
   discountAmount: z.number().min(0).optional().default(0),
   discountDescription: z.string().optional(),
-  taxRate: z.number().min(0).max(1).optional().default(0.19),
-  taxAmount: z.number().min(0),
+  taxRate: z.number().min(0).max(1).optional().default(0),
+  taxAmount: z.number().min(0).optional().default(0),
   total: z.number().min(0),
-  status: z.enum(["DRAFT", "PENDING", "PAID", "OVERDUE"]).optional().default("DRAFT"),
+  status: z.enum(["DRAFT", "PENDING", "PAID", "CANCELLED"]).optional().default("DRAFT"),
   notes: z.string().optional(),
+  bankName: z.string().optional(),
+  accountType: z.string().optional(),
+  accountNumber: z.string().optional(),
   clientId: z.string().min(1, "Client ID is required"),
   items: z.array(
     z.object({
@@ -36,7 +38,7 @@ export async function GET(request: Request) {
       where.status = status.toUpperCase();
     }
 
-    const invoicesRaw = await prisma.invoice.findMany({
+    const prsRaw = await prisma.paymentRequest.findMany({
       where,
       include: {
         client: true,
@@ -45,26 +47,25 @@ export async function GET(request: Request) {
       orderBy: { date: "desc" },
     });
 
-    const invoices = await Promise.all(invoicesRaw.map(async (inv) => ({
-      ...inv,
-      subtotal: Number(inv.subtotal),
-      discountAmount: Number(inv.discountAmount),
-      taxRate: Number(inv.taxRate),
-      taxAmount: Number(inv.taxAmount),
-      total: Number(inv.total),
-      items: inv.items.map(item => ({
+    const prs = prsRaw.map(pr => ({
+      ...pr,
+      subtotal: Number(pr.subtotal),
+      discountAmount: Number(pr.discountAmount),
+      taxRate: Number(pr.taxRate),
+      taxAmount: Number(pr.taxAmount),
+      total: Number(pr.total),
+      items: pr.items.map(item => ({
         ...item,
         unitPrice: Number(item.unitPrice),
         total: Number(item.total),
       })),
-      verificationToken: await getOrCreateInvoiceToken(inv.id),
-    })));
+    }));
 
-    return NextResponse.json(invoices);
+    return NextResponse.json(prs);
   } catch (error) {
-    console.error("Error fetching invoices:", error);
+    console.error("Error fetching payment requests:", error);
     return NextResponse.json(
-      { error: "Failed to fetch invoices" },
+      { error: "Failed to fetch payment requests" },
       { status: 500 }
     );
   }
@@ -73,13 +74,13 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const validatedData = invoiceCreateSchema.parse(body);
+    const validatedData = paymentRequestCreateSchema.parse(body);
 
-    const { items, ...invoiceData } = validatedData;
+    const { items, ...prData } = validatedData;
 
-    const invoice = await prisma.invoice.create({
+    const pr = await prisma.paymentRequest.create({
       data: {
-        ...invoiceData,
+        ...prData,
         items: {
           create: items,
         },
@@ -91,13 +92,13 @@ export async function POST(request: Request) {
 
     await prisma.activityLog.create({
       data: {
-        action: `Nueva factura creada: ${invoice.number}`,
+        action: `Nueva cuenta de cobro creada: ${pr.number}`,
         type: "INFO",
-        clientId: invoice.clientId,
+        clientId: pr.clientId,
       }
     });
 
-    return NextResponse.json(invoice, { status: 201 });
+    return NextResponse.json(pr, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -105,9 +106,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    console.error("Error creating invoice:", error);
+    console.error("Error creating payment request:", error);
     return NextResponse.json(
-      { error: "Failed to create invoice" },
+      { error: "Failed to create payment request" },
       { status: 500 }
     );
   }

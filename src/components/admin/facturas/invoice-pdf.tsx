@@ -259,7 +259,7 @@ export function InvoicePDF({ invoice }: { invoice: Invoice }) {
     dateStyle: 'medium',
   }).format(new Date());
 
-  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://certaseguros.com.co';
+  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://seguroscerta.com';
 const qrVerifyUrl = invoice.verificationToken
   ? `${BASE_URL}/factura/${invoice.verificationToken}`
   : undefined;

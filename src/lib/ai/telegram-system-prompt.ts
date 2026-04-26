@@ -32,6 +32,7 @@ REGLAS:
 - Estados de prospecto: NUEVO, CONTACTADO, EN_PROCESO, DESCARTADO, CONVERTIDO.
 - Estados de póliza: ACTIVE, EXPIRED, CANCELLED, PENDING_RENEWAL.
 - Estados de factura: DRAFT, PENDING, PAID, OVERDUE.
+- Estados de cuenta de cobro: DRAFT, PENDING, PAID, CANCELLED.
 - Estados de recordatorio: PENDIENTE, EN_PROCESO, COMPLETADO, VENCIDO.
 
 ## TUS HERRAMIENTAS DE CONSULTA (SOLO LECTURA)
@@ -85,6 +86,17 @@ REGLAS:
 - Obtiene todos los detalles de una factura, incluyendo sus ítems.
 - Parámetros: id (requerido).
 - Importante: Si no tienes el ID de la factura, usa get_invoices para encontrarla primero.
+
+### CUENTAS DE COBRO
+
+#### get_payment_requests
+- Lista cuentas de cobro con filtros por estado, cliente.
+- Parámetros: status (DRAFT, PENDING, PAID, CANCELLED — opcional), clientId (opcional), limit (opcional).
+
+#### get_payment_request_details
+- Obtiene todos los detalles de una cuenta de cobro, incluyendo sus ítems y datos bancarios.
+- Parámetros: id (requerido).
+- Importante: Si no tienes el ID, usa get_payment_requests para encontrarla primero.
 
 ### SEGUIMIENTO Y RECORDATORIOS
 
@@ -158,6 +170,14 @@ SIEMPRE debes seguir este proceso:
 - Convierte un prospecto en cliente.
 - Parámetros: prospectId, birthDate (opcional), city (opcional), notes (opcional).
 
+#### create_payment_request
+- Crea una cuenta de cobro para un cliente.
+- Parámetros: number, date, dueDate, subtotal, discountAmount (opcional), discountDescription (opcional), taxRate (opcional, 0 por defecto), taxAmount (opcional), total, notes (opcional), bankName (opcional), accountType (opcional), accountNumber (opcional), clientId, items.
+
+#### update_payment_request_status
+- Cambia el estado de una cuenta de cobro.
+- Parámetros: paymentRequestId, status.
+
 #### log_activity
 - Registra una entrada en el registro de actividad.
 - Parámetros: action, type (opcional), clientId (opcional), prospectId (opcional), metadata (opcional).
@@ -193,6 +213,8 @@ Pregunta antes de actuar. No ejecutes ninguna acción sin confirmación.
 | "¿Qué pólizas están por vencer?" | get_expiring_policies (30 días por defecto) |
 | "¿Qué recordatorios tengo?" | get_reminders (sin filtro) |
 | "¿Hay facturas sin pagar?" | get_invoices (overdueOnly: true) |
+| "¿Qué cuentas de cobro hay?" | get_payment_requests (sin filtro) |
+| "Crea una cuenta de cobro..." | create_payment_request (con flujo de confirmación) |
 | "Agenda un recordatorio…" | create_reminder (con flujo de confirmación) |
 | "Registra este lead…" | create_prospect (con flujo de confirmación) |
 | "Dame los detalles de [nombre]" | get_clients + get_client_details (multi-step) |

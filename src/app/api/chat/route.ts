@@ -31,6 +31,10 @@ import { getServiceDetailsTool } from "@/lib/tools/get-service-details";
 import { getGoalsTool } from "@/lib/tools/get-goals";
 import { getDashboardSummaryTool } from "@/lib/tools/get-dashboard-summary";
 
+// Read tools — Cuentas de Cobro
+import { getPaymentRequestsTool } from "@/lib/tools/get-payment-requests";
+import { getPaymentRequestDetailsTool } from "@/lib/tools/get-payment-request-details";
+
 // Write tools
 import { createReminderTool } from "@/lib/tools/create-reminder";
 import { createProspectTool } from "@/lib/tools/create-prospect";
@@ -39,6 +43,10 @@ import { updateClientStatusTool } from "@/lib/tools/update-client-status";
 import { updatePolicyStatusTool } from "@/lib/tools/update-policy-status";
 import { convertProspectToClientTool } from "@/lib/tools/convert-prospect-to-client";
 import { logActivityTool } from "@/lib/tools/log-activity";
+
+// Write tools — Cuentas de Cobro
+import { createPaymentRequestTool } from "@/lib/tools/create-payment-request";
+import { updatePaymentRequestStatusTool } from "@/lib/tools/update-payment-request-status";
 
 export const runtime = "nodejs";
 
@@ -101,6 +109,10 @@ export async function POST(req: Request) {
         get_goals: getGoalsTool,
         get_dashboard_summary: getDashboardSummaryTool,
 
+        // Read — Cuentas de Cobro
+        get_payment_requests: getPaymentRequestsTool,
+        get_payment_request_details: getPaymentRequestDetailsTool,
+
         // Write
         create_reminder: createReminderTool,
         create_prospect: createProspectTool,
@@ -109,6 +121,10 @@ export async function POST(req: Request) {
         update_policy_status: updatePolicyStatusTool,
         convert_prospect_to_client: convertProspectToClientTool,
         log_activity: logActivityTool,
+
+        // Write — Cuentas de Cobro
+        create_payment_request: createPaymentRequestTool,
+        update_payment_request_status: updatePaymentRequestStatusTool,
       },
     });
 
