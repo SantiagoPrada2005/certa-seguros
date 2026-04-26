@@ -5,10 +5,7 @@ import { AdminThemeSwitcher } from "@/components/admin-theme-switcher"
 
 export default function AdminChatPage() {
   return (
-    <div className="flex w-screen h-screen overflow-hidden bg-background">
-      <div className="absolute top-6 right-6 z-50">
-        <AdminThemeSwitcher />
-      </div>
+    <div className="flex w-full min-h-[100dvh] overflow-hidden bg-background">
       <AnimatedAIChat backHref="/admin" />
     </div>
   );
