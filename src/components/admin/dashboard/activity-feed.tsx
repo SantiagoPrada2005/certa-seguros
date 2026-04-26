@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActivityIcon } from "lucide-react";
+import { relativeTime } from "@/lib/format";
 
 type ActivityItem = {
   id: string;
@@ -24,16 +25,6 @@ const badgeIcon: Record<string, string> = {
   INFO: "→",
   WARNING: "!",
   ERROR: "✕",
-};
-
-const relativeTime = (iso: string) => {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "Ahora";
-  if (mins < 60) return `Hace ${mins} min`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `Hace ${hrs}h`;
-  return `Hace ${Math.floor(hrs / 24)}d`;
 };
 
 export function ActivityFeed({ feed }: { feed: ActivityItem[] }) {

@@ -707,11 +707,11 @@ export async function getDashboardData(): Promise<DashboardData> {
     monthlyRevenue,
     pendingReminders,
     prospectsByStatus,
-    convertedProspectsCount,
     policies,
     serviceDistributionDist,
     leadSourcesDist,
     goals,
+    weeklyProspectActivity,
   ] = await Promise.all([
     // 1. Feed
     prisma.activityLog.findMany({
@@ -738,29 +738,35 @@ export async function getDashboardData(): Promise<DashboardData> {
       where: { deletedAt: null },
       _count: { _all: true },
     }),
-    // 8. Converted prospects (for conversion rate)
-    prisma.prospect.count({ where: { status: "CONVERTIDO" } }),
-    // 9. All policies this year (for revenue chart)
+    // 8. All policies this year (for revenue chart)
     prisma.policy.findMany({
       where: { startDate: { gte: startOfYear } },
       select: { startDate: true, premiumAmount: true, commissionAmount: true },
     }),
-    // 10. Active policies by type
+    // 9. Active policies by type
     prisma.policy.groupBy({
       by: ["type"],
       where: { status: "ACTIVE" },
       _count: { _all: true },
     }),
-    // 11. Lead sources
+    // 10. Lead sources
     prisma.prospect.groupBy({
       by: ["source"],
       where: { source: { not: null }, deletedAt: null },
       _count: { _all: true },
     }),
-    // 12. Active goals
+    // 11. Active goals
     prisma.goal.findMany({
       where: { isActive: true },
       orderBy: { createdAt: "desc" },
+    }),
+    // 12. Weekly prospect activity
+    prisma.activityLog.findMany({
+      where: {
+        createdAt: { gte: startOfWeek, lte: endOfWeek },
+        prospectId: { not: null },
+      },
+      select: { createdAt: true },
     }),
   ]);
 
@@ -812,53 +818,50 @@ export async function getDashboardData(): Promise<DashboardData> {
     }));
 
   // --- Process conversion ---
-  const totalProspectsAll = totalProspects + convertedProspectsCount;
-  const conversionRate = totalProspectsAll > 0
-    ? Math.round((convertedProspectsCount / totalProspectsAll) * 100)
-    : 0;
+  const convertedFromGroupBy = prospectsByStatus.find((s) => s.status === "CONVERTIDO")?._count._all || 0;
+  const totalAllProspects = prospectsByStatus.reduce((sum, s) => sum + s._count._all, 0);
+  const conversionRate = totalAllProspects > 0 ? Math.round((convertedFromGroupBy / totalAllProspects) * 100) : 0;
   const conversionData = [{ name: "Conversión", valor: conversionRate, fill: "var(--color-primary)" }];
 
   // --- Process weekly activity (FIXED semantic mapping) ---
-  const prospectActivity = await prisma.activityLog.findMany({
-    where: {
-      createdAt: { gte: startOfWeek, lte: endOfWeek },
-      prospectId: { not: null },
-    },
-    select: { createdAt: true },
-  });
-
   const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
   const weekDays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
   const weeklyMap = new Map<string, WeeklyActivity>();
   weekDays.forEach((d) => weeklyMap.set(d, { dia: d, nuevos: 0, gestiones: 0, cerrados: 0 }));
 
-  // "Nuevos": prospects created each day this week
-  for (let i = 0; i < 7; i++) {
+  const weekDayStartEnd = weekDays.map((_, i) => {
     const dayStart = new Date(startOfWeek);
     dayStart.setDate(dayStart.getDate() + i);
     dayStart.setHours(0, 0, 0, 0);
     const dayEnd = new Date(dayStart);
     dayEnd.setHours(23, 59, 59, 999);
+    return { dayStart, dayEnd };
+  });
+
+  const weeklyCounts = await Promise.all(
+    weekDayStartEnd.flatMap(({ dayStart, dayEnd }) => [
+      prisma.prospect.count({
+        where: { createdAt: { gte: dayStart, lte: dayEnd }, deletedAt: null },
+      }),
+      prisma.prospect.count({
+        where: {
+          updatedAt: { gte: dayStart, lte: dayEnd },
+          status: { in: ["CONVERTIDO", "DESCARTADO"] },
+          deletedAt: null,
+        },
+      }),
+    ])
+  );
+
+  for (let i = 0; i < 7; i++) {
     const dayName = weekDays[i];
-
-    const nuevos = await prisma.prospect.count({
-      where: { createdAt: { gte: dayStart, lte: dayEnd }, deletedAt: null },
-    });
-    const cerrados = await prisma.prospect.count({
-      where: {
-        updatedAt: { gte: dayStart, lte: dayEnd },
-        status: { in: ["CONVERTIDO", "DESCARTADO"] },
-        deletedAt: null,
-      },
-    });
-
     const entry = weeklyMap.get(dayName)!;
-    entry.nuevos = nuevos;
-    entry.cerrados = cerrados;
+    entry.nuevos = weeklyCounts[i * 2];
+    entry.cerrados = weeklyCounts[i * 2 + 1];
   }
 
   // "Gestiones": ActivityLog entries per day with prospectId
-  prospectActivity.forEach((log) => {
+  weeklyProspectActivity.forEach((log) => {
     const dayName = days[log.createdAt.getDay()];
     if (weeklyMap.has(dayName)) {
       weeklyMap.get(dayName)!.gestiones++;
@@ -885,7 +888,9 @@ export async function getDashboardData(): Promise<DashboardData> {
   // --- Build prospects breakdown ---
   const prospectsBreakdown: Record<string, number> = {};
   prospectsByStatus.forEach(({ status, _count }) => {
-    prospectsBreakdown[status] = _count._all;
+    if (status !== "DESCARTADO") {
+      prospectsBreakdown[status] = _count._all;
+    }
   });
 
   return {

@@ -215,33 +215,3 @@ export async function fetchGoals(params?: {
   if (!res.ok) throw new Error("Error fetching goals");
   return res.json();
 }
-
-// ─── Dashboard Stats ─────────────────────────────────────────────────────────
-
-export interface DashboardStats {
-  feed: {
-    id: string;
-    action: string;
-    type: string;
-    createdAt: string;
-    client: { name: string; type: string } | null;
-    prospect: { name: string } | null;
-  }[];
-  stats: {
-    totalClients: number;
-    totalProspects: number;
-    activePolicies: number;
-    monthlyRevenue: number;
-    pendingReminders: number;
-    conversionRate: number;
-    prospectsBreakdown: Record<string, number>;
-  };
-}
-
-export async function fetchDashboardStats(limit = 6): Promise<DashboardStats> {
-  const url = new URL(`${BASE_URL}/api/dashboard/stats`);
-  url.searchParams.set("limit", String(limit));
-  const res = await fetch(url.toString(), { cache: "no-store" });
-  if (!res.ok) throw new Error("Error fetching dashboard stats");
-  return res.json();
-}
