@@ -4,34 +4,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, Variants, useInView } from 'framer-motion';
 import Image from 'next/image';
 
-// ─── Counter-up hook ─────────────────────────────────────────────────────────
-function useCountUp(target: number, duration = 1800, shouldStart = false) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!shouldStart) return;
-    let startTime: number | null = null;
-
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
-      setCount(Math.floor(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-
-    requestAnimationFrame(step);
-  }, [shouldStart, target, duration]);
-
-  return count;
-}
-
 // ─── Stat data ────────────────────────────────────────────────────────────────
 const stats = [
-  { label: 'Clientes Felices', numeric: 10000, display: '+', suffix: '', image: '/images/clientes-felices.png', large: true },
+  { label: 'Alto indice de Reclamaciones Pagadas', suffix: '', image: '/images/clientes-felices.png', large: true },
   { label: 'Años de Experiencia', numeric: 20, display: '+', suffix: '', image: '/images/años-de-experiencia.png', large: false },
-  { label: 'Reclamaciones Pagadas', numeric: 98, display: '%', suffix: '', image: '/images/pagados.png', large: false },
-  { label: 'Soporte disponible', numeric: 0, display: '', suffix: '24/7', image: '/images/atencion-24hrs.png', large: false },
+  { label: 'Tiempo de respuesta a cotización agiles', suffix: '', image: '/images/pagados.png', large: false },
+  { label: 'Soporte Personalizado', suffix: '', image: '/images/atencion-24hrs.png', large: false },
 ];
 
 const benefits = [
@@ -67,14 +45,7 @@ const benefitVariants: Variants = {
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ stat, shouldStart }: { stat: typeof stats[0]; shouldStart: boolean }) {
-  const count = useCountUp(stat.numeric, 1800, shouldStart && stat.numeric > 0);
 
-  const displayValue = stat.numeric === 0
-    ? stat.suffix
-    : `${stat.numeric >= 10000
-      ? count >= 10000 ? '10,000' : count.toLocaleString()
-      : count
-    }${stat.display}`;
 
   return (
     <motion.div
@@ -99,11 +70,6 @@ function StatCard({ stat, shouldStart }: { stat: typeof stats[0]; shouldStart: b
           height={70}
           className="object-contain w-full h-full p-1"
         />
-      </div>
-
-      {/* Number */}
-      <div className="font-montserrat text-4xl font-black text-white mb-6 tracking-tight leading-none">
-        {displayValue}
       </div>
 
       {/* Label */}
@@ -161,7 +127,7 @@ const TrustSection = () => {
             <h2 className="font-montserrat text-4xl lg:text-5xl font-extrabold text-white mb-6 leading-tight">
               ¿Por qué elegir{' '}
               <span className="text-cyan-400 relative">
-                Certa Seguros?
+                Seguros Certa?
                 <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-cyan-400/40 rounded-full" />
               </span>
             </h2>
