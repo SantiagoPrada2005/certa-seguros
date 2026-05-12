@@ -8,7 +8,7 @@ import Image from 'next/image';
 const stats = [
   { label: 'Alto indice de Reclamaciones Pagadas', suffix: '', image: '/images/clientes-felices.png', large: true },
   { label: 'Años de Experiencia', numeric: 20, display: '+', suffix: '', image: '/images/años-de-experiencia.png', large: false },
-  { label: 'Tiempo de respuesta a cotización agiles', suffix: '', image: '/images/pagados.png', large: false },
+  { label: 'Tiempo de respuesta a cotización ágiles', suffix: '', image: '/images/pagados.png', large: false },
   { label: 'Soporte Personalizado', suffix: '', image: '/images/atencion-24hrs.png', large: false },
 ];
 
