@@ -15,7 +15,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-12 bg-[#182e6b] text-center border-t border-white/5">
         <p className="text-white/30 text-sm font-poppins">
-          &copy; {new Date().getFullYear()} Certa Seguros. Todos los derechos reservados.
+          &copy; {new Date().getFullYear()} Seguros Certa. Todos los derechos reservados.
         </p>
       </footer>
     </main>
